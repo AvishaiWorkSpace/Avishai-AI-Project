@@ -1,0 +1,5033 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rally</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Karantina:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================
+   PLONI — local font (drop files into /fonts/)
+   ברגע שקבצי הפונט קיימים, Ploni נטען אוטומטית.
+   עד אז — fallback ל-Frank Ruhl Libre.
+   ============================================ */
+@font-face {
+  font-family: 'Ploni';
+  src: url('fonts/ploni-regular.woff2') format('woff2');
+  font-weight: 400; font-display: swap;
+}
+@font-face {
+  font-family: 'Ploni';
+  src: url('fonts/ploni-medium.woff2') format('woff2');
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: 'Ploni';
+  src: url('fonts/ploni-bold.woff2') format('woff2');
+  font-weight: 700; font-display: swap;
+}
+@font-face {
+  font-family: 'Ploni';
+  src: url('fonts/ploni-ultrabold.woff2') format('woff2');
+  font-weight: 800; font-display: swap;
+}
+
+/* ============================================
+   DESIGN TOKENS — Rally DNA
+   ============================================ */
+:root {
+  --bg: #FAFAF7;
+  --bg-elev: #F4F4F0;
+  --surface: #FFFFFF;
+  --border: #ECECE8;
+  --border-strong: #D8D8D3;
+
+  --text: #0E0E0C;
+  --text-mute: #5A5A55;
+  --text-soft: #9A9A95;
+
+  --brand: #1A4D2E;
+  --brand-pressed: #143D24;
+  --brand-soft: #E8F0EA;
+  --brand-contrast: #FFFFFF;
+
+  --warn: #B8732A;
+  --danger: #A8302A;
+
+  --font-sans: 'Ploni', 'Frank Ruhl Libre', 'Narkiss Tam', -apple-system, system-ui, sans-serif;
+  --font-display: 'Ploni', 'Karantina', 'Frank Ruhl Libre', sans-serif;
+
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+  --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-10: 48px; --s-12: 64px;
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --t-fast: 120ms;
+  --t-base: 220ms;
+  --t-slow: 320ms;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* Accessibility — focus visible for keyboard navigation only */
+*:focus { outline: none; }
+*:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.slider:focus-visible,
+.icon-btn:focus-visible {
+  outline-offset: 3px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  font-feature-settings: 'tnum' on, 'ss01' on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none;
+}
+
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================
+   APP CONTAINER & SCREENS
+   ============================================ */
+.app {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.screen {
+  display: none;
+  padding-bottom: 100px;
+  animation: screenIn 280ms var(--ease-smooth);
+}
+.screen.is-active { display: block; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================
+   TOP BAR (shared)
+   ============================================ */
+.topbar {
+  padding: 18px 20px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topbar.with-back { padding-top: 14px; }
+
+.brand-mark {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--brand);
+  line-height: 1;
+}
+.brand-mark::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--brand);
+  border-radius: 50%;
+  margin-right: 2px;
+  vertical-align: super;
+  transform: translateY(-4px);
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--t-fast) var(--ease-smooth), background var(--t-fast);
+  flex-shrink: 0;
+}
+.icon-btn:active { transform: scale(0.94); background: var(--brand-soft); }
+.icon-btn svg { width: 20px; height: 20px; stroke: var(--text); fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+.has-dot { position: relative; }
+.has-dot::after {
+  content: '';
+  position: absolute;
+  top: 9px; left: 9px;
+  width: 8px; height: 8px;
+  background: var(--brand);
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+
+/* ============================================
+   GREETING
+   ============================================ */
+.greet {
+  padding: 4px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.greet-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--brand-soft) center/cover no-repeat;
+  color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  font-family: var(--font-display);
+}
+
+/* Avatar with photo — pass URL inline via style="--ph: url(...)" */
+.has-photo {
+  background-image: var(--ph) !important;
+  color: transparent !important;
+}
+.has-photo > * { display: none; }
+.greet-text { line-height: 1.25; min-width: 0; }
+.greet-hello { font-size: 14px; color: var(--text-mute); font-weight: 500; }
+.greet-name { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+.greet-meta {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-top: 3px;
+  font-feature-settings: 'tnum' on;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.greet-meta .dot { display: inline-block; width: 3px; height: 3px; background: var(--text-soft); border-radius: 50%; }
+
+/* ============================================
+   LEVEL TAG
+   ============================================ */
+/* ============================================
+   LEVEL TAG — A1 / A2 / B1 / B2 / C1 / C2
+   שיטה ספרדית/אירופית סטנדרטית. A1 = top, C2 = beginner.
+   ============================================ */
+.level-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: var(--r-sm);
+  padding: 3px 9px 2px;
+  line-height: 1;
+}
+.level-tag::before {
+  content: '';
+  display: none;
+}
+
+/* Range pill — לדוגמה "B2 – B1" */
+.level-range {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: var(--r-sm);
+  padding: 3px 9px 2px;
+  line-height: 1;
+}
+
+/* ============================================
+   HERO — "המשחק הבא שלך"
+   ============================================ */
+.hero {
+  margin: 8px 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 8px 24px rgba(20,30,30,0.04);
+}
+
+.hero-image {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #1A4D2E 0%, #2D6E47 100%);
+  overflow: hidden;
+}
+.hero-image img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: contrast(1.05) saturate(0.92) brightness(0.98);
+}
+.hero-image::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0) 100%);
+  pointer-events: none;
+}
+.hero-overlay {
+  position: absolute;
+  bottom: 16px; right: 16px; left: 16px;
+  color: #fff;
+  z-index: 1;
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 5px 10px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--r-pill);
+  margin-bottom: 8px;
+}
+.hero-venue {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.hero-when {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  margin-top: 4px;
+  font-feature-settings: 'tnum' on;
+}
+
+.hero-body { padding: 18px 20px 20px; }
+
+.hero-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.hero-players { display: flex; align-items: center; }
+.player-pip {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  background: var(--brand-soft) center/cover no-repeat;
+  color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  margin-left: -8px;
+  font-family: var(--font-display);
+  background-image: var(--ph);
+}
+.player-pip[style*="--ph"] { color: transparent; }
+.player-pip.empty {
+  background: transparent;
+  border: 1.5px dashed var(--border-strong);
+  color: var(--text-soft);
+}
+.player-pip:first-child { margin-left: 0; }
+.hero-players-count {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin-right: 12px;
+  font-weight: 500;
+  font-feature-settings: 'tnum' on;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-mute);
+  font-feature-settings: 'tnum' on;
+  flex-shrink: 0;
+}
+.hero-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* ============================================
+   SLIDE-TO-JOIN
+   ============================================ */
+.slider {
+  position: relative;
+  height: 60px;
+  background: #E8EFE8;
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  user-select: none;
+  margin-top: 4px;
+  transition: background 300ms ease;
+}
+.slider-track-fill {
+  position: absolute;
+  top: 0; bottom: 0;
+  right: 0;
+  width: 60px;
+  background: var(--brand);
+  border-radius: var(--r-pill);
+  pointer-events: none;
+  transition: none;
+}
+.slider-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--brand);
+  pointer-events: none;
+  letter-spacing: 0.005em;
+  transition: opacity 200ms, color 300ms;
+}
+.slider-thumb {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 52px;
+  height: 52px;
+  background: #1A4D2E;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(26,77,46,0.35);
+  display: flex; align-items: center; justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  z-index: 2;
+}
+.slider-thumb:active { cursor: grabbing; }
+.slider-thumb svg {
+  width: 22px; height: 22px;
+  stroke: #FFFFFF;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.slider.done { background: #1A4D2E; }
+.slider.done .slider-track-fill { width: 100% !important; background: #1A4D2E; }
+.slider.done .slider-label { opacity: 1; color: #FFFFFF; }
+.slider.done .slider-thumb { background: rgba(255,255,255,0.25); box-shadow: none; }
+.slider.done .slider-thumb svg.arrow { display: none; }
+.slider.done .slider-thumb svg.check { display: block; }
+.slider-thumb svg.check { display: none; }
+
+/* ============================================
+   SECTION HEADER
+   ============================================ */
+.section-head {
+  padding: 8px 20px 12px;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.section-link {
+  font-size: 13px;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+/* ============================================
+   CHIPS
+   ============================================ */
+.chips {
+  display: flex; gap: 8px;
+  padding: 0 20px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-mute);
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.chip:active { transform: scale(0.96); }
+.chip.is-active {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+/* ============================================
+   MATCH CARDS
+   ============================================ */
+.matches { padding: 0 20px 24px; display: flex; flex-direction: column; gap: 12px; }
+
+.match {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  transition: transform var(--t-fast) var(--ease-smooth);
+  opacity: 0;
+  transform: translateY(8px);
+  animation: matchIn 380ms var(--ease-spring) forwards;
+}
+.match:nth-child(1) { animation-delay: 40ms; }
+.match:nth-child(2) { animation-delay: 100ms; }
+.match:nth-child(3) { animation-delay: 160ms; }
+.match:nth-child(4) { animation-delay: 220ms; }
+.match:nth-child(5) { animation-delay: 280ms; }
+.match:active { transform: scale(0.992) translateY(0); }
+@keyframes matchIn { to { opacity: 1; transform: translateY(0); } }
+
+.match-top {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  padding: 12px;
+  align-items: stretch;
+}
+.match-img {
+  width: 96px; height: 64px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--brand-soft);
+}
+.match-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: contrast(1.05) saturate(0.92) brightness(0.98);
+}
+.match-info { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.match-venue {
+  font-size: 15px; font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.005em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.match-when {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin-top: 2px;
+  font-feature-settings: 'tnum' on;
+}
+
+.match-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: #FBFBF8;
+}
+.match-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-mute);
+  font-weight: 500;
+  font-feature-settings: 'tnum' on;
+  flex-wrap: wrap;
+}
+.match-meta .pill {
+  padding: 3px 8px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+/* ============================================
+   STATUS BADGES on match cards
+   ============================================ */
+.badge-strip {
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.b-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: var(--r-pill);
+}
+.b-tag.hot   { background: #FBEDE3; color: var(--warn); }
+.b-tag.last  { background: #F4E8E6; color: var(--danger); }
+.b-tag.mine  { background: var(--brand); color: #fff; }
+.b-tag.joined{ background: var(--brand-soft); color: var(--brand); }
+.b-tag .dotpulse {
+  width: 6px; height: 6px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.55; transform: scale(0.85); }
+}
+
+/* ============================================
+   EMERGENCY BANNER
+   ============================================ */
+.alert-banner {
+  margin: 0 20px 16px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.alert-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 4px;
+  background: var(--brand);
+}
+.alert-dot {
+  width: 10px; height: 10px;
+  background: var(--brand);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.alert-info { flex: 1; min-width: 0; }
+.alert-title { font-size: 13px; font-weight: 700; letter-spacing: 0.01em; }
+.alert-sub { font-size: 12px; color: rgba(250,250,247,0.7); margin-top: 1px; font-feature-settings: 'tnum' on; }
+.alert-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   CALENDAR STRIP (Find screen) — Playtomic DNA
+   ============================================ */
+.cal-strip {
+  display: flex;
+  gap: 6px;
+  padding: 0 20px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cal-strip::-webkit-scrollbar { display: none; }
+.cal-day {
+  flex-shrink: 0;
+  min-width: 56px;
+  padding: 10px 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.cal-day:active { transform: scale(0.96); }
+.cal-dow {
+  font-size: 11px;
+  color: var(--text-mute);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.cal-num {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  font-feature-settings: 'tnum' on;
+}
+.cal-cnt {
+  font-size: 10px;
+  color: var(--brand);
+  font-weight: 700;
+  font-feature-settings: 'tnum' on;
+  margin-top: 2px;
+}
+.cal-cnt.empty { color: var(--text-soft); font-weight: 500; }
+.cal-day.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+.cal-day.is-active .cal-dow,
+.cal-day.is-active .cal-num,
+.cal-day.is-active .cal-cnt {
+  color: #fff;
+}
+
+/* ============================================
+   FRIENDS SECTION (Home) — social proof
+   ============================================ */
+.friends-strip {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.friends-strip::-webkit-scrollbar { display: none; }
+.friend-card {
+  flex-shrink: 0;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+  transition: transform var(--t-fast) var(--ease-smooth);
+}
+.friend-card:active { transform: scale(0.99); }
+.friend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.friend-stack { display: flex; }
+.friend-pip {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--brand-soft) center/cover no-repeat;
+  background-image: var(--ph);
+  color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  border: 2px solid var(--surface);
+  margin-left: -8px;
+}
+.friend-pip[style*="--ph"] { color: transparent; }
+.friend-pip:first-child { margin-left: 0; }
+.friend-info {
+  font-size: 12px;
+  color: var(--text-mute);
+  line-height: 1.4;
+}
+.friend-info strong { color: var(--text); font-weight: 700; }
+.friend-meta {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.friend-when {
+  font-size: 12px;
+  color: var(--text-mute);
+  font-feature-settings: 'tnum' on;
+}
+
+/* ============================================
+   POST-JOIN CONFIRMATION (in sheet)
+   ============================================ */
+.confirm-state {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+.confirm-state.show { display: flex; }
+.confirm-headline {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.confirm-headline::before {
+  content:'';
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--brand);
+  flex-shrink: 0;
+  display: inline-block;
+  position: relative;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M5 13l4 4L19 7'/></svg>");
+  background-size: 14px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.confirm-sub {
+  font-size: 14px;
+  color: var(--text-mute);
+  margin-bottom: 14px;
+}
+.confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.confirm-act {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+  width: 100%;
+}
+.confirm-act:active { transform: scale(0.99); }
+.confirm-act svg {
+  width: 18px; height: 18px;
+  stroke: var(--text-mute);
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.confirm-act-arrow {
+  margin-right: auto;
+  color: var(--text-soft);
+  font-size: 16px;
+}
+
+/* ============================================
+   ONBOARDING SCREENS
+   ============================================ */
+.onb {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 20px 32px;
+  background: var(--bg);
+}
+.onb.is-active { display: flex; }
+
+.onb-top {
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.onb-back {
+  width: 36px; height: 36px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.onb-back svg { width:18px; height:18px; stroke: var(--text); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.onb-skip { color: var(--text-mute); font-size: 14px; font-weight: 600; }
+
+.onb-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.welcome-stage {
+  text-align: center;
+  padding: 40px 0;
+}
+.welcome-mark {
+  font-family: var(--font-display);
+  font-size: 88px;
+  font-weight: 700;
+  color: var(--brand);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+.welcome-mark::after {
+  content:'';
+  display:inline-block;
+  width:12px; height:12px;
+  background: var(--brand);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: super;
+  transform: translateY(-12px);
+}
+.welcome-tag {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 14px;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+.welcome-sub {
+  font-size: 15px;
+  color: var(--text-mute);
+  margin-top: 8px;
+  line-height: 1.55;
+  max-width: 320px;
+  margin-inline: auto;
+}
+
+.onb-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.onb-title {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.onb-sub {
+  font-size: 14px;
+  color: var(--text-mute);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.onb-foot { padding-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  height: 56px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: transform var(--t-fast) var(--ease-smooth);
+}
+.btn-secondary:active { transform: scale(0.98); }
+.btn-secondary svg { width: 18px; height: 18px; }
+
+.terms {
+  font-size: 11px;
+  color: var(--text-soft);
+  text-align: center;
+  padding-top: 16px;
+  line-height: 1.6;
+}
+.terms a { color: var(--text-mute); text-decoration: underline; text-underline-offset: 2px; }
+
+/* OTP boxes */
+.otp {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0;
+  direction: ltr;
+}
+.otp-box {
+  flex: 1;
+  height: 64px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  font-feature-settings: 'tnum' on;
+}
+.otp-box:focus { outline: none; border-color: var(--brand); }
+
+/* zones multi-select chips */
+.zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 0;
+}
+.zone-chip {
+  padding: 10px 14px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.zone-chip:active { transform: scale(0.96); }
+.zone-chip.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--brand-contrast);
+}
+.zone-chip.is-active::before {
+  content: '✓ ';
+  font-weight: 800;
+}
+
+/* slider for radius */
+.radius {
+  margin-top: 28px;
+}
+.radius-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-mute);
+  font-weight: 600;
+  font-feature-settings: 'tnum' on;
+  margin-bottom: 10px;
+}
+.radius-val {
+  font-family: var(--font-display);
+  color: var(--brand);
+  font-size: 16px;
+}
+.radius-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.radius-btn {
+  height: 50px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--r-md);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-mute);
+  font-feature-settings: 'tnum' on;
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.radius-btn:active { transform: scale(0.97); }
+.radius-btn.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--brand-contrast);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty {
+  margin: 0 20px;
+  text-align: center;
+  padding: 56px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-mute);
+}
+.empty-glyph {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.empty-glyph svg { width: 28px; height: 28px; stroke: var(--brand); fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.empty-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.005em;
+}
+.empty-sub {
+  font-size: 14px;
+  margin-top: 6px;
+  line-height: 1.55;
+  max-width: 280px;
+  margin-inline: auto;
+}
+.empty-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+.empty-actions .btn-primary { height: 48px; font-size: 14px; }
+.empty-actions .btn-link {
+  color: var(--text-mute);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px;
+}
+
+/* ============================================
+   NOTIFICATIONS INBOX
+   ============================================ */
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 20px 24px;
+}
+.notif {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+.notif:first-child { border-top: none; }
+.notif-icon {
+  width: 40px; height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+}
+.notif-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.notif-icon.warn { background: #FBEDE3; color: var(--warn); }
+.notif-icon.danger { background: #F4E8E6; color: var(--danger); }
+.notif-icon.muted { background: var(--bg-elev); color: var(--text-mute); }
+.notif-body { flex: 1; min-width: 0; }
+.notif-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+.notif-title strong { font-weight: 700; }
+.notif-meta {
+  font-size: 12px;
+  color: var(--text-mute);
+  margin-top: 4px;
+  font-feature-settings: 'tnum' on;
+}
+.notif.unread .notif-title::after {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--brand);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.notif-day-head {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-mute);
+  letter-spacing: 0.05em;
+  margin: 16px 20px 4px;
+  padding-bottom: 4px;
+}
+
+/* ============================================
+   LOADING (skeleton + meaningful progress)
+   ============================================ */
+.loading-text {
+  margin: 0 20px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-mute);
+  font-weight: 500;
+}
+.loading-spin {
+  width: 14px; height: 14px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-step {
+  opacity: 0;
+  animation: fadeStep 0.4s var(--ease-smooth) forwards;
+}
+@keyframes fadeStep { from { opacity:0; transform: translateX(-4px); } to { opacity:1; transform: translateX(0); } }
+
+/* Skeleton card (match) */
+.skel-match {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.skel-img {
+  width: 96px; height: 64px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(110deg, var(--bg-elev) 8%, var(--border) 18%, var(--bg-elev) 33%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+.skel-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(110deg, var(--bg-elev) 8%, var(--border) 18%, var(--bg-elev) 33%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  margin-bottom: 8px;
+}
+.skel-line.short { width: 60%; }
+.skel-line.tiny { width: 35%; height: 10px; }
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+.match-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+.match-cta::after {
+  content: '←';
+  margin-right: 4px;
+}
+
+/* ============================================
+   BOTTOM TAB BAR
+   ============================================ */
+.tabbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-width: 430px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 10px 4px calc(10px + env(safe-area-inset-bottom)) 4px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 50;
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  color: var(--text-soft);
+  transition: color var(--t-fast);
+}
+.tab svg { width: 22px; height: 22px; stroke-width: 1.75; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.tab span { font-size: 11px; font-weight: 600; }
+.tab.is-active { color: var(--brand); }
+.tab.is-active svg { stroke-width: 2; }
+.tab.center { position: relative; }
+.tab.center .fab {
+  position: absolute;
+  top: -22px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 20px rgba(26,77,46,0.32);
+  transition: transform var(--t-fast) var(--ease-smooth);
+}
+.tab.center .fab:active { transform: scale(0.94); }
+.tab.center .fab svg { width: 22px; height: 22px; stroke: #fff; }
+.tab.center span { margin-top: 30px; }
+
+/* ============================================
+   QUICK MATCH — home entry + screen
+   ============================================ */
+.quickmatch {
+  margin: 4px 20px 20px;
+  width: calc(100% - 40px);
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: 16px 18px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 8px 24px rgba(26,77,46,0.22);
+  transition: transform var(--t-fast) var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+}
+.quickmatch::after {
+  content: '';
+  position: absolute; top: -40%; left: -20%;
+  width: 80px; height: 200%;
+  background: rgba(255,255,255,0.08);
+  transform: rotate(18deg);
+}
+.quickmatch:active { transform: scale(0.99); }
+.quickmatch-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.16);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.quickmatch-icon svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.quickmatch-text { flex: 1; text-align: right; }
+.quickmatch-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.1; }
+.quickmatch-sub { font-size: 12px; color: rgba(255,255,255,0.82); margin-top: 2px; }
+.quickmatch-arrow { font-size: 20px; opacity: 0.75; }
+
+/* Quick Match screen */
+.quick-wrap { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; padding: 0 20px 32px; }
+.quick-search { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.radar { position: relative; width: 168px; height: 168px; margin-bottom: 36px; display: flex; align-items: center; justify-content: center; }
+.radar-core { width: 76px; height: 76px; border-radius: 50%; background: var(--brand); display: flex; align-items: center; justify-content: center; z-index: 2; box-shadow: 0 8px 24px rgba(26,77,46,0.28); }
+.radar-core svg { width: 36px; height: 36px; stroke: #fff; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.radar-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--brand); opacity: 0; animation: radar 2.1s ease-out infinite; }
+.radar-ring:nth-child(2) { animation-delay: 0.7s; }
+.radar-ring:nth-child(3) { animation-delay: 1.4s; }
+@keyframes radar { 0% { opacity: 0.5; transform: scale(0.45); } 100% { opacity: 0; transform: scale(1); } }
+.quick-status { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+.quick-step { font-size: 14px; color: var(--text-mute); margin-top: 10px; min-height: 20px; font-weight: 500; }
+.quick-step span { display: inline-block; animation: fadeStep 0.4s var(--ease-smooth); }
+
+.quick-found { animation: rateIn 420ms var(--ease-spring); }
+.quick-found-head { text-align: center; padding: 8px 0 20px; }
+.quick-found-eyebrow { font-size: 12px; font-weight: 600; color: var(--brand); letter-spacing: 0.08em; text-transform: uppercase; }
+.quick-found-title { font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.015em; margin-top: 6px; }
+.match-fit {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--brand-soft); color: var(--brand);
+  font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--r-pill);
+  font-feature-settings: 'tnum' on;
+}
+
+/* ============================================
+   MARKETPLACE — שוק המגרשים
+   ============================================ */
+.market-hero {
+  margin: 4px 20px 16px;
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(26,77,46,0.18);
+}
+.market-hero-title {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.market-hero-sub {
+  font-size: 13px; color: rgba(255,255,255,0.85);
+  margin-top: 8px; line-height: 1.5;
+}
+.market-hero-cta {
+  margin-top: 16px;
+  width: 100%;
+  height: 48px;
+  background: #fff;
+  color: var(--brand);
+  border-radius: var(--r-pill);
+  font-weight: 700; font-size: 15px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform var(--t-fast) var(--ease-smooth);
+}
+.market-hero-cta:active { transform: scale(0.98); }
+.market-hero-cta svg { width: 18px; height: 18px; stroke: var(--brand); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.market-card { /* builds on .match */ }
+.market-seller {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: #FBFBF8;
+}
+.market-seller-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--brand-soft) center/cover no-repeat;
+  background-image: var(--ph);
+  flex-shrink: 0;
+}
+.market-seller-text {
+  font-size: 12px; color: var(--text-mute); font-weight: 500;
+  font-feature-settings: 'tnum' on;
+}
+.market-seller-text strong { color: var(--text); font-weight: 700; }
+
+.type-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700;
+  color: var(--text-mute);
+  background: var(--bg-elev);
+  border-radius: var(--r-pill);
+  padding: 3px 9px;
+}
+
+.price-same {
+  display: inline-flex; align-items: baseline; gap: 5px;
+}
+.price-same .amt {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 700; color: var(--text);
+  font-feature-settings: 'tnum' on;
+}
+.price-same .note {
+  font-size: 11px; font-weight: 600; color: var(--brand);
+}
+
+/* sell flow — court picker */
+.sell-pick {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sell-option {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  text-align: right;
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.sell-option:active { transform: scale(0.99); }
+.sell-option.is-active { border-color: var(--brand); background: var(--brand-soft); }
+.sell-option-img {
+  width: 56px; height: 40px; border-radius: var(--r-sm); overflow: hidden;
+  background: var(--brand-soft); flex-shrink: 0;
+}
+.sell-option-img img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.05) saturate(0.92) brightness(0.98); }
+.sell-option-info { flex: 1; min-width: 0; }
+.sell-option-venue { font-size: 14px; font-weight: 700; }
+.sell-option-when { font-size: 12px; color: var(--text-mute); font-feature-settings: 'tnum' on; margin-top: 1px; }
+.sell-option-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.sell-option.is-active .sell-option-check { background: var(--brand); border-color: var(--brand); }
+.sell-option-check svg { width: 13px; height: 13px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.sell-option.is-active .sell-option-check svg { opacity: 1; }
+
+.price-locked {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+}
+.price-locked-amt { font-family: var(--font-display); font-size: 22px; font-weight: 700; font-feature-settings: 'tnum' on; }
+.price-locked-note { font-size: 12px; color: var(--text-mute); display: flex; align-items: center; gap: 4px; }
+.price-locked-note svg { width: 13px; height: 13px; stroke: var(--text-mute); fill: none; stroke-width: 2; }
+
+.trust-block {
+  display: flex; gap: 10px;
+  background: var(--brand-soft);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  font-size: 13px; color: var(--brand);
+  line-height: 1.5;
+}
+.trust-block svg { width: 18px; height: 18px; stroke: var(--brand); fill: none; stroke-width: 1.75; flex-shrink: 0; margin-top: 1px; }
+
+/* ============================================
+   WHATSAPP LINK (under each player)
+   ============================================ */
+.wa-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1FA855;
+  margin-top: 3px;
+}
+.wa-link svg { width: 13px; height: 13px; fill: #1FA855; stroke: none; }
+.wa-link:active { opacity: 0.6; }
+
+/* ============================================
+   GROUP CHAT SCREEN
+   ============================================ */
+.chat-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+.chat-head {
+  flex-shrink: 0;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.chat-head-info { flex: 1; min-width: 0; }
+.chat-head-title {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chat-head-sub {
+  font-size: 12px;
+  color: var(--text-mute);
+  font-feature-settings: 'tnum' on;
+  margin-top: 1px;
+}
+.chat-head-avatars { display: flex; }
+.chat-head-pip {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  margin-left: -10px;
+  background: var(--brand-soft) center/cover no-repeat;
+  background-image: var(--ph);
+}
+
+/* Pinned equipment summary */
+.chat-equip {
+  flex-shrink: 0;
+  margin: 12px 16px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+}
+.chat-equip-head {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: var(--text);
+  margin-bottom: 10px;
+}
+.chat-equip-head svg { width: 15px; height: 15px; stroke: var(--brand); fill: none; stroke-width: 1.75; }
+.equip-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.equip-label { color: var(--text-mute); font-weight: 500; }
+.equip-status { display: flex; align-items: center; gap: 6px; font-weight: 700; font-feature-settings: 'tnum' on; }
+.equip-status.ok { color: var(--brand); }
+.equip-status.missing { color: var(--warn); }
+.equip-status svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.equip-claim {
+  font-size: 12px; font-weight: 700; color: var(--brand);
+  background: var(--brand-soft); border-radius: var(--r-pill);
+  padding: 4px 10px;
+}
+
+.chat-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chat-daydiv {
+  align-self: center;
+  font-size: 11px;
+  color: var(--text-soft);
+  font-weight: 600;
+  background: var(--bg-elev);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+}
+.msg { display: flex; gap: 8px; max-width: 82%; align-self: flex-start; }
+.msg-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--brand-soft) center/cover no-repeat;
+  background-image: var(--ph);
+  align-self: flex-end;
+}
+.msg-content {}
+.msg-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand);
+  margin-bottom: 3px;
+}
+.msg-bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px 14px 14px 14px;
+  padding: 9px 13px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+}
+.msg-time {
+  font-size: 10px;
+  color: var(--text-soft);
+  margin-top: 3px;
+  font-feature-settings: 'tnum' on;
+}
+.msg.mine { align-self: flex-end; flex-direction: row-reverse; }
+.msg.mine .msg-avatar { display: none; }
+.msg.mine .msg-name { display: none; }
+.msg.mine .msg-bubble {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  border-radius: 14px 4px 14px 14px;
+}
+.msg.mine .msg-time { text-align: left; }
+
+.chat-input-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.chat-input {
+  flex: 1;
+  height: 44px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 0 16px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+}
+.chat-input:focus { border-color: var(--brand); }
+.chat-send {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--t-fast) var(--ease-smooth);
+}
+.chat-send:active { transform: scale(0.92); }
+.chat-send svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ============================================
+   POST-GAME RATING SCREEN
+   ============================================ */
+.rate-intro {
+  padding: 8px 20px 20px;
+}
+.rate-eyebrow {
+  font-size: 12px; font-weight: 600; color: var(--brand);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+}
+.rate-title {
+  font-family: var(--font-display);
+  font-size: 30px; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.rate-sub { font-size: 14px; color: var(--text-mute); margin-top: 6px; line-height: 1.5; }
+
+.rate-card {
+  margin: 0 20px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 18px;
+}
+.rate-player {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.rate-player-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--brand-soft) center/cover no-repeat;
+  background-image: var(--ph);
+  flex-shrink: 0;
+}
+.rate-player-name { font-size: 16px; font-weight: 700; }
+.rate-player-lvl {
+  font-size: 12px; color: var(--text-mute);
+  font-family: var(--font-display); letter-spacing: 0.04em; margin-top: 1px;
+}
+
+/* Star row */
+.stars { display: flex; gap: 6px; direction: ltr; justify-content: flex-end; margin-bottom: 18px; }
+.star {
+  width: 34px; height: 34px;
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease-spring);
+}
+.star:active { transform: scale(1.2); }
+.star svg { width: 100%; height: 100%; fill: var(--border-strong); stroke: none; transition: fill var(--t-fast); }
+.star.lit svg { fill: #E6A817; }
+
+/* Attribute rows */
+.attr {
+  margin-bottom: 14px;
+}
+.attr:last-child { margin-bottom: 0; }
+.attr-label {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  margin-bottom: 7px;
+}
+.attr-chips { display: flex; gap: 6px; }
+.attr-chip {
+  flex: 1;
+  padding: 9px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: 12px; font-weight: 600;
+  color: var(--text-mute);
+  text-align: center;
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.attr-chip:active { transform: scale(0.96); }
+.attr-chip.is-active {
+  background: var(--brand); border-color: var(--brand); color: #fff;
+}
+.rate-divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* End-game simulation banner (in chat) */
+.sim-endgame {
+  flex-shrink: 0;
+  margin: 10px 16px 0;
+  padding: 13px 16px;
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  transition: transform var(--t-fast) var(--ease-smooth);
+}
+.sim-endgame:active { transform: scale(0.99); }
+.sim-arrow { font-size: 18px; }
+
+/* Stepped rater */
+.rate-progress { display: flex; gap: 6px; }
+.rate-dot {
+  flex: 1; height: 4px; border-radius: var(--r-pill);
+  background: var(--border);
+  transition: background var(--t-base) var(--ease-smooth);
+}
+.rate-dot.done, .rate-dot.current { background: var(--brand); }
+
+.rate-card-anim { animation: rateIn 360ms var(--ease-spring); }
+@keyframes rateIn { from { opacity:0; transform: translateX(12px) scale(0.98); } to { opacity:1; transform: translateX(0) scale(1); } }
+
+.rate-q {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  margin: 4px 0 12px; text-align: center;
+}
+.rate-hint {
+  font-size: 12px; color: var(--text-soft); text-align: center; margin-bottom: 14px;
+  min-height: 16px;
+  font-weight: 500;
+}
+.stars.big { gap: 10px; justify-content: center; margin-bottom: 6px; }
+.stars.big .star { width: 42px; height: 42px; }
+
+/* Kudos — fun compliment chips (multi-select) */
+.kudos { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.kudo {
+  padding: 9px 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-size: 13px; font-weight: 600;
+  color: var(--text-mute);
+  transition: all var(--t-fast) var(--ease-spring);
+}
+.kudo:active { transform: scale(0.94); }
+.kudo.is-active {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+/* ============================================
+   FIRST-MATCH CELEBRATION (one-time wow moment)
+   חגיגה דקה — אפס confetti, אבל יש רגע
+   ============================================ */
+.celebrate-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(14,14,12,0.85);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 380ms var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+.celebrate-bg.show { opacity: 1; pointer-events: auto; }
+
+.celebrate-card {
+  max-width: 360px;
+  background: var(--bg);
+  border-radius: var(--r-lg);
+  padding: 40px 28px 28px;
+  text-align: center;
+  transform: scale(0.92) translateY(20px);
+  opacity: 0;
+  transition: all 480ms cubic-bezier(0.34, 1.32, 0.64, 1);
+}
+.celebrate-bg.show .celebrate-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  transition-delay: 120ms;
+}
+
+.celebrate-mark {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.celebrate-mark::before,
+.celebrate-mark::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--brand);
+  opacity: 0;
+}
+.celebrate-bg.show .celebrate-mark::before {
+  animation: ripple 1.6s ease-out 320ms;
+}
+.celebrate-bg.show .celebrate-mark::after {
+  animation: ripple 1.6s ease-out 600ms;
+}
+@keyframes ripple {
+  0%   { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(2.0); }
+}
+.celebrate-mark svg { width: 44px; height: 44px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.celebrate-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.celebrate-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  margin-top: 6px;
+}
+.celebrate-sub {
+  font-size: 14px;
+  color: var(--text-mute);
+  margin-top: 10px;
+  line-height: 1.55;
+  max-width: 280px;
+  margin-inline: auto;
+}
+.celebrate-cta {
+  margin-top: 24px;
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  background: var(--text);
+  color: var(--bg);
+  padding: 12px 18px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 100;
+  transition: transform 380ms cubic-bezier(0.34, 1.32, 0.64, 1);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+}
+.toast.show { transform: translate(-50%, 0); }
+
+/* ============================================
+   SKILL QUIZ
+   ============================================ */
+.quiz {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0 20px 32px;
+}
+.quiz.is-active { display: flex; }
+
+.quiz-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0 16px;
+}
+.quiz-back {
+  width: 36px; height: 36px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.quiz-back svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.quiz-progress {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: var(--r-pill);
+  transition: width 320ms var(--ease-spring);
+}
+.quiz-count {
+  font-size: 12px;
+  color: var(--text-mute);
+  font-weight: 600;
+  font-feature-settings: 'tnum' on;
+  flex-shrink: 0;
+}
+
+.quiz-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.quiz-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.quiz-question {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.015em;
+  margin-bottom: 8px;
+}
+.quiz-sub {
+  font-size: 14px;
+  color: var(--text-mute);
+  margin-bottom: 28px;
+}
+
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-opt {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  transition: all var(--t-base) var(--ease-spring);
+}
+.quiz-opt:active { transform: scale(0.99); }
+.quiz-opt.is-selected {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.quiz-opt .badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-soft);
+  font-feature-settings: 'tnum' on;
+}
+.quiz-opt.is-selected .badge { color: var(--brand); }
+
+.quiz-footer { padding-top: 24px; }
+.btn-primary {
+  display: block;
+  width: 100%;
+  height: 56px;
+  background: var(--brand);
+  color: var(--brand-contrast);
+  border-radius: var(--r-pill);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.005em;
+  transition: transform var(--t-fast) var(--ease-smooth), background var(--t-fast);
+}
+.btn-primary:active { transform: scale(0.98); background: var(--brand-pressed); }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ============================================
+   FIND SCREEN
+   ============================================ */
+.find-search {
+  margin: 0 20px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-mute);
+}
+.find-search svg { width: 18px; height: 18px; stroke: var(--text-mute); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.find-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+}
+.find-search input::placeholder { color: var(--text-soft); }
+
+.find-summary {
+  padding: 0 20px 12px;
+  font-size: 13px;
+  color: var(--text-mute);
+  font-weight: 500;
+  font-feature-settings: 'tnum' on;
+}
+.find-summary strong { color: var(--text); font-weight: 700; }
+
+/* ============================================
+   PROFILE SCREEN
+   ============================================ */
+.profile-hero {
+  padding: 8px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.profile-avatar {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background: var(--brand) center/cover no-repeat;
+  background-image: var(--ph);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 38px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 24px rgba(26,77,46,0.22);
+}
+.profile-avatar[style*="--ph"] { color: transparent; }
+.profile-name {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.profile-bio {
+  font-size: 13px;
+  color: var(--text-mute);
+  margin-top: 6px;
+  font-feature-settings: 'tnum' on;
+  display: flex; gap: 6px; align-items: center;
+}
+.profile-bio .dot { display: inline-block; width: 3px; height: 3px; background: var(--text-soft); border-radius: 50%; }
+
+.stats {
+  margin: 0 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+.stat {
+  padding: 16px 12px;
+  text-align: center;
+  border-left: 1px solid var(--border);
+}
+.stat:first-child { border-left: none; }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  font-feature-settings: 'tnum' on;
+  letter-spacing: -0.01em;
+}
+.stat-lbl {
+  font-size: 11px;
+  color: var(--text-mute);
+  font-weight: 600;
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
+.credibility {
+  margin: 0 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+}
+.credibility-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.credibility-label {
+  font-size: 13px;
+  color: var(--text-mute);
+  font-weight: 600;
+}
+.credibility-score {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  font-feature-settings: 'tnum' on;
+}
+.credibility-score span { color: var(--text-soft); font-size: 14px; font-weight: 500; }
+.credibility-tier {
+  font-size: 12px;
+  color: var(--brand);
+  font-weight: 700;
+  background: var(--brand-soft);
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  display: inline-block;
+}
+.credibility-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.credibility-bar-fill {
+  height: 100%;
+  background: var(--brand);
+  width: 71%;
+  border-radius: var(--r-pill);
+}
+
+.history {
+  margin: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.history-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.history-mark {
+  width: 36px; height: 36px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+}
+.history-mark.w { background: var(--brand-soft); color: var(--brand); }
+.history-mark.l { background: #F4E8E6; color: var(--danger); }
+.history-info { flex: 1; min-width: 0; }
+.history-venue {
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.history-date { font-size: 12px; color: var(--text-mute); font-feature-settings: 'tnum' on; margin-top: 1px; }
+.history-score {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--text-mute);
+  font-feature-settings: 'tnum' on;
+}
+
+/* ============================================
+   DETAIL SHEET (modal)
+   ============================================ */
+.sheet-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(14,14,12,0.55);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms var(--ease-smooth);
+}
+.sheet-bg.show { opacity: 1; pointer-events: auto; }
+
+.sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--bg);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  z-index: 91;
+  transform: translateY(100%);
+  transition: transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.sheet.show { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border-strong);
+  border-radius: var(--r-pill);
+  margin: 8px auto 0;
+}
+
+.sheet-img {
+  aspect-ratio: 16 / 9;
+  margin: 12px 16px 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  position: relative;
+  background: var(--brand-soft);
+}
+.sheet-img img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.05) saturate(0.92) brightness(0.98); }
+
+.sheet-body { padding: 18px 20px 24px; }
+.sheet-venue {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.sheet-when {
+  font-size: 14px;
+  color: var(--text-mute);
+  margin-top: 4px;
+  font-feature-settings: 'tnum' on;
+}
+
+.sheet-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 18px 0;
+}
+.meta-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+}
+.meta-lbl {
+  font-size: 11px;
+  color: var(--text-soft);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.meta-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  font-feature-settings: 'tnum' on;
+}
+
+.sheet-players {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.sheet-players-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.sheet-players-title { font-size: 13px; font-weight: 700; }
+.sheet-players-count { font-size: 12px; color: var(--text-mute); font-feature-settings: 'tnum' on; }
+.player-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+.player-row:first-of-type { border-top: none; }
+.player-row-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--brand-soft) center/cover no-repeat;
+  background-image: var(--ph);
+  color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+}
+.player-row-avatar[style*="--ph"] { color: transparent; }
+.player-row.empty .player-row-avatar {
+  background: transparent;
+  border: 1.5px dashed var(--border-strong);
+  color: var(--text-soft);
+}
+.player-row-name { font-size: 14px; font-weight: 600; flex: 1; }
+.player-row.empty .player-row-name { color: var(--text-soft); }
+.player-row-lvl { font-size: 12px; color: var(--text-mute); font-feature-settings: 'tnum' on; }
+
+/* ============================================
+   ADD GAME FORM
+   ============================================ */
+.form-section { padding: 8px 20px 20px; }
+.form-field { margin-bottom: 18px; }
+.form-lbl {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-mute);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+.form-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--t-fast);
+}
+.form-input:focus { border-color: var(--brand); }
+
+.seg-group {
+  display: grid;
+  gap: 6px;
+}
+.seg-group.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.seg-group.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.seg-opt {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 4px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-mute);
+  text-align: center;
+  font-feature-settings: 'tnum' on;
+  transition: all var(--t-fast) var(--ease-smooth);
+}
+.seg-opt:active { transform: scale(0.97); }
+.seg-opt.is-active {
+  background: var(--brand);
+  color: var(--brand-contrast);
+  border-color: var(--brand);
+}
+
+/* ============================================
+   TOGGLE SWITCH — אישור ידני
+   ============================================ */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--border-strong);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background var(--t-base) var(--ease-smooth);
+}
+.toggle-track::before {
+  content: '';
+  position: absolute;
+  width: 22px; height: 22px;
+  top: 3px; right: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--t-base) var(--ease-spring);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+.toggle-switch input:checked + .toggle-track { background: var(--brand); }
+.toggle-switch input:checked + .toggle-track::before { transform: translateX(-20px); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ========================================
+     ONBOARDING: WELCOME (starting screen)
+     ======================================== -->
+<section class="screen is-active" data-screen="welcome">
+  <div class="onb is-active">
+    <div class="onb-top">
+      <div></div>
+      <button class="onb-skip" onclick="goto('home')">דלג</button>
+    </div>
+
+    <div class="onb-body welcome-stage">
+      <div class="welcome-mark">Rally</div>
+      <div class="welcome-tag">רשת הפאדל של ישראל</div>
+      <p class="welcome-sub">חיבור בזמן אמת בין שחקנים, מגרשים ושותפים — בלי קבוצות וואטסאפ.</p>
+    </div>
+
+    <div class="onb-foot">
+      <button class="btn-primary" onclick="goto('login')">המשך</button>
+      <div class="terms">בהמשך אתה מאשר את <a href="#">תנאי השימוש</a> ו<a href="#">מדיניות הפרטיות</a>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ONBOARDING: LOGIN METHOD
+     ======================================== -->
+<section class="screen" data-screen="login">
+  <div class="onb is-active">
+    <div class="onb-top">
+      <button class="onb-back" onclick="goto('welcome')">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div></div>
+    </div>
+
+    <div class="onb-body">
+      <div class="onb-eyebrow">כניסה</div>
+      <h1 class="onb-title">בוא נכיר אותך</h1>
+      <p class="onb-sub">כניסה לוקחת חצי דקה. בלי סיסמאות.</p>
+
+      <div style="margin-top:28px; display:flex; flex-direction:column; gap:10px">
+        <button class="btn-primary" onclick="goto('otp')">
+          המשך עם מספר טלפון
+        </button>
+        <button class="btn-secondary" onclick="goto('profile-setup')">
+          <svg viewBox="0 0 24 24"><path d="M21.35 11.1H12v3.8h5.35c-.25 1.3-1.05 2.4-2.25 3.15v2.6h3.65c2.15-1.95 3.4-4.85 3.4-8.25 0-.45-.05-.85-.1-1.3z" fill="#4285F4"/><path d="M12 22c2.95 0 5.4-.95 7.2-2.6l-3.65-2.6c-1 .7-2.3 1.1-3.55 1.1-2.75 0-5.05-1.85-5.85-4.3H2.45v2.7C4.2 19.85 7.85 22 12 22z" fill="#34A853"/><path d="M6.15 13.6c-.2-.6-.3-1.2-.3-1.6s.1-1 .3-1.6V7.7H2.45C1.55 9.05 1 10.5 1 12s.55 2.95 1.45 4.3l3.7-2.7z" fill="#FBBC05"/><path d="M12 6.5c1.55 0 2.95.55 4.05 1.6l3.05-3.05C17.4 3.45 14.95 2.5 12 2.5c-4.15 0-7.8 2.15-9.55 5.3l3.7 2.7c.8-2.45 3.1-4 5.85-4z" fill="#EA4335"/></svg>
+          המשך עם Google
+        </button>
+      </div>
+    </div>
+
+    <div class="onb-foot">
+      <div class="terms">הכניסה היא בחינם ותמיד תישאר כזו.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ONBOARDING: OTP
+     ======================================== -->
+<section class="screen" data-screen="otp">
+  <div class="onb is-active">
+    <div class="onb-top">
+      <button class="onb-back" onclick="goto('login')">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div></div>
+    </div>
+
+    <div class="onb-body">
+      <div class="onb-eyebrow">אימות</div>
+      <h1 class="onb-title">שלחנו לך קוד</h1>
+      <p class="onb-sub">SMS עם 4 ספרות נשלח ל-‎+972 50-123-4567. <a href="#" style="color:var(--brand); font-weight:600">שנה מספר</a></p>
+
+      <div class="otp">
+        <input class="otp-box" maxlength="1" inputmode="numeric" value="3">
+        <input class="otp-box" maxlength="1" inputmode="numeric" value="7">
+        <input class="otp-box" maxlength="1" inputmode="numeric" value="">
+        <input class="otp-box" maxlength="1" inputmode="numeric" value="">
+      </div>
+
+      <div style="font-size:13px; color:var(--text-mute); text-align:center">
+        לא קיבלת? <a href="#" style="color:var(--brand); font-weight:600">שלח שוב בעוד 0:32</a>
+      </div>
+    </div>
+
+    <div class="onb-foot">
+      <button class="btn-primary" onclick="goto('profile-setup')">אמת ובוא נמשיך</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ONBOARDING: PROFILE SETUP (name + photo)
+     ======================================== -->
+<section class="screen" data-screen="profile-setup">
+  <div class="onb is-active">
+    <div class="onb-top">
+      <button class="onb-back" onclick="goto('otp')">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div></div>
+    </div>
+
+    <div class="onb-body">
+      <div class="onb-eyebrow">פרופיל</div>
+      <h1 class="onb-title">איך לקרוא לך?</h1>
+      <p class="onb-sub">השם והתמונה ייראו לשחקנים אחרים במשחקים שתצטרף אליהם.</p>
+
+      <div style="margin-top:32px; display:flex; flex-direction:column; align-items:center; gap:18px">
+        <button style="width:96px; height:96px; border-radius:50%; background:var(--brand-soft); border:2px dashed var(--border-strong); color:var(--text-soft); display:flex; align-items:center; justify-content:center; font-size:36px; font-family:var(--font-display)">+</button>
+        <div style="font-size:12px; color:var(--text-soft); font-weight:600">הוסף תמונה</div>
+      </div>
+
+      <div style="margin-top:24px">
+        <label class="form-lbl">שם פרטי</label>
+        <input class="form-input" value="אבישי" placeholder="השם שלך">
+      </div>
+    </div>
+
+    <div class="onb-foot">
+      <button class="btn-primary" onclick="goto('zones')">המשך</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     ONBOARDING: ZONES (multi-select + radius)
+     ======================================== -->
+<section class="screen" data-screen="zones">
+  <div class="onb is-active">
+    <div class="onb-top">
+      <button class="onb-back" onclick="goto('profile-setup')">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div></div>
+    </div>
+
+    <div class="onb-body">
+      <div class="onb-eyebrow">איפה משחקים</div>
+      <h1 class="onb-title">איפה אתה משחק?</h1>
+      <p class="onb-sub">סמן כל מקום שמתאים — נמצא לך משחקים בכל האזורים האלה.</p>
+
+      <div class="zones" id="zonesList">
+        <button class="zone-chip is-active">תל אביב</button>
+        <button class="zone-chip is-active">פתח תקווה</button>
+        <button class="zone-chip">רמת גן</button>
+        <button class="zone-chip">גבעתיים</button>
+        <button class="zone-chip">חולון</button>
+        <button class="zone-chip">בת ים</button>
+        <button class="zone-chip">הרצליה</button>
+        <button class="zone-chip">רעננה</button>
+        <button class="zone-chip">הוד השרון</button>
+        <button class="zone-chip">ראש העין</button>
+        <button class="zone-chip">ראשון לציון</button>
+        <button class="zone-chip">נתניה</button>
+      </div>
+
+      <div class="radius">
+        <div class="radius-row">
+          <div>רדיוס נסיעה מקסימלי</div>
+          <div class="radius-val" id="radiusVal">30 דק׳</div>
+        </div>
+        <div class="radius-buttons" id="radiusBtns">
+          <button class="radius-btn">15</button>
+          <button class="radius-btn is-active">30</button>
+          <button class="radius-btn">45</button>
+          <button class="radius-btn">60</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="onb-foot">
+      <button class="btn-primary" onclick="goto('quiz'); qIndex=0; answers.length=0; renderQ();">המשך לשאלון רמה</button>
+      <div class="terms">השאלון לוקח 2 דקות ונקבע אם אתה C2 או A1.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: HOME
+     ======================================== -->
+<section class="screen" data-screen="home">
+
+  <header class="topbar">
+    <div class="brand-mark">Rally</div>
+    <button class="icon-btn has-dot" aria-label="התראות" onclick="goto('inbox')">
+      <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 003.4 0"/></svg>
+    </button>
+  </header>
+
+  <div class="greet" onclick="goto('profile')">
+    <div class="greet-avatar" style="--ph: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80'); background-image: var(--ph); color: transparent;">אב</div>
+    <div class="greet-text">
+      <div class="greet-hello">היי</div>
+      <div class="greet-name">אבישי</div>
+      <div class="greet-meta">
+        <span class="level-tag">B2</span>
+        <span class="dot"></span>
+        <span>פתח תקווה</span>
+        <span class="dot"></span>
+        <span>אמינות 71</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Match — the "find me a game now" Uber moment -->
+  <button class="quickmatch" onclick="goto('quick')">
+    <div class="quickmatch-icon">
+      <svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+    </div>
+    <div class="quickmatch-text">
+      <div class="quickmatch-title">מצא משחק עכשיו</div>
+      <div class="quickmatch-sub">התאמה אוטומטית לרמה ולאזור · תוך שניות</div>
+    </div>
+    <div class="quickmatch-arrow">←</div>
+  </button>
+
+  <!-- Emergency cancellation banner — מופיע רק כשיש מגרש שזמין חירום באזור -->
+  <div class="alert-banner" onclick="openSheet()" role="button" tabindex="0">
+    <div class="alert-dot"></div>
+    <div class="alert-info">
+      <div class="alert-title">מגרש פנוי עכשיו · The Padel Club, הרצליה</div>
+      <div class="alert-sub">B2 · 20:00 · ₪40 · 8.4 ק״מ · 18 דק׳ נסיעה</div>
+    </div>
+    <div class="alert-cta">הצטרפות ←</div>
+  </div>
+
+  <section class="hero" onclick="openSheet()" aria-label="המשחק הבא שלך">
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?auto=format&fit=crop&w=900&q=80" alt="">
+      <div class="hero-overlay">
+        <div class="hero-tag">המשחק הבא שלך</div>
+        <div class="hero-venue">Madison Padel — תל אביב</div>
+        <div class="hero-when">היום · 19:00–20:30 · 90´</div>
+      </div>
+    </div>
+
+    <div class="hero-body">
+      <!-- Optional: club details + end-game simulation -->
+      <div style="margin: -8px 0 14px; display:flex; justify-content:space-between; align-items:center">
+        <a href="#" onclick="event.stopPropagation(); goto('club'); return false;" style="font-size:12px; color:var(--text-mute); font-weight:600">פרטי המועדון →</a>
+        <a href="#" onclick="event.stopPropagation(); goto('rate'); return false;" style="font-size:12px; color:var(--brand); font-weight:700">סיום משחק · דרג ←</a>
+      </div>
+      <div class="hero-row">
+        <div style="display:flex; align-items:center">
+          <div class="hero-players">
+            <div class="player-pip" style="--ph: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">י</div>
+            <div class="player-pip" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">ד</div>
+            <div class="player-pip" style="--ph: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">א</div>
+            <div class="player-pip empty">+</div>
+          </div>
+          <span class="hero-players-count">חסר שחקן אחד</span>
+        </div>
+        <div class="hero-meta">
+          <span>4.7 ק״מ · 12 דק׳ נסיעה</span>
+          <span class="level-range">B2 – B1</span>
+        </div>
+      </div>
+
+      <div class="slider" id="slider" onclick="event.stopPropagation()">
+        <div class="slider-track-fill"></div>
+        <div class="slider-label">הצטרף למשחק ←</div>
+        <div class="slider-thumb" id="thumb">
+          <svg class="arrow" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg class="check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Friends section — social proof, Playtomic-style -->
+  <div class="section-head">
+    <h2 class="section-title">החברים שלך משחקים</h2>
+    <a class="section-link" href="#">הכל</a>
+  </div>
+
+  <div class="friends-strip">
+    <div class="friend-card" onclick="openSheet()">
+      <div class="friend-row">
+        <div class="friend-stack">
+          <div class="friend-pip" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); color: transparent;">דנ</div>
+          <div class="friend-pip" style="--ph: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); color: transparent;">יו</div>
+        </div>
+        <div class="friend-info">
+          <strong>דניאל</strong> ו<strong>יואב</strong><br>הצטרפו למשחק
+        </div>
+      </div>
+      <div class="friend-meta">PadelPro · רמת גן</div>
+      <div class="friend-when">מחר · 18:00 · חסר שחקן אחד</div>
+    </div>
+
+    <div class="friend-card" onclick="openSheet()">
+      <div class="friend-row">
+        <div class="friend-stack">
+          <div class="friend-pip" style="--ph: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); color: transparent;">אל</div>
+        </div>
+        <div class="friend-info">
+          <strong>אלון</strong> ארגן משחק
+        </div>
+      </div>
+      <div class="friend-meta">Club Padel · פתח תקווה</div>
+      <div class="friend-when">חמישי · 20:00 · חסרים 2</div>
+    </div>
+
+    <div class="friend-card" onclick="openSheet()">
+      <div class="friend-row">
+        <div class="friend-stack">
+          <div class="friend-pip" style="--ph: url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); color: transparent;">רן</div>
+          <div class="friend-pip" style="--ph: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); color: transparent;">מי</div>
+          <div class="friend-pip" style="--ph: url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); color: transparent;">תו</div>
+        </div>
+        <div class="friend-info">
+          <strong>רן</strong> +2 חברים<br>מחפשים שחקן
+        </div>
+      </div>
+      <div class="friend-meta">WPT Center · הוד השרון</div>
+      <div class="friend-when">שישי · 09:00 · חסר 1</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2 class="section-title">פתוחים באזור</h2>
+    <a class="section-link" href="#" onclick="goto('find'); return false;">כל המשחקים</a>
+  </div>
+
+  <div class="chips">
+    <button class="chip is-active">הכל</button>
+    <button class="chip">עכשיו</button>
+    <button class="chip">היום</button>
+    <button class="chip">מחר</button>
+    <button class="chip">B</button>
+    <button class="chip">A</button>
+  </div>
+
+  <div class="matches">
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">PadelPro · רמת גן</div>
+          <div class="match-when">מחר · 18:00–19:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B1</span>
+          <span>7.8 ק״מ · 18 דק׳</span>
+          <span>חסרים 2</span>
+          <span>₪45</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="badge-strip"><span class="b-tag last"><span class="dotpulse"></span>נשאר מקום אחד</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1673266893352-6de89e258064?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">The Padel Club · הרצליה</div>
+          <div class="match-when">היום · 21:00–22:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2</span>
+          <span>12.3 ק״מ · 26 דק׳</span>
+          <span>₪52</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">Club Padel · פתח תקווה</div>
+          <div class="match-when">חמישי · 20:00–21:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2</span>
+          <span>3.4 ק״מ · 8 דק׳</span>
+          <span>חסרים 3</span>
+          <span>₪38</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: FIND
+     ======================================== -->
+<section class="screen" data-screen="find">
+  <header class="topbar">
+    <button class="icon-btn" onclick="goto('home')" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">משחקים פתוחים</div>
+    <button class="icon-btn" aria-label="פילטר">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+    </button>
+  </header>
+
+  <div class="find-search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" placeholder="חיפוש לפי מועדון, עיר, רמה…">
+  </div>
+
+  <!-- Calendar strip — Playtomic-style horizontal day picker -->
+  <div class="cal-strip" id="calStrip">
+    <button class="cal-day is-active">
+      <span class="cal-dow">היום</span>
+      <span class="cal-num">28</span>
+      <span class="cal-cnt">14</span>
+    </button>
+    <button class="cal-day">
+      <span class="cal-dow">מחר</span>
+      <span class="cal-num">29</span>
+      <span class="cal-cnt">22</span>
+    </button>
+    <button class="cal-day">
+      <span class="cal-dow">ה׳</span>
+      <span class="cal-num">30</span>
+      <span class="cal-cnt">18</span>
+    </button>
+    <button class="cal-day">
+      <span class="cal-dow">ו׳</span>
+      <span class="cal-num">31</span>
+      <span class="cal-cnt">31</span>
+    </button>
+    <button class="cal-day">
+      <span class="cal-dow">ש׳</span>
+      <span class="cal-num">1</span>
+      <span class="cal-cnt">27</span>
+    </button>
+    <button class="cal-day">
+      <span class="cal-dow">א׳</span>
+      <span class="cal-num">2</span>
+      <span class="cal-cnt">15</span>
+    </button>
+    <button class="cal-day">
+      <span class="cal-dow">ב׳</span>
+      <span class="cal-num">3</span>
+      <span class="cal-cnt empty">3</span>
+    </button>
+  </div>
+
+  <div class="chips">
+    <button class="chip is-active">הכל</button>
+    <button class="chip">בוקר</button>
+    <button class="chip">צהריים</button>
+    <button class="chip">ערב</button>
+    <button class="chip">B</button>
+    <button class="chip">A</button>
+  </div>
+
+  <div class="find-summary" id="findSummary"><strong>14 משחקים</strong> · היום · ברדיוס 30 דק׳ נסיעה</div>
+
+  <!-- Empty state — appears when filter yields nothing -->
+  <div class="empty" id="findEmpty" style="display:none">
+    <div class="empty-glyph">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </div>
+    <div class="empty-title">לא נמצאו משחקים</div>
+    <p class="empty-sub">אין משחקים פעילים בקריטריונים שלך. נסה להרחיב את הרדיוס או היה הראשון לפרסם.</p>
+    <div class="empty-actions">
+      <button class="btn-primary" onclick="goto('add')">פרסם משחק</button>
+      <button class="btn-link">הרחב רדיוס ל-60 דק׳</button>
+    </div>
+  </div>
+
+  <!-- Loading meaningful state — appears briefly when day changes -->
+  <div class="loading-text" id="findLoading" style="display:none">
+    <div class="loading-spin"></div>
+    <span class="loading-step" id="loadingStep">מחפש משחקים בקרבת מקומך…</span>
+  </div>
+
+  <div class="matches" id="findMatches" style="display:flex">
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">PadelPro · רמת גן</div>
+          <div class="match-when">מחר · 18:00–19:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B1</span>
+          <span>18 דק׳</span>
+          <span>חסרים 2</span>
+          <span>₪45</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1673266893352-6de89e258064?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">The Padel Club · הרצליה</div>
+          <div class="match-when">היום · 21:00–22:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2</span>
+          <span>12.3 ק״מ · 26 דק׳</span>
+          <span>חסר 1</span>
+          <span>₪52</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openRequestSheet()">
+      <div class="badge-strip"><span class="b-tag" style="background:#FFF8ED; color:#B8732A; border:1px solid #F0D9B0">🔒 אישור מארגן נדרש</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">Club Padel · פתח תקווה</div>
+          <div class="match-when">חמישי · 20:00–21:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2</span>
+          <span>3.4 ק״מ · 8 דק׳</span>
+          <span>חסרים 3</span>
+          <span>₪38</span>
+        </div>
+        <button class="match-cta" style="background:var(--bg-elev); color:var(--text); border:1px solid var(--border-strong)">שלח בקשה</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="badge-strip"><span class="b-tag joined">✓ הצטרפת</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">WPT Center · הוד השרון</div>
+          <div class="match-when">שישי · 09:00–10:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">A2</span>
+          <span>9.1 ק״מ · 22 דק׳</span>
+          <span>חסר 1</span>
+          <span>₪60</span>
+        </div>
+        <button class="match-cta">פרטים</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="badge-strip"><span class="b-tag mine">המשחק שלך</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1673266893352-6de89e258064?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">Madison Padel — תל אביב</div>
+          <div class="match-when">ראשון · 20:00–21:30 · 90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2</span>
+          <span>4.7 ק״מ · 12 דק׳</span>
+          <span>חסרים 2</span>
+          <span>₪48</span>
+        </div>
+        <button class="match-cta">ניהול</button>
+      </div>
+      <a href="#" onclick="event.stopPropagation(); goto('sell-court'); return false;" style="display:block; padding:10px 14px; border-top:1px solid var(--border); background:#FBFBF8; font-size:12px; font-weight:600; color:var(--brand); text-align:right">לא יכול להגיע? מכור את המגרש ←</a>
+    </article>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: ADD GAME
+     ======================================== -->
+<section class="screen" data-screen="add">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goto('home')" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">פרסום משחק</div>
+    <div style="width:40px"></div>
+  </header>
+
+  <div class="form-section">
+    <div class="form-field">
+      <label class="form-lbl">מועדון</label>
+      <input class="form-input" placeholder="בחר מועדון…" value="Madison Padel — תל אביב">
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">תאריך ושעה</label>
+      <input class="form-input" placeholder="" value="היום, 19:00–20:30">
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">רמת המשחק</label>
+      <div class="seg-group cols-6" style="grid-template-columns:repeat(6,1fr)">
+        <button class="seg-opt" style="font-family:var(--font-display); letter-spacing:0.04em">C2</button>
+        <button class="seg-opt" style="font-family:var(--font-display); letter-spacing:0.04em">C1</button>
+        <button class="seg-opt is-active" style="font-family:var(--font-display); letter-spacing:0.04em">B2</button>
+        <button class="seg-opt" style="font-family:var(--font-display); letter-spacing:0.04em">B1</button>
+        <button class="seg-opt" style="font-family:var(--font-display); letter-spacing:0.04em">A2</button>
+        <button class="seg-opt" style="font-family:var(--font-display); letter-spacing:0.04em">A1</button>
+      </div>
+      <div style="font-size:12px; color:var(--text-soft); margin-top:8px; line-height:1.5">C2 מתחיל · A1 מקצוען. <a href="#" onclick="event.preventDefault(); goto('quiz')" style="color:var(--brand); font-weight:600">לא בטוח? עשה את השאלון</a></div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">כמה שחקנים חסרים</label>
+      <div class="seg-group cols-3">
+        <button class="seg-opt">1</button>
+        <button class="seg-opt is-active">2</button>
+        <button class="seg-opt">3</button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">מחיר לשחקן</label>
+      <input class="form-input" placeholder="₪" value="₪45">
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">הערות (אופציונלי)</label>
+      <input class="form-input" placeholder="למשל: יש מחבטים נוספים במגרש">
+    </div>
+
+    <!-- אישור ידני toggle -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); margin-bottom:4px">
+      <div>
+        <div style="font-size:15px; font-weight:600; color:var(--text)">אישור ידני של שחקנים</div>
+        <div style="font-size:13px; color:var(--text-mute); margin-top:2px">תקבל בקשה לפני כל הצטרפות — אתה מחליט מי נכנס</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="manualApprovalToggle" onchange="toggleApprovalHint(this)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    <div id="approvalHint" style="display:none; font-size:12px; color:var(--brand); font-weight:500; padding:6px 4px 10px; line-height:1.5">
+      ✓ שחקנים יראו "שלח בקשה" — נשלח לך פרופיל מלא לפני שהמשחק מאושר
+    </div>
+
+    <button class="btn-primary" onclick="publishGame()">פרסום משחק</button>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: PLAYER APPROVAL REQUEST (מארגן)
+     ======================================== -->
+<section class="screen" data-screen="player-request">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goBack()" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">בקשת הצטרפות</div>
+    <div style="width:40px"></div>
+  </header>
+
+  <!-- Match context chip -->
+  <div style="margin:8px 20px 0; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); display:flex; align-items:center; gap:12px">
+    <div style="width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,#1A4D2E,#2D6E47); display:flex; align-items:center; justify-content:center; flex-shrink:0">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    </div>
+    <div>
+      <div style="font-weight:700; font-size:15px; color:var(--text)">Madison Padel · ת״א</div>
+      <div style="font-size:13px; color:var(--text-mute); margin-top:2px; display:flex; align-items:center; gap:6px">ראשון · 20:00–21:30 <span class="level-tag">B2</span></div>
+    </div>
+  </div>
+
+  <!-- Player card -->
+  <div style="margin:12px 20px 0; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; box-shadow:0 4px 20px rgba(20,30,30,0.06)">
+
+    <!-- Player header -->
+    <div style="padding:20px 20px 16px; display:flex; align-items:center; gap:16px; border-bottom:1px solid var(--border)">
+      <div style="width:64px; height:64px; border-radius:50%; background:url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=200&q=80') center/cover no-repeat; flex-shrink:0; border:2px solid var(--border)"></div>
+      <div style="flex:1; min-width:0">
+        <div style="font-size:19px; font-weight:700; color:var(--text); font-family:var(--font-display)">אלון פרי</div>
+        <div style="margin-top:5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+          <span class="level-tag">B1</span>
+          <span style="font-size:13px; color:var(--text-mute)">28 משחקים</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-soft); margin-top:3px">הצטרף לפני 8 שניות</div>
+      </div>
+    </div>
+
+    <!-- Trust metrics -->
+    <div style="padding:18px 20px; border-bottom:1px solid var(--border)">
+      <div style="font-size:11px; font-weight:700; color:var(--text-soft); letter-spacing:0.09em; margin-bottom:14px; text-transform:uppercase">נתוני אמינות</div>
+
+      <!-- Reliability bar -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px">
+        <span style="font-size:14px; color:var(--text-mute); font-weight:500">ציון אמינות</span>
+        <span style="font-size:24px; font-weight:800; color:var(--brand); font-family:var(--font-display); line-height:1">84</span>
+      </div>
+      <div style="height:6px; background:var(--bg-elev); border-radius:99px; overflow:hidden; margin-bottom:16px">
+        <div style="width:84%; height:100%; background:linear-gradient(90deg,#1A4D2E,#2D6E47); border-radius:99px"></div>
+      </div>
+
+      <!-- Stars -->
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px">
+        <div style="display:flex; gap:2px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#1A4D2E"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#1A4D2E"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#1A4D2E"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#1A4D2E"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#D8D8D3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <span style="font-size:14px; font-weight:600; color:var(--text)">4.2</span>
+        <span style="font-size:13px; color:var(--text-soft)">מ-18 דירוגים</span>
+      </div>
+
+      <!-- Level match callout -->
+      <div style="background:var(--brand-soft); border-radius:var(--r-md); padding:12px 14px; border:1px solid rgba(26,77,46,0.12)">
+        <div style="font-size:13px; font-weight:700; color:var(--brand); margin-bottom:3px">✓ התאמה טובה למשחק שלך</div>
+        <div style="font-size:13px; color:var(--text-mute); line-height:1.5">הרמה שלו (B1) נכנסת לטווח שפרסמת (B2–B1). שיחק 4 פעמים עם שחקנים ברמה דומה.</div>
+      </div>
+    </div>
+
+    <!-- Kudos -->
+    <div style="padding:16px 20px">
+      <div style="font-size:11px; font-weight:700; color:var(--text-soft); letter-spacing:0.09em; margin-bottom:10px; text-transform:uppercase">קיבל שבחים על</div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px">
+        <span style="font-size:13px; font-weight:500; padding:5px 11px; background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--r-pill); color:var(--text-mute)">וולי מדויק</span>
+        <span style="font-size:13px; font-weight:500; padding:5px 11px; background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--r-pill); color:var(--text-mute)">אנרגיות טובות</span>
+        <span style="font-size:13px; font-weight:500; padding:5px 11px; background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--r-pill); color:var(--text-mute)">ראש משחק</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div style="padding:20px; display:flex; flex-direction:column; gap:10px" id="approvalActions">
+    <button class="btn-primary" onclick="approvePlayer()" style="font-size:16px; height:54px">✓ אשר שחקן</button>
+    <button onclick="declinePlayer()" style="height:48px; border-radius:var(--r-pill); border:1.5px solid var(--border-strong); font-size:15px; font-weight:600; color:var(--danger); background:var(--surface); cursor:pointer; transition:all var(--t-fast)">דחה בקשה</button>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: NOTIFICATIONS (inbox)
+     ======================================== -->
+<section class="screen" data-screen="inbox">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goto('home')" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">התראות</div>
+    <button class="icon-btn" aria-label="הגדרות">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3h0a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5h0a1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8h0a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>
+    </button>
+  </header>
+
+  <div class="notif-day-head">היום</div>
+  <div class="notif-list">
+
+    <!-- 🔔 JOIN REQUEST — action card -->
+    <div class="notif unread" style="cursor:pointer; align-items:flex-start; flex-direction:column; gap:12px; padding-bottom:14px" onclick="goto('player-request')">
+      <div style="display:flex; align-items:flex-start; gap:12px; width:100%">
+        <div class="notif-icon" style="background:var(--brand-soft); flex-shrink:0; margin-top:2px">
+          <svg viewBox="0 0 24 24" stroke="#1A4D2E"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="notif-body">
+          <div class="notif-title"><strong>אלון פרי</strong> רוצה להצטרף למשחק שלך</div>
+          <div class="notif-meta">לפני 2 דק׳ · רמה B1 · אמינות 84 · Club Padel, חמישי 20:00</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; width:100%; padding-right:52px">
+        <button onclick="event.stopPropagation(); approvePlayerQuick(this)" style="flex:1; height:36px; border-radius:var(--r-pill); background:var(--brand); color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; transition:opacity var(--t-fast)">אשר</button>
+        <button onclick="event.stopPropagation(); declinePlayerQuick(this)" style="flex:1; height:36px; border-radius:var(--r-pill); background:var(--bg-elev); color:var(--text-mute); font-size:13px; font-weight:600; border:1px solid var(--border); cursor:pointer">דחה</button>
+        <button onclick="event.stopPropagation(); goto('player-request')" style="flex:1.4; height:36px; border-radius:var(--r-pill); background:transparent; color:var(--brand); font-size:13px; font-weight:600; border:1.5px solid var(--brand); cursor:pointer">פרופיל מלא</button>
+      </div>
+    </div>
+
+    <div class="notif unread" onclick="goto('chat')" style="cursor:pointer">
+      <div class="notif-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">המשחק שלך מתחיל בעוד <strong>4 שעות</strong></div>
+        <div class="notif-meta">Madison Padel · ת״א · 19:00 · 90´ · פתח צ'אט קבוצה</div>
+      </div>
+    </div>
+
+    <div class="notif unread">
+      <div class="notif-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title"><strong>אלון פרי</strong> הצטרף למשחק שלך</div>
+        <div class="notif-meta">לפני 12 דק׳ · רמה B1 · אמינות 78</div>
+      </div>
+    </div>
+
+    <div class="notif">
+      <div class="notif-icon warn">
+        <svg viewBox="0 0 24 24"><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">מגרש פנוי בקרבתך — <strong>The Padel Club</strong></div>
+        <div class="notif-meta">לפני 28 דק׳ · 20:00 · ₪40 · B2</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notif-day-head">אתמול</div>
+  <div class="notif-list">
+    <div class="notif">
+      <div class="notif-icon">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title"><strong>דניאל בר</strong> דירג אותך 5/5</div>
+        <div class="notif-meta">"שחקן יציב, פרטנר מצוין. נחזור" · אמינות +2</div>
+      </div>
+    </div>
+
+    <div class="notif" onclick="goto('rate')" style="cursor:pointer">
+      <div class="notif-icon muted">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">תזכורת: דרג את המשחק ב-<strong>PadelPro</strong></div>
+        <div class="notif-meta">15:30–17:00 · 3 שחקנים ממתינים לדירוג שלך</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notif-day-head">השבוע</div>
+  <div class="notif-list">
+    <div class="notif">
+      <div class="notif-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">עלית רמה — מ-<strong>C1 ל-B2</strong></div>
+        <div class="notif-meta">7 ניצחונות אחרונים · השאלון שלך עודכן</div>
+      </div>
+    </div>
+
+    <div class="notif">
+      <div class="notif-icon danger">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title"><strong>יואב כהן</strong> ביטל את המשחק</div>
+        <div class="notif-meta">לפני 3 ימים · WPT Center · ההחזר עובד</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: MARKETPLACE — שוק המגרשים
+     ======================================== -->
+<section class="screen" data-screen="market">
+  <header class="topbar">
+    <div class="topbar-title">שוק המגרשים</div>
+    <button class="icon-btn" aria-label="עזרה">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 2.5-3 2.5"/><path d="M12 17h.01"/></svg>
+    </button>
+  </header>
+
+  <div class="market-hero">
+    <div class="market-hero-title">מגרש מתפנה? אל תאבד עליו כסף.</div>
+    <div class="market-hero-sub">קנה או מכור מגרשים ברגע האחרון — באותו מחיר בדיוק, בלי תוספת. הפסד הופך לעסקה.</div>
+    <button class="market-hero-cta" onclick="goto('sell-court')">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      יש לי מגרש למכירה
+    </button>
+  </div>
+
+  <div class="chips">
+    <button class="chip is-active">הכל</button>
+    <button class="chip">עכשיו</button>
+    <button class="chip">היום</button>
+    <button class="chip">מחר</button>
+    <button class="chip">מגרש שלם</button>
+    <button class="chip">מקום בודד</button>
+  </div>
+
+  <div class="find-summary"><strong>4 מגרשים</strong> מתפנים היום · באזור שלך</div>
+
+  <div class="matches">
+
+    <article class="match market-card" onclick="openMarketSheet()">
+      <div class="badge-strip"><span class="b-tag last"><span class="dotpulse"></span>מתפנה היום · 20:00</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">Madison Padel · ת״א</div>
+          <div class="match-when">היום · 20:00–21:30 · 6.1 ק״מ</div>
+        </div>
+      </div>
+      <div class="market-seller">
+        <div class="market-seller-avatar" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="market-seller-text">מוכר: <strong>דניאל ב.</strong> · אמינות 78</div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="type-tag">מקום אחד</span>
+          <span class="level-range">B2 – B1</span>
+        </div>
+        <span class="price-same"><span class="amt">₪48</span><span class="note">אותו מחיר</span></span>
+      </div>
+    </article>
+
+    <article class="match market-card" onclick="openMarketSheet()">
+      <div class="badge-strip"><span class="b-tag hot">עוד 3 שעות</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?auto=format&fit=crop&w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">PadelPro · רמת גן</div>
+          <div class="match-when">היום · 21:00–22:30 · 7.8 ק״מ</div>
+        </div>
+      </div>
+      <div class="market-seller">
+        <div class="market-seller-avatar" style="--ph: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="market-seller-text">מוכרת: <strong>רונית כ.</strong> · אמינות 84</div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="type-tag">מגרש שלם · 4 מקומות</span>
+          <span class="level-range">B1</span>
+        </div>
+        <span class="price-same"><span class="amt">₪180</span><span class="note">אותו מחיר</span></span>
+      </div>
+    </article>
+
+    <article class="match market-card" onclick="openMarketSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">Club Padel · פתח תקווה</div>
+          <div class="match-when">מחר · 18:00–19:30 · 3.4 ק״מ</div>
+        </div>
+      </div>
+      <div class="market-seller">
+        <div class="market-seller-avatar" style="--ph: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="market-seller-text">מוכר: <strong>אלון פ.</strong> · אמינות 71</div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="type-tag">מקום אחד</span>
+          <span class="level-range">B2</span>
+        </div>
+        <span class="price-same"><span class="amt">₪42</span><span class="note">אותו מחיר</span></span>
+      </div>
+    </article>
+
+    <article class="match market-card" onclick="openMarketSheet()">
+      <div class="badge-strip"><span class="b-tag last"><span class="dotpulse"></span>מתפנה היום · 21:30</span></div>
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1673266893352-6de89e258064?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">WPT Center · הוד השרון</div>
+          <div class="match-when">היום · 21:30–23:00 · 9.1 ק״מ</div>
+        </div>
+      </div>
+      <div class="market-seller">
+        <div class="market-seller-avatar" style="--ph: url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="market-seller-text">מוכר: <strong>תומר ל.</strong> · אמינות 90</div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="type-tag">מגרש שלם · 4 מקומות</span>
+          <span class="level-range">A2</span>
+        </div>
+        <span class="price-same"><span class="amt">₪240</span><span class="note">אותו מחיר</span></span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: SELL COURT — מכירת/העברת מגרש
+     ======================================== -->
+<section class="screen" data-screen="sell-court">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goBack()" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">מכירת מגרש</div>
+    <div style="width:40px"></div>
+  </header>
+
+  <div class="form-section">
+    <div style="margin-bottom:20px">
+      <div class="rate-eyebrow">לא יכול להגיע?</div>
+      <h1 class="rate-title" style="font-size:26px">מכור את המגרש</h1>
+      <p class="rate-sub">בחר מגרש שלא תוכל להגיע אליו. נמצא לו קונה — באותו מחיר, בלי שתפסיד.</p>
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">איזה מגרש</label>
+      <div class="sell-pick" id="sellPick">
+        <button class="sell-option is-active" data-price="₪48" onclick="selectSellOption(this)">
+          <div class="sell-option-img"><img src="https://images.unsplash.com/photo-1673266893352-6de89e258064?w=200&q=80" alt=""></div>
+          <div class="sell-option-info">
+            <div class="sell-option-venue">Madison Padel · ת״א</div>
+            <div class="sell-option-when">היום · 19:00–20:30 · 90´</div>
+          </div>
+          <div class="sell-option-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+        </button>
+        <button class="sell-option" data-price="₪52" onclick="selectSellOption(this)">
+          <div class="sell-option-img"><img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=200&q=80" alt=""></div>
+          <div class="sell-option-info">
+            <div class="sell-option-venue">The Padel Club · הרצליה</div>
+            <div class="sell-option-when">מחר · 21:00–22:30 · 90´</div>
+          </div>
+          <div class="sell-option-check"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></div>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">מה למכור</label>
+      <div class="seg-group" style="grid-template-columns:repeat(2,1fr)">
+        <button class="seg-opt is-active">המקום שלי</button>
+        <button class="seg-opt">המגרש כולו · 4 מקומות</button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-lbl">מחיר</label>
+      <div class="price-locked">
+        <div class="price-locked-amt" id="sellPrice">₪48</div>
+        <div class="price-locked-note">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+          נעול · אותו מחיר ששילמת
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--text-soft); margin-top:8px; line-height:1.5">מחיר הוגן = מכירה מהירה. הקונה משלם בדיוק מה ששילמת — בלי תוספת.</div>
+    </div>
+
+    <div class="trust-block" style="margin-bottom:20px">
+      <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div>הקונה משלם ישירות. אתה מקבל החזר מלא ברגע שהמגרש נמכר. Rally דואגת להעברה בטוחה.</div>
+    </div>
+
+    <button class="btn-primary" onclick="sellCourt()">פרסם בשוק</button>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: QUICK MATCH
+     ======================================== -->
+<section class="screen" data-screen="quick">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goBack()" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">מצא משחק עכשיו</div>
+    <div style="width:40px"></div>
+  </header>
+
+  <div class="quick-wrap">
+    <!-- Searching state -->
+    <div class="quick-search" id="quickSearching">
+      <div class="radar">
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-core">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        </div>
+      </div>
+      <div class="quick-status">מחפש לך רביעייה…</div>
+      <div class="quick-step" id="quickStep"><span>סורק מגרשים ברדיוס שלך</span></div>
+    </div>
+
+    <!-- Found state -->
+    <div id="quickFound" style="display:none">
+      <div class="quick-found">
+        <div class="quick-found-head">
+          <div class="quick-found-eyebrow">מצאנו התאמה</div>
+          <div class="quick-found-title">יש לך משחק 🎾</div>
+        </div>
+
+        <article class="match" style="opacity:1; transform:none; animation:none">
+          <div class="hero-image" style="aspect-ratio:16/9; border-radius:0">
+            <img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=900&q=80" alt="">
+            <div class="hero-overlay">
+              <div class="hero-tag">התאמה אוטומטית</div>
+              <div class="hero-venue" style="font-size:24px">PadelPro · רמת גן</div>
+              <div class="hero-when">היום · 20:30–22:00 · 90´</div>
+            </div>
+          </div>
+          <div style="padding:14px 16px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px">
+              <div style="display:flex; align-items:center">
+                <div class="hero-players">
+                  <div class="player-pip" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">ד</div>
+                  <div class="player-pip" style="--ph: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">א</div>
+                  <div class="player-pip" style="--ph: url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">ר</div>
+                </div>
+                <span class="hero-players-count">3 שחקנים מחכים לך</span>
+              </div>
+              <span class="match-fit">התאמה 96%</span>
+            </div>
+            <div style="display:flex; gap:10px; font-size:13px; color:var(--text-mute); font-feature-settings:'tnum' on; margin-bottom:4px">
+              <span class="level-range">B2 – B1</span>
+              <span>· 6.1 ק״מ · 14 דק׳</span>
+              <span>· ₪48</span>
+            </div>
+          </div>
+        </article>
+
+        <div style="padding:20px 0 0; display:flex; flex-direction:column; gap:10px">
+          <button class="btn-primary" onclick="quickJoin()">מצוין, מצרף אותי</button>
+          <button class="btn-secondary" onclick="startQuickMatch()">חפש משחק אחר</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: GROUP CHAT
+     ======================================== -->
+<section class="screen" data-screen="chat">
+  <div class="chat-wrap">
+    <!-- Header -->
+    <div class="chat-head">
+      <button class="icon-btn" onclick="goto('home')" aria-label="חזרה" style="border:none; background:transparent; width:32px">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="chat-head-avatars">
+        <div class="chat-head-pip" style="--ph: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph)"></div>
+        <div class="chat-head-pip" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph)"></div>
+        <div class="chat-head-pip" style="--ph: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph)"></div>
+      </div>
+      <div class="chat-head-info">
+        <div class="chat-head-title">Madison Padel · היום 19:00</div>
+        <div class="chat-head-sub">4 שחקנים · B2–B1</div>
+      </div>
+    </div>
+
+    <!-- Equipment summary (pinned) -->
+    <div class="chat-equip">
+      <div class="chat-equip-head">
+        <svg viewBox="0 0 24 24"><path d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2H4a1 1 0 00-1 1v11a2 2 0 002 2h14a2 2 0 002-2V8a1 1 0 00-1-1z"/></svg>
+        ציוד למשחק
+      </div>
+      <div class="equip-row">
+        <span class="equip-label">כדורים</span>
+        <span class="equip-status ok"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> דניאל מביא</span>
+      </div>
+      <div class="equip-row">
+        <span class="equip-label">מחבט רזרבי</span>
+        <span class="equip-status ok"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg> אתה מביא</span>
+      </div>
+      <div class="equip-row" id="equipWater">
+        <span class="equip-label">מים לקבוצה</span>
+        <button class="equip-claim" onclick="claimWater()">אני אביא</button>
+      </div>
+    </div>
+
+    <!-- End-game simulation entry -->
+    <button class="sim-endgame" onclick="goto('rate')">
+      <span>סיימתם לשחק? דרגו את הקבוצה</span>
+      <span class="sim-arrow">←</span>
+    </button>
+
+    <!-- Messages -->
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="chat-daydiv">היום</div>
+
+      <div class="msg">
+        <div class="msg-avatar" style="--ph: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="msg-content">
+          <div class="msg-name">יואב כהן</div>
+          <div class="msg-bubble">חברים, מי מביא כדורים היום?</div>
+          <div class="msg-time">17:42</div>
+        </div>
+      </div>
+
+      <div class="msg">
+        <div class="msg-avatar" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="msg-content">
+          <div class="msg-name">דניאל בר</div>
+          <div class="msg-bubble">יש לי קופסה חדשה של Head, סגור 🎾</div>
+          <div class="msg-time">17:45</div>
+        </div>
+      </div>
+
+      <div class="msg">
+        <div class="msg-avatar" style="--ph: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="msg-content">
+          <div class="msg-name">אלון פרי</div>
+          <div class="msg-bubble">מישהו עם מחבט רזרבי? שכחתי את שלי בעבודה 😅</div>
+          <div class="msg-time">17:48</div>
+        </div>
+      </div>
+
+      <div class="msg mine">
+        <div class="msg-content">
+          <div class="msg-bubble">יש לי שניים, אביא לך אחד. נתראה ב-19:00</div>
+          <div class="msg-time">17:50</div>
+        </div>
+      </div>
+
+      <div class="msg">
+        <div class="msg-avatar" style="--ph: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80'); background-image: var(--ph)"></div>
+        <div class="msg-content">
+          <div class="msg-name">יואב כהן</div>
+          <div class="msg-bubble">אלופים 💪 מי שרוצה — אני עושה חימום קצר ב-18:50</div>
+          <div class="msg-time">17:52</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input bar -->
+    <div class="chat-input-bar">
+      <input class="chat-input" id="chatInput" placeholder="הודעה לקבוצה…">
+      <button class="chat-send" onclick="sendChatMsg()" aria-label="שלח">
+        <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: POST-GAME RATING (stepped, one player at a time)
+     ======================================== -->
+<section class="screen" data-screen="rate">
+  <header class="topbar with-back" style="padding-bottom:0">
+    <button class="icon-btn" onclick="goto('home')" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">איך היה המשחק?</div>
+    <div style="width:40px"></div>
+  </header>
+
+  <!-- progress dots -->
+  <div class="rate-progress" id="rateProgress" style="padding:12px 20px 4px"></div>
+
+  <!-- single player card, rendered by JS -->
+  <div id="rateCard"></div>
+
+  <div style="padding:4px 20px 32px">
+    <button class="btn-primary" id="rateNext" disabled onclick="rateAdvance()">בחר דירוג כדי להמשיך</button>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: RATE DONE (reward)
+     ======================================== -->
+<section class="screen" data-screen="rate-done">
+  <div class="onb is-active">
+    <div class="onb-top"><div></div><div></div></div>
+    <div class="onb-body welcome-stage">
+      <div class="celebrate-mark" style="margin:0 auto 24px">
+        <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <div class="welcome-tag">תודה ששיחקת נקי 🤝</div>
+      <p class="welcome-sub" id="rateDoneSub">דירגת את כל הקבוצה. כל פרגון עוזר לשחקן הבא לדעת עם מי הוא משחק — ומעלה גם את האמינות שלך.</p>
+      <div style="margin-top:20px; display:inline-flex; align-items:center; gap:8px; background:var(--brand-soft); color:var(--brand); font-weight:700; padding:10px 18px; border-radius:var(--r-pill); font-size:14px">
+        <span style="font-family:var(--font-display); font-size:18px">+3</span> אמינות
+      </div>
+    </div>
+    <div class="onb-foot">
+      <button class="btn-primary" onclick="goto('home')">חזרה לבית</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: CLUB (מצומצם — שם + תמונה + 2-3 משחקים פתוחים)
+     ======================================== -->
+<section class="screen" data-screen="club">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goto('home')" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div></div>
+    <button class="icon-btn" aria-label="שתף">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.9 4M15.5 6.5l-6.9 4"/></svg>
+    </button>
+  </header>
+
+  <div class="hero-image" style="margin:8px 20px 0; border-radius:var(--r-lg); aspect-ratio:16/10; border:1px solid var(--border)">
+    <img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?auto=format&fit=crop&w=900&q=80" alt="">
+    <div class="hero-overlay">
+      <div class="hero-venue">Madison Padel — תל אביב</div>
+      <div class="hero-when">4 מגרשים · פתוח 07:00–23:00 · 4.7 ק״מ · 12 דק׳ נסיעה</div>
+    </div>
+  </div>
+
+  <div class="section-head" style="padding-top:20px">
+    <h2 class="section-title">משחקים פתוחים</h2>
+    <span class="section-link" style="cursor:default">3</span>
+  </div>
+
+  <div class="matches">
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">היום · 19:00–20:30</div>
+          <div class="match-when">90´ · עוד 4 שעות</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2 – B1</span>
+          <span>חסר 1</span>
+          <span>₪45</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1673266893352-6de89e258064?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">מחר · 20:30–22:00</div>
+          <div class="match-when">90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B2</span>
+          <span>חסרים 2</span>
+          <span>₪42</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+
+    <article class="match" onclick="openSheet()">
+      <div class="match-top">
+        <div class="match-img"><img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?w=400&q=80" alt=""></div>
+        <div class="match-info">
+          <div class="match-venue">שישי · 08:00–09:30</div>
+          <div class="match-when">90´</div>
+        </div>
+      </div>
+      <div class="match-bottom">
+        <div class="match-meta">
+          <span class="pill">B1 – A2</span>
+          <span>חסר 1</span>
+          <span>₪55</span>
+        </div>
+        <button class="match-cta">הצטרפות</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: PROFILE
+     ======================================== -->
+<section class="screen" data-screen="profile">
+  <header class="topbar with-back">
+    <button class="icon-btn" onclick="goto('home')" aria-label="חזרה">
+      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <div class="topbar-title">פרופיל</div>
+    <button class="icon-btn" aria-label="עריכה">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 113 3L7 19l-4 1 1-4z"/></svg>
+    </button>
+  </header>
+
+  <div class="profile-hero">
+    <div class="profile-avatar" style="--ph: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80'); background-image: var(--ph); color: transparent;">אב</div>
+    <div class="profile-name">אבישי לוי</div>
+    <div class="profile-bio">
+      <span class="level-tag">B2</span>
+      <span class="dot"></span>
+      <span>פתח תקווה · ת״א</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">23</div>
+      <div class="stat-lbl">משחקים</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">14</div>
+      <div class="stat-lbl">ניצחונות</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">61%</div>
+      <div class="stat-lbl">אחוזי ניצחון</div>
+    </div>
+  </div>
+
+  <div class="credibility">
+    <div class="credibility-row">
+      <div>
+        <div class="credibility-label">אמינות</div>
+        <div class="credibility-tier">אמין</div>
+      </div>
+      <div class="credibility-score">71<span>/100</span></div>
+    </div>
+    <div class="credibility-bar">
+      <div class="credibility-bar-fill"></div>
+    </div>
+  </div>
+
+  <div class="credibility" style="cursor:pointer" onclick="goto('quiz')">
+    <div class="credibility-row" style="margin-bottom:0">
+      <div>
+        <div class="credibility-label">עדכן רמת משחק</div>
+        <div style="font-size:13px; color:var(--text); margin-top:4px">השאלון לוקח 2 דקות</div>
+      </div>
+      <div style="font-size:20px; color:var(--brand)">←</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2 class="section-title">משחקים אחרונים</h2>
+    <a class="section-link" href="#">הכל</a>
+  </div>
+
+  <div class="history">
+    <div class="history-row">
+      <div class="history-mark w">W</div>
+      <div class="history-info">
+        <div class="history-venue">The Padel Club · הרצליה</div>
+        <div class="history-date">26.5 · 19:00</div>
+      </div>
+      <div class="history-score">6–3 / 6–4</div>
+    </div>
+    <div class="history-row">
+      <div class="history-mark w">W</div>
+      <div class="history-info">
+        <div class="history-venue">Madison Padel — תל אביב</div>
+        <div class="history-date">23.5 · 20:00</div>
+      </div>
+      <div class="history-score">7–5 / 6–2</div>
+    </div>
+    <div class="history-row">
+      <div class="history-mark l">L</div>
+      <div class="history-info">
+        <div class="history-venue">PadelPro · רמת גן</div>
+        <div class="history-date">21.5 · 18:30</div>
+      </div>
+      <div class="history-score">4–6 / 3–6</div>
+    </div>
+    <div class="history-row">
+      <div class="history-mark w">W</div>
+      <div class="history-info">
+        <div class="history-venue">Club Padel · פתח תקווה</div>
+        <div class="history-date">18.5 · 21:00</div>
+      </div>
+      <div class="history-score">6–4 / 6–4</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: QUIZ RESULT — A1 / A2 / B1 / B2 / C1 / C2
+     ======================================== -->
+<section class="screen" data-screen="quiz-result">
+  <div class="quiz is-active">
+    <div class="quiz-header" style="justify-content:center">
+      <div class="brand-mark" style="font-size:24px">Rally</div>
+    </div>
+
+    <div class="quiz-body" style="text-align:center; align-items:center">
+      <div class="quiz-eyebrow" style="color:var(--text-mute)">תוצאת הערכה</div>
+      <div style="font-family:var(--font-display); font-size:18px; color:var(--text-mute); margin-bottom:14px">הרמה שלך</div>
+      <div id="resultScore" style="font-family:var(--font-display); font-weight:700; font-size:148px; line-height:0.9; color:var(--brand); letter-spacing:-0.02em">B2</div>
+      <div id="resultLabel" style="font-family:var(--font-display); font-size:22px; font-weight:700; margin-top:10px">שחקן בינוני-גבוה</div>
+      <p id="resultBlurb" style="font-size:14px; color:var(--text-mute); max-width:320px; margin:20px auto 0; line-height:1.65">שחקן עם טכניקה טובה ושליטה טובה בכל סוגי החבטות — כולל וולי, חבטות מהקיר ולובים. יציב ואינו מחטיא בקלות תחת לחץ מתון. מבין היטב את המשחק מבחינה טקטית — בהגנה, בהתקפה ובמעברים ביניהן.</p>
+    </div>
+
+    <div class="quiz-footer">
+      <button class="btn-primary" onclick="goto('home')">בוא נמצא לך משחק</button>
+      <button style="display:block; width:100%; margin-top:12px; padding:14px; color:var(--text-mute); font-weight:600; font-size:14px" onclick="qIndex=0; answers.length=0; renderQ(); goto('quiz')">לעשות שוב</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     SCREEN: QUIZ (skill assessment)
+     ======================================== -->
+<section class="screen" data-screen="quiz">
+  <div class="quiz is-active" id="quiz">
+    <div class="quiz-header">
+      <button class="quiz-back" onclick="prevQ()">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"/></svg>
+      </button>
+      <div class="quiz-progress"><div class="quiz-progress-fill" id="quizFill" style="width:8.3%"></div></div>
+      <div class="quiz-count"><span id="quizCur">1</span> / 12</div>
+    </div>
+
+    <div class="quiz-body">
+      <div class="quiz-eyebrow">משחק רגלי</div>
+      <h1 class="quiz-question" id="quizQ">החזרה מהכף — עד כמה היא יציבה?</h1>
+      <p class="quiz-sub">ענה בכנות. זה לא מבחן — זה כדי שנמצא לך שחקנים ברמה שלך.</p>
+
+      <div class="quiz-options" id="quizOpts">
+        <button class="quiz-opt" data-pt="4">מעולה — שולט לגמרי <span class="badge">4</span></button>
+        <button class="quiz-opt" data-pt="3">טוב — ברוב המקרים <span class="badge">3</span></button>
+        <button class="quiz-opt" data-pt="2">בינוני — עובד עליי לפעמים <span class="badge">2</span></button>
+        <button class="quiz-opt" data-pt="1">צריך לשפר — עדיין מתקשה <span class="badge">1</span></button>
+      </div>
+    </div>
+
+    <div class="quiz-footer">
+      <button class="btn-primary" id="quizNext" disabled onclick="nextQ()">הבא</button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================
+     BOTTOM TAB BAR
+     ======================================== -->
+<nav class="tabbar" aria-label="ניווט ראשי" id="tabbar">
+  <button class="tab is-active" data-tab="home" onclick="goto('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    <span>בית</span>
+  </button>
+  <button class="tab" data-tab="find" onclick="goto('find')">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <span>חיפוש</span>
+  </button>
+  <button class="tab center" data-tab="add" onclick="goto('add')">
+    <div class="fab">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+    </div>
+    <span>פרסום</span>
+  </button>
+  <button class="tab" data-tab="market" onclick="goto('market')">
+    <svg viewBox="0 0 24 24"><path d="M17 3l4 4-4 4"/><path d="M21 7H8a4 4 0 00-4 4"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h13a4 4 0 004-4"/></svg>
+    <span>שוק</span>
+  </button>
+  <button class="tab" data-tab="profile" onclick="goto('profile')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+    <span>פרופיל</span>
+  </button>
+</nav>
+
+</div><!-- /.app -->
+
+<!-- ========================================
+     DETAIL SHEET (overlay)
+     ======================================== -->
+<div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+<aside class="sheet" id="sheet" aria-hidden="true">
+  <div class="sheet-handle"></div>
+  <div class="sheet-img">
+    <img src="https://images.unsplash.com/photo-1646649853703-7645147474ba?auto=format&fit=crop&w=900&q=80" alt="">
+  </div>
+  <div class="sheet-body">
+    <div class="sheet-venue">Madison Padel — תל אביב</div>
+    <div class="sheet-when">היום · 19:00–20:30 · 90´ · עוד 4 שעות</div>
+
+    <div class="sheet-meta-grid">
+      <div class="meta-block">
+        <div class="meta-lbl">רמה נדרשת</div>
+        <div class="meta-val" style="font-family:var(--font-display); letter-spacing:0.04em">B2 – B1</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-lbl">מחיר לשחקן</div>
+        <div class="meta-val">₪45</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-lbl">מרחק</div>
+        <div class="meta-val">4.7 ק״מ <span style="color:var(--text-mute); font-size:13px; font-weight:500">· 12 דק׳ נסיעה</span></div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-lbl">מארגן</div>
+        <div class="meta-val">יואב כהן · <span style="font-family:var(--font-display); letter-spacing:0.04em">B1</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-players">
+      <div class="sheet-players-head">
+        <div class="sheet-players-title">שחקנים</div>
+        <div class="sheet-players-count">3 / 4</div>
+      </div>
+      <div class="player-row">
+        <div class="player-row-avatar" style="--ph: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">יו</div>
+        <div style="flex:1; min-width:0">
+          <div class="player-row-name" style="flex:none">יואב כהן <span style="color:var(--text-soft); font-size:11px; font-weight:500">· מארגן</span></div>
+          <a class="wa-link" href="https://wa.me/972501234567" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.13c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.14.21-3.7-.78-3.11-1.23-5.1-4.4-5.26-4.6-.15-.2-1.26-1.68-1.26-3.2s.8-2.27 1.08-2.58c.28-.31.61-.39.82-.39.2 0 .41 0 .59.01.19.01.44-.07.69.53.24.6.83 2.07.9 2.22.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.18-.31.4-.45.53-.15.15-.3.31-.13.6.17.3.77 1.27 1.65 2.06 1.14 1.01 2.1 1.33 2.4 1.48.3.15.47.13.64-.08.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.72.81 2.01.96.3.15.5.22.57.34.07.12.07.71-.17 1.39z"/></svg>
+            וואטסאפ
+          </a>
+        </div>
+        <div class="player-row-lvl" style="font-family:var(--font-display); letter-spacing:0.04em">B1</div>
+      </div>
+      <div class="player-row">
+        <div class="player-row-avatar" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">דנ</div>
+        <div style="flex:1; min-width:0">
+          <div class="player-row-name" style="flex:none">דניאל בר</div>
+          <a class="wa-link" href="https://wa.me/972527654321" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.13c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.14.21-3.7-.78-3.11-1.23-5.1-4.4-5.26-4.6-.15-.2-1.26-1.68-1.26-3.2s.8-2.27 1.08-2.58c.28-.31.61-.39.82-.39.2 0 .41 0 .59.01.19.01.44-.07.69.53.24.6.83 2.07.9 2.22.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.18-.31.4-.45.53-.15.15-.3.31-.13.6.17.3.77 1.27 1.65 2.06 1.14 1.01 2.1 1.33 2.4 1.48.3.15.47.13.64-.08.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.72.81 2.01.96.3.15.5.22.57.34.07.12.07.71-.17 1.39z"/></svg>
+            וואטסאפ
+          </a>
+        </div>
+        <div class="player-row-lvl" style="font-family:var(--font-display); letter-spacing:0.04em">B2</div>
+      </div>
+      <div class="player-row">
+        <div class="player-row-avatar" style="--ph: url('https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=160&q=80'); background-image: var(--ph); color: transparent;">אל</div>
+        <div style="flex:1; min-width:0">
+          <div class="player-row-name" style="flex:none">אלון פרי</div>
+          <a class="wa-link" href="https://wa.me/972549876543" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.13c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.14.21-3.7-.78-3.11-1.23-5.1-4.4-5.26-4.6-.15-.2-1.26-1.68-1.26-3.2s.8-2.27 1.08-2.58c.28-.31.61-.39.82-.39.2 0 .41 0 .59.01.19.01.44-.07.69.53.24.6.83 2.07.9 2.22.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.18-.31.4-.45.53-.15.15-.3.31-.13.6.17.3.77 1.27 1.65 2.06 1.14 1.01 2.1 1.33 2.4 1.48.3.15.47.13.64-.08.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.72.81 2.01.96.3.15.5.22.57.34.07.12.07.71-.17 1.39z"/></svg>
+            וואטסאפ
+          </a>
+        </div>
+        <div class="player-row-lvl" style="font-family:var(--font-display); letter-spacing:0.04em">B1</div>
+      </div>
+      <div class="player-row empty">
+        <div class="player-row-avatar">+</div>
+        <div class="player-row-name">מקום פנוי</div>
+        <div class="player-row-lvl">—</div>
+      </div>
+    </div>
+
+    <!-- Slide-to-join (initial state) -->
+    <div id="joinState">
+      <div class="slider" id="sliderSheet">
+        <div class="slider-track-fill"></div>
+        <div class="slider-label">הצטרף למשחק ←</div>
+        <div class="slider-thumb" id="thumbSheet">
+          <svg class="arrow" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg class="check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-join confirmation (shown after slide success) -->
+    <div class="confirm-state" id="confirmState">
+      <div class="confirm-headline">נרשמת למשחק</div>
+      <div class="confirm-sub">נשלח לך תזכורת שעה לפני. בינתיים — תיאמו ציוד בצ'אט הקבוצה.</div>
+
+      <div class="confirm-actions">
+        <button class="btn-primary" style="margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px" onclick="closeSheet(); goto('chat');">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          פתח את צ'אט הקבוצה
+        </button>
+        <button class="confirm-act">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+          <span>הוסף ליומן</span>
+          <span class="confirm-act-arrow">←</span>
+        </button>
+        <button class="confirm-act">
+          <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 00-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 00-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>פתח ב-Waze · 4.7 ק״מ · 12 דק׳</span>
+          <span class="confirm-act-arrow">←</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ========================================
+     MARKET BUY SHEET — קניית מגרש מהשוק
+     ======================================== -->
+<div class="sheet-bg" id="marketSheetBg" onclick="closeMarketSheet()"></div>
+<aside class="sheet" id="marketSheet" aria-hidden="true">
+  <div class="sheet-handle"></div>
+  <div class="sheet-img">
+    <img src="https://images.unsplash.com/photo-1743456110628-6508997cf730?w=900&q=80" alt="">
+  </div>
+  <div class="sheet-body">
+    <div class="sheet-venue">Madison Padel · ת״א</div>
+    <div class="sheet-when">היום · 20:00–21:30 · 90´ · עוד 4 שעות</div>
+
+    <div class="sheet-meta-grid">
+      <div class="meta-block">
+        <div class="meta-lbl">סוג</div>
+        <div class="meta-val">מקום אחד</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-lbl">מחיר</div>
+        <div class="meta-val">₪48 <span style="font-size:11px; color:var(--brand); font-weight:700">אותו מחיר</span></div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-lbl">רמה</div>
+        <div class="meta-val" style="font-family:var(--font-display); letter-spacing:0.04em">B2 – B1</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-lbl">מרחק</div>
+        <div class="meta-val">6.1 ק״מ <span style="color:var(--text-mute); font-size:13px; font-weight:500">· 14 דק׳</span></div>
+      </div>
+    </div>
+
+    <div class="market-seller" style="border-radius:var(--r-md); border:1px solid var(--border); margin-bottom:14px; background:var(--surface)">
+      <div class="market-seller-avatar" style="--ph: url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80'); background-image: var(--ph); width:36px; height:36px"></div>
+      <div style="flex:1">
+        <div style="font-size:13px; font-weight:700">דניאל בר · מוכר</div>
+        <div style="font-size:12px; color:var(--text-mute)">אמינות 78 · 14 משחקים</div>
+      </div>
+      <a class="wa-link" href="https://wa.me/972527654321" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.13c-.24.68-1.42 1.31-1.96 1.36-.5.05-1.14.21-3.7-.78-3.11-1.23-5.1-4.4-5.26-4.6-.15-.2-1.26-1.68-1.26-3.2s.8-2.27 1.08-2.58c.28-.31.61-.39.82-.39.2 0 .41 0 .59.01.19.01.44-.07.69.53.24.6.83 2.07.9 2.22.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.18-.31.4-.45.53-.15.15-.3.31-.13.6.17.3.77 1.27 1.65 2.06 1.14 1.01 2.1 1.33 2.4 1.48.3.15.47.13.64-.08.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.72.81 2.01.96.3.15.5.22.57.34.07.12.07.71-.17 1.39z"/></svg>
+        וואטסאפ
+      </a>
+    </div>
+
+    <div class="trust-block" style="margin-bottom:14px">
+      <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div>קנייה בטוחה: התשלום עובר ישירות למוכר ברגע שתאשר. אם המגרש נופל — אתה מקבל החזר מלא.</div>
+    </div>
+
+    <!-- Slide-to-buy (initial state) -->
+    <div id="buyState">
+      <div class="slider" id="sliderBuy">
+        <div class="slider-track-fill"></div>
+        <div class="slider-label">החלק לקנייה · ₪48</div>
+        <div class="slider-thumb" id="thumbBuy">
+          <svg class="arrow" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg class="check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-buy confirmation -->
+    <div class="confirm-state" id="buyConfirmState">
+      <div class="confirm-headline">המקום שלך</div>
+      <div class="confirm-sub">הכסף עבר ישירות לדניאל. הוא קיבל החזר מלא, ואתה במשחק.</div>
+
+      <div class="confirm-actions">
+        <button class="btn-primary" style="margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px" onclick="closeMarketSheet(); goto('chat');">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          פתח את צ'אט הקבוצה
+        </button>
+        <button class="confirm-act">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+          <span>הוסף ליומן</span>
+          <span class="confirm-act-arrow">←</span>
+        </button>
+        <button class="confirm-act">
+          <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 00-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 00-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>פתח ב-Waze · 6.1 ק״מ · 14 דק׳</span>
+          <span class="confirm-act-arrow">←</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="toast" id="toast">✓ הצטרפת למשחק</div>
+
+<!-- Request-Sent sheet — שלח בקשה confirmation -->
+<div class="sheet-bg" id="requestSheetBg" onclick="closeRequestSheet()"></div>
+<div class="sheet" id="requestSheet" style="max-height:72vh">
+  <div class="sheet-handle" id="requestSheetHandle"></div>
+  <div style="padding:8px 24px 32px; text-align:center">
+    <div style="width:64px; height:64px; border-radius:50%; background:var(--brand-soft); display:flex; align-items:center; justify-content:center; margin:0 auto 16px">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#1A4D2E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </div>
+    <div style="font-size:20px; font-weight:800; color:var(--text); font-family:var(--font-display); margin-bottom:8px">הבקשה נשלחה!</div>
+    <div style="font-size:15px; color:var(--text-mute); line-height:1.6; margin-bottom:24px">המארגן יראה את הפרופיל שלך ויחליט אם לאשר. נשלח לך עדכון ברגע שיש תשובה.</div>
+    <div style="background:var(--bg-elev); border-radius:var(--r-md); padding:12px 16px; text-align:right; border:1px solid var(--border); margin-bottom:20px">
+      <div style="font-size:13px; color:var(--text-soft); margin-bottom:2px">המשחק</div>
+      <div style="font-size:15px; font-weight:700; color:var(--text)">Club Padel · פתח תקווה</div>
+      <div style="font-size:13px; color:var(--text-mute); margin-top:2px; display:flex; align-items:center; gap:6px">חמישי · 20:00–21:30 <span class="level-tag">B2</span></div>
+    </div>
+    <button class="btn-primary" onclick="closeRequestSheet()" style="width:100%">סגור</button>
+  </div>
+</div>
+
+<!-- First-Match Celebration — one-time wow moment -->
+<div class="celebrate-bg" id="celebrate" onclick="closeCelebrate()">
+  <div class="celebrate-card" onclick="event.stopPropagation()">
+    <div class="celebrate-mark">
+      <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div class="celebrate-eyebrow">המשחק הראשון שלך</div>
+    <div class="celebrate-title">ברוך הבא לרשת.</div>
+    <p class="celebrate-sub">המשחק שלך נקבע. נשלח לך תזכורת שעה לפני, ואת מסלול הנסיעה ב-Waze חצי שעה לפני.</p>
+    <div class="celebrate-cta">
+      <button class="btn-primary" onclick="closeCelebrate()">מעולה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================
+   NAV
+   ============================================ */
+const NO_TABBAR = ['welcome', 'login', 'otp', 'profile-setup', 'zones', 'quiz', 'quiz-result', 'inbox', 'chat', 'rate', 'rate-done', 'quick', 'sell-court', 'player-request'];
+const FULL_HEIGHT = ['chat', 'quick'];
+
+let navHistory = [];
+const TAB_ROOTS = ['home', 'find', 'add', 'market', 'profile'];
+
+function goto(name, opts) {
+  opts = opts || {};
+  const cur = document.querySelector('.screen.is-active');
+  const curName = cur ? cur.dataset.screen : null;
+  // track history for swipe-back (skip when navigating back, or to a tab root)
+  if (!opts.back && curName && curName !== name) {
+    if (TAB_ROOTS.includes(name)) navHistory = [];
+    else navHistory.push(curName);
+  }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('is-active'));
+  const target = document.querySelector(`.screen[data-screen="${name}"]`);
+  if (target) target.classList.add('is-active');
+  document.querySelectorAll('#tabbar .tab').forEach(t => {
+    t.classList.toggle('is-active', t.dataset.tab === name);
+  });
+  document.getElementById('tabbar').style.display = NO_TABBAR.includes(name) ? 'none' : 'grid';
+  const fullHeight = FULL_HEIGHT.includes(name);
+  document.querySelectorAll('.screen').forEach(s => {
+    s.style.paddingBottom = fullHeight ? '0' : (NO_TABBAR.includes(name) ? '32px' : '100px');
+  });
+  if (name === 'chat') {
+    const m = document.getElementById('chatMsgs');
+    if (m) m.scrollTop = m.scrollHeight;
+  }
+  if (name === 'rate' && typeof startRating === 'function') startRating();
+  if (name === 'quick' && typeof startQuickMatch === 'function') startQuickMatch();
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  const prev = navHistory.pop();
+  goto(prev || 'home', { back: true });
+}
+
+// Initialize: hide tabbar on welcome
+document.getElementById('tabbar').style.display = 'none';
+
+/* ============================================
+   SWIPE-BACK (edge gesture, RTL = from right edge)
+   ============================================ */
+(function () {
+  let sx = 0, sy = 0, tracking = false;
+  document.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    // RTL back gesture starts from the right edge
+    if (t.clientX > window.innerWidth - 26) { tracking = true; sx = t.clientX; sy = t.clientY; }
+    else tracking = false;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = sx - t.clientX;   // moved left
+    const dy = Math.abs(t.clientY - sy);
+    const cur = document.querySelector('.screen.is-active');
+    const name = cur ? cur.dataset.screen : null;
+    // don't hijack back on full-screen chat (has its own scroll) or onboarding gate
+    if (dx > 64 && dy < 50 && name && !['welcome','login','otp'].includes(name)) goBack();
+  }, { passive: true });
+})();
+
+/* ============================================
+   SHEET
+   ============================================ */
+function openSheet() {
+  // reset to initial state on every open
+  document.getElementById('joinState').style.display = '';
+  document.getElementById('confirmState').classList.remove('show');
+  sheetSlider && sheetSlider.reset();
+  document.getElementById('sheetBg').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('sheet').scrollTop = 0;
+}
+function closeSheet() {
+  document.getElementById('sheetBg').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+/* ============================================
+   DRAG-TO-DISMISS (sheet handle → swipe down to close)
+   ============================================ */
+function initDragDismiss(sheetEl, handleEl, closeFn) {
+  if (!sheetEl || !handleEl) return;
+  let startY = 0, dy = 0, dragging = false;
+
+  function down(e) {
+    dragging = true;
+    startY = (e.touches ? e.touches[0].clientY : e.clientY);
+    dy = 0;
+    sheetEl.style.transition = 'none';
+    e.preventDefault();
+  }
+  function move(e) {
+    if (!dragging) return;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY);
+    dy = y - startY;
+    if (dy < 0) dy = dy * 0.25;            // rubber-band when dragging up
+    sheetEl.style.transform = `translateY(${dy}px)`;
+  }
+  function up() {
+    if (!dragging) return;
+    dragging = false;
+    sheetEl.style.transition = 'transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1)';
+    if (dy > 120) {
+      sheetEl.style.transform = 'translateY(100%)';
+      setTimeout(() => { closeFn(); sheetEl.style.transform = ''; }, 280);
+    } else {
+      sheetEl.style.transform = 'translateY(0)';
+    }
+  }
+
+  handleEl.addEventListener('pointerdown', down);
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', up);
+  window.addEventListener('pointercancel', up);
+}
+
+/* ============================================
+   SLIDE-TO-JOIN (factory — supports multiple)
+   ============================================ */
+function initSlider(sliderEl, thumbEl, onComplete) {
+  const fill  = sliderEl.querySelector('.slider-track-fill');
+  const label = sliderEl.querySelector('.slider-label');
+  const originalLabel = label.textContent;
+
+  let startX = 0, dragging = false, currentX = 0, maxX = 0;
+  const THUMB = 52, PAD = 4;
+
+  function setX(x) {
+    currentX = x;
+    thumbEl.style.transform = `translateX(${-x}px)`;
+    fill.style.width = (THUMB + PAD + x) + 'px';
+    fill.style.transition = 'none';
+    thumbEl.style.transition = 'none';
+    label.style.opacity = String(Math.max(0, 1 - x / (maxX * 0.5)));
+  }
+  function snapBack() {
+    thumbEl.style.transition = 'transform 320ms cubic-bezier(0.34, 1.32, 0.64, 1)';
+    fill.style.transition  = 'width 280ms cubic-bezier(0.2, 0.8, 0.2, 1)';
+    label.style.transition = 'opacity 200ms';
+    thumbEl.style.transform = 'translateX(0)';
+    fill.style.width = THUMB + PAD + 'px';
+    label.style.opacity = '1';
+    currentX = 0;
+  }
+  function complete() {
+    sliderEl.classList.add('done');
+    thumbEl.style.transition = 'transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1)';
+    thumbEl.style.transform = `translateX(${-maxX}px)`;
+    label.textContent = 'מצטרף!';
+    if (navigator.vibrate) navigator.vibrate(20);
+    onComplete && onComplete();
+  }
+
+  function onDown(e) {
+    dragging = true;
+    const rect = sliderEl.getBoundingClientRect();
+    maxX = rect.width - THUMB - PAD * 2;
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const x = (e.touches ? e.touches[0].clientX : e.clientX);
+    let dx = startX - x;
+    if (dx < 0) dx = 0;
+    if (dx > maxX) dx = maxX;
+    setX(dx);
+  }
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    if (currentX >= maxX * 0.92) complete(); else snapBack();
+  }
+
+  thumbEl.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onUp);
+
+  return { snapBack, reset: () => { sliderEl.classList.remove('done'); label.textContent = originalLabel; snapBack(); } };
+}
+
+// Hero slider — shows transient toast (משחק לא מלא ב-modal)
+const heroSlider = initSlider(document.getElementById('slider'), document.getElementById('thumb'), () => {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+  setTimeout(() => heroSlider.reset(), 1800);
+});
+
+// Sheet slider — transitions to confirmation state instead of resetting
+let hasJoinedBefore = false;
+const sheetSlider = initSlider(document.getElementById('sliderSheet'), document.getElementById('thumbSheet'), () => {
+  setTimeout(() => {
+    document.getElementById('joinState').style.display = 'none';
+    document.getElementById('confirmState').classList.add('show');
+
+    // First match celebration — fires once per session
+    if (!hasJoinedBefore) {
+      hasJoinedBefore = true;
+      setTimeout(() => {
+        document.getElementById('celebrate').classList.add('show');
+        if (navigator.vibrate) navigator.vibrate([20, 80, 30]);
+      }, 480);
+    }
+  }, 400);
+});
+
+// Drag-to-dismiss for the join sheet
+initDragDismiss(document.getElementById('sheet'), document.querySelector('#sheet .sheet-handle'), closeSheet);
+
+/* ============================================
+   MARKETPLACE — buy sheet + sell flow
+   ============================================ */
+function openMarketSheet() {
+  document.getElementById('buyState').style.display = '';
+  document.getElementById('buyConfirmState').classList.remove('show');
+  buySlider && buySlider.reset();
+  document.getElementById('marketSheetBg').classList.add('show');
+  document.getElementById('marketSheet').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('marketSheet').scrollTop = 0;
+}
+function closeMarketSheet() {
+  document.getElementById('marketSheetBg').classList.remove('show');
+  document.getElementById('marketSheet').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+const buySlider = initSlider(document.getElementById('sliderBuy'), document.getElementById('thumbBuy'), () => {
+  setTimeout(() => {
+    document.getElementById('buyState').style.display = 'none';
+    document.getElementById('buyConfirmState').classList.add('show');
+    if (navigator.vibrate) navigator.vibrate([15, 60, 25]);
+  }, 380);
+});
+
+initDragDismiss(document.getElementById('marketSheet'), document.querySelector('#marketSheet .sheet-handle'), closeMarketSheet);
+
+function selectSellOption(el) {
+  document.querySelectorAll('#sellPick .sell-option').forEach(o => o.classList.remove('is-active'));
+  el.classList.add('is-active');
+  const price = el.dataset.price || '₪48';
+  const target = document.getElementById('sellPrice');
+  if (target) target.textContent = price;
+  if (navigator.vibrate) navigator.vibrate(8);
+}
+
+function sellCourt() {
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = '✓ המגרש פורסם בשוק · נודיע כשנמכר';
+    t.classList.add('show');
+    setTimeout(() => { t.classList.remove('show'); t.textContent = '✓ הצטרפת למשחק'; }, 2400);
+  }
+  goto('market');
+}
+
+function closeCelebrate() {
+  document.getElementById('celebrate').classList.remove('show');
+}
+
+/* ============================================
+   QUICK MATCH — searching → found
+   ============================================ */
+const QUICK_STEPS = [
+  'סורק מגרשים ברדיוס שלך…',
+  'מסנן לפי רמה B2…',
+  'בודק זמינות לעכשיו…',
+  'מצאתי 3 שחקנים שמחכים לרביעייה…',
+];
+let quickStepTimer = null;
+let quickRevealTimer = null;
+
+function startQuickMatch() {
+  const searching = document.getElementById('quickSearching');
+  const found = document.getElementById('quickFound');
+  const stepEl = document.getElementById('quickStep');
+  if (!searching || !found || !stepEl) return;
+
+  clearInterval(quickStepTimer);
+  clearTimeout(quickRevealTimer);
+
+  searching.style.display = 'flex';
+  found.style.display = 'none';
+
+  let i = 0;
+  stepEl.innerHTML = `<span>${QUICK_STEPS[0]}</span>`;
+  quickStepTimer = setInterval(() => {
+    i++;
+    if (i >= QUICK_STEPS.length) { clearInterval(quickStepTimer); return; }
+    stepEl.innerHTML = `<span>${QUICK_STEPS[i]}</span>`;
+  }, 620);
+
+  quickRevealTimer = setTimeout(() => {
+    clearInterval(quickStepTimer);
+    searching.style.display = 'none';
+    found.style.display = 'block';
+    if (navigator.vibrate) navigator.vibrate([12, 60, 18]);
+  }, 2600);
+}
+
+function quickJoin() {
+  goto('chat');
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = '✓ הצטרפת למשחק';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1600);
+  }
+}
+
+/* ============================================
+   GROUP CHAT
+   ============================================ */
+function claimWater() {
+  const row = document.getElementById('equipWater');
+  const btn = row.querySelector('.equip-claim');
+  const span = document.createElement('span');
+  span.className = 'equip-status ok';
+  span.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg> אתה מביא';
+  btn.replaceWith(span);
+  if (navigator.vibrate) navigator.vibrate(10);
+}
+function sendChatMsg() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById('chatMsgs');
+  const now = new Date();
+  const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const el = document.createElement('div');
+  el.className = 'msg mine';
+  el.innerHTML = `<div class="msg-content"><div class="msg-bubble"></div><div class="msg-time">${time}</div></div>`;
+  el.querySelector('.msg-bubble').textContent = text;
+  msgs.appendChild(el);
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+document.getElementById('chatInput') && document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendChatMsg();
+});
+
+/* ============================================
+   POST-GAME RATING — stars + attributes
+   ============================================ */
+/* Stepped rater — one player at a time, friendly not chore */
+const RATE_PLAYERS = [
+  { name: 'יואב כהן', lvl: 'B1 · מארגן', ph: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' },
+  { name: 'דניאל בר', lvl: 'B2', ph: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80' },
+  { name: 'אלון פרי', lvl: 'B1', ph: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=200&q=80' },
+];
+const KUDOS = ['סמאש קטלני', 'וולי מדויק', 'הגנה איתנה', 'ראש משחק', 'זריז במגרש', 'אנרגיות טובות'];
+const STAR_HINTS = ['', 'היה קשה', 'סביר', 'נהנינו', 'משחק מעולה', 'מהטובים שהיו! 🔥'];
+
+let rateIdx = 0;
+const rateState = RATE_PLAYERS.map(() => ({ stars: 0, kudos: [], level: 1 })); // level: 0 low / 1 accurate / 2 high
+
+function rateStarSVG() {
+  return '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+}
+
+function renderRateProgress() {
+  const p = document.getElementById('rateProgress');
+  p.innerHTML = RATE_PLAYERS.map((_, i) =>
+    `<div class="rate-dot ${i < rateIdx ? 'done' : (i === rateIdx ? 'current' : '')}"></div>`
+  ).join('');
+}
+
+function renderRateCard() {
+  const pl = RATE_PLAYERS[rateIdx];
+  const st = rateState[rateIdx];
+  const card = document.getElementById('rateCard');
+  card.innerHTML = `
+    <div class="rate-card rate-card-anim">
+      <div class="rate-player" style="justify-content:center; flex-direction:column; text-align:center; gap:8px">
+        <div class="rate-player-avatar" style="width:72px; height:72px; --ph: url('${pl.ph}'); background-image: var(--ph)"></div>
+        <div>
+          <div class="rate-player-name" style="font-size:20px">${pl.name}</div>
+          <div class="rate-player-lvl">${pl.lvl} · שיחקתם יחד 90 דקות</div>
+        </div>
+      </div>
+
+      <div class="rate-divider"></div>
+
+      <div class="rate-q">איך היה לשחק איתו?</div>
+      <div class="stars big" id="rateStars">
+        ${[0,1,2,3,4].map(i => `<span class="star ${i < st.stars ? 'lit':''}" data-i="${i}">${rateStarSVG()}</span>`).join('')}
+      </div>
+      <div class="rate-hint" id="rateHint">${st.stars ? STAR_HINTS[st.stars] : 'הקש על הכוכבים'}</div>
+
+      <div class="rate-divider"></div>
+
+      <div class="rate-q">מה בלט אצלו? <span style="color:var(--text-soft); font-weight:500">(אפשר כמה)</span></div>
+      <div class="kudos" id="rateKudos">
+        ${KUDOS.map(k => `<button class="kudo ${st.kudos.includes(k)?'is-active':''}" data-k="${k}">${k}</button>`).join('')}
+      </div>
+
+      <div class="rate-divider"></div>
+
+      <div class="attr">
+        <div class="attr-label" style="text-align:center">הרמה שלו בפועל הייתה</div>
+        <div class="attr-chips" id="rateLevel">
+          <button class="attr-chip ${st.level===0?'is-active':''}" data-l="0">נמוכה מהמוצהר</button>
+          <button class="attr-chip ${st.level===1?'is-active':''}" data-l="1">מדויקת</button>
+          <button class="attr-chip ${st.level===2?'is-active':''}" data-l="2">גבוהה מהמוצהר</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // stars
+  card.querySelectorAll('#rateStars .star').forEach(star => {
+    star.addEventListener('click', () => {
+      const n = parseInt(star.dataset.i, 10) + 1;
+      st.stars = n;
+      card.querySelectorAll('#rateStars .star').forEach((s, i) => s.classList.toggle('lit', i < n));
+      document.getElementById('rateHint').textContent = STAR_HINTS[n];
+      if (navigator.vibrate) navigator.vibrate(10);
+      updateRateNext();
+    });
+  });
+  // kudos (multi)
+  card.querySelectorAll('#rateKudos .kudo').forEach(k => {
+    k.addEventListener('click', () => {
+      const key = k.dataset.k;
+      const at = st.kudos.indexOf(key);
+      if (at >= 0) { st.kudos.splice(at, 1); k.classList.remove('is-active'); }
+      else { st.kudos.push(key); k.classList.add('is-active'); }
+      if (navigator.vibrate) navigator.vibrate(8);
+    });
+  });
+  // level (single)
+  card.querySelectorAll('#rateLevel .attr-chip').forEach(c => {
+    c.addEventListener('click', () => {
+      st.level = parseInt(c.dataset.l, 10);
+      card.querySelectorAll('#rateLevel .attr-chip').forEach(x => x.classList.remove('is-active'));
+      c.classList.add('is-active');
+    });
+  });
+
+  renderRateProgress();
+  updateRateNext();
+}
+
+function updateRateNext() {
+  const btn = document.getElementById('rateNext');
+  const st = rateState[rateIdx];
+  const last = rateIdx === RATE_PLAYERS.length - 1;
+  if (st.stars === 0) {
+    btn.disabled = true;
+    btn.textContent = 'בחר דירוג כדי להמשיך';
+  } else {
+    btn.disabled = false;
+    btn.textContent = last ? 'סיום ושליחה' : `הבא · ${RATE_PLAYERS[rateIdx+1].name}`;
+  }
+}
+
+function rateAdvance() {
+  if (rateState[rateIdx].stars === 0) return;
+  if (rateIdx < RATE_PLAYERS.length - 1) {
+    rateIdx++;
+    renderRateCard();
+    window.scrollTo(0, 0);
+  } else {
+    const kudosCount = rateState.reduce((a, s) => a + s.kudos.length, 0);
+    document.getElementById('rateDoneSub').textContent =
+      `דירגת את כל הקבוצה וחילקת ${kudosCount} פרגונים. כל פרגון עוזר לשחקן הבא לדעת עם מי הוא משחק — ומעלה גם את האמינות שלך.`;
+    goto('rate-done');
+  }
+}
+
+// init rater fresh whenever entering the rate screen
+function startRating() {
+  rateIdx = 0;
+  rateState.forEach(s => { s.stars = 0; s.kudos = []; s.level = 1; });
+  renderRateCard();
+}
+
+/* ============================================
+   CHIP / SEG TOGGLES (visual only)
+   ============================================ */
+document.querySelectorAll('.chips').forEach(group => {
+  group.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      group.querySelectorAll('.chip').forEach(c => c.classList.remove('is-active'));
+      chip.classList.add('is-active');
+    });
+  });
+});
+document.querySelectorAll('.seg-group').forEach(group => {
+  group.querySelectorAll('.seg-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      group.querySelectorAll('.seg-opt').forEach(o => o.classList.remove('is-active'));
+      opt.classList.add('is-active');
+    });
+  });
+});
+
+// Zone chips — multi-select toggle
+document.querySelectorAll('#zonesList .zone-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('is-active'));
+});
+
+// Radius buttons — single select with live label
+document.querySelectorAll('#radiusBtns .radius-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#radiusBtns .radius-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.getElementById('radiusVal').textContent = btn.textContent.trim() + ' דק׳';
+  });
+});
+
+// Calendar strip — meaningful day switch with progress + empty states
+const LOADING_STEPS = [
+  'מחפש משחקים בקרבת מקומך…',
+  'מדרג לפי מרחק וזמינות…',
+  'בודק התאמה לרמה שלך…',
+];
+
+document.querySelectorAll('#calStrip .cal-day').forEach(day => {
+  day.addEventListener('click', () => {
+    document.querySelectorAll('#calStrip .cal-day').forEach(d => d.classList.remove('is-active'));
+    day.classList.add('is-active');
+
+    const cntEl = day.querySelector('.cal-cnt');
+    const count = parseInt(cntEl.textContent, 10);
+    const isEmpty = cntEl.classList.contains('empty') || count < 5;
+    const dow = day.querySelector('.cal-dow').textContent;
+
+    const matches = document.getElementById('findMatches');
+    const empty   = document.getElementById('findEmpty');
+    const loading = document.getElementById('findLoading');
+    const summary = document.getElementById('findSummary');
+    const stepEl  = document.getElementById('loadingStep');
+
+    matches.style.display = 'none';
+    empty.style.display = 'none';
+    loading.style.display = 'flex';
+
+    // step through 3 progress messages
+    let i = 0;
+    stepEl.textContent = LOADING_STEPS[0];
+    stepEl.style.animation = 'none'; void stepEl.offsetWidth; stepEl.style.animation = '';
+    const stepInt = setInterval(() => {
+      i++;
+      if (i >= LOADING_STEPS.length) { clearInterval(stepInt); return; }
+      stepEl.textContent = LOADING_STEPS[i];
+      stepEl.style.animation = 'none'; void stepEl.offsetWidth; stepEl.style.animation = 'fadeStep 0.4s var(--ease-smooth) forwards';
+    }, 380);
+
+    setTimeout(() => {
+      clearInterval(stepInt);
+      loading.style.display = 'none';
+      if (isEmpty) {
+        empty.style.display = 'block';
+        summary.innerHTML = `<strong>${count} משחקים</strong> · ${dow} · נסה להרחיב חיפוש`;
+      } else {
+        matches.style.display = 'flex';
+        summary.innerHTML = `<strong>${count} משחקים</strong> · ${dow} · ברדיוס 30 דק׳ נסיעה`;
+      }
+    }, 1200);
+  });
+});
+
+// OTP — auto-advance focus when typing
+document.querySelectorAll('.otp-box').forEach((box, i, all) => {
+  box.addEventListener('input', () => {
+    if (box.value && i < all.length - 1) all[i + 1].focus();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !box.value && i > 0) all[i - 1].focus();
+  });
+});
+
+/* ============================================
+   QUIZ
+   ============================================ */
+const SKILL_OPTS = [
+  { label: 'מעולה — שולט לגמרי',       pt: 4 },
+  { label: 'טוב — ברוב המקרים',         pt: 3 },
+  { label: 'בינוני — עובד עליי לפעמים', pt: 2 },
+  { label: 'צריך לשפר — עדיין מתקשה',  pt: 1 }
+];
+const EXP_OPTS = [
+  { label: 'יותר מ-5 שנים',  pt: 4 },
+  { label: '3–5 שנים',       pt: 3 },
+  { label: '1–2 שנים',       pt: 2 },
+  { label: 'פחות משנה',      pt: 1 }
+];
+
+const QUESTIONS = [
+  { eyebrow: 'משחק רגלי',  q: 'החזרה מהכף (Forehand) — עד כמה היא יציבה?', opts: SKILL_OPTS },
+  { eyebrow: 'משחק רגלי',  q: 'החזרה מהגב (Backhand) — עד כמה היא בטוחה?', opts: SKILL_OPTS },
+  { eyebrow: 'משחק אווירי', q: 'בנדחה (Bandeja) — אתה שולט בה מהאזור הגבוה?', opts: SKILL_OPTS },
+  { eyebrow: 'משחק אווירי', q: 'ויבורה (Vibora) — אתה מבצע אותה בביטחון?', opts: SKILL_OPTS },
+  { eyebrow: 'משחק רשת',   q: 'משחק ברשת — אתה מרגיש בנוח שם?', opts: SKILL_OPTS },
+  { eyebrow: 'משחק רשת',   q: 'וולי (Volley) — עד כמה אתה מדויק?', opts: SKILL_OPTS },
+  { eyebrow: 'טקטיקה',     q: 'לוב (Lob) — אתה יודע מתי ואיך לשחק לוב?', opts: SKILL_OPTS },
+  { eyebrow: 'התקפה',     q: 'סמש (Smash) — בעצמה ובדיוק?', opts: SKILL_OPTS },
+  { eyebrow: 'טקטיקה',     q: 'מיקום במגרש — אתה זז ומתמצא טקטית?', opts: SKILL_OPTS },
+  { eyebrow: 'שיתוף פעולה', q: 'משחק בשתיים — אתה עובד טוב עם פרטנר?', opts: SKILL_OPTS },
+  { eyebrow: 'מנטליות',    q: 'תחת לחץ — נשאר קר־ראש בנקודות מכריעות?', opts: SKILL_OPTS },
+  { eyebrow: 'ניסיון',     q: 'כמה זמן אתה משחק פאדל?', opts: EXP_OPTS }
+];
+
+let qIndex = 0;
+const answers = [];
+
+function renderQ() {
+  const q = QUESTIONS[qIndex];
+  document.querySelector('.quiz-eyebrow').textContent = q.eyebrow;
+  document.getElementById('quizQ').textContent = q.q;
+  document.getElementById('quizCur').textContent = String(qIndex + 1);
+  document.getElementById('quizFill').style.width = ((qIndex + 1) / QUESTIONS.length * 100) + '%';
+  // re-render options (Q12 has different option labels)
+  const optsHtml = q.opts.map(o => `<button class="quiz-opt" data-pt="${o.pt}">${o.label} <span class="badge">${o.pt}</span></button>`).join('');
+  document.getElementById('quizOpts').innerHTML = optsHtml;
+  document.getElementById('quizNext').disabled = !answers[qIndex];
+}
+
+document.getElementById('quizOpts').addEventListener('click', e => {
+  const btn = e.target.closest('.quiz-opt');
+  if (!btn) return;
+  document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('is-selected'));
+  btn.classList.add('is-selected');
+  answers[qIndex] = parseInt(btn.dataset.pt, 10);
+  document.getElementById('quizNext').disabled = false;
+});
+
+/* ============================================
+   LEVEL DEFINITIONS — A1–C2 (Spanish/European padel system)
+   תיאורים על־פי המסך של המשתמש.
+   ============================================ */
+const LEVELS = {
+  'A1': {
+    label: 'מקצוען',
+    blurb: 'שחקן בעל ניסיון של שנים, מתאמן באופן קבוע עם מאמן ומשקיע בפיתוח המשחק שלו. שולט בכל החבטות ברמה גבוהה מאוד, עם יכולת מצוינת לקרוא את המשחק. בטופ 10 בארץ.'
+  },
+  'A2': {
+    label: 'מתקדם מאוד',
+    blurb: 'שחקן ששולט ברמה גבוהה בכל סוגי החבטות ובעל יכולת לחזות את מהלך המשחק. שולט בקצב, בונה נקודות ומסיים אותן בוויינרים בעוצמה גבוהה. בעל עבודת רגליים מצוינת והבנה טקטית גבוהה. משתתף בתחרויות ומשיג תוצאות טובות.'
+  },
+  'B1': {
+    label: 'מתקדם',
+    blurb: 'שחקן עם טכניקה גבוהה ושליטה מצוינת בכל החבטות. שחקן יציב מאוד שמתמודד עם קצב משחק מהיר, עם עבודת רגליים טובה. מבין טקטית לעומק את המשחק, בונה נקודות ומסיים אותן בעוצמה או בחתוכים. לרוב מתחרה בתחרויות ובעל רקע בענפי מחבט אחרים.'
+  },
+  'B2': {
+    label: 'בינוני-גבוה',
+    blurb: 'שחקן עם טכניקה טובה ושליטה טובה בכל סוגי החבטות — כולל וולי, חבטות מהקיר ולובים. יציב ואינו מחטיא בקלות תחת לחץ מתון. מבין היטב את המשחק מבחינה טקטית — בהגנה, בהתקפה ובמעברים ביניהן.'
+  },
+  'C1': {
+    label: 'בינוני',
+    blurb: 'שחקן שמתחיל לשלוט בכל סוגי החבטות, כולל משחק רשת והחזרות מהקיר. שולט בעוצמות הכדור, בעל טכניקה סבירה ומצליח לשמור ראלי. מבין בצורה סבירה את עקרונות המשחק.'
+  },
+  'C2': {
+    label: 'מתחיל',
+    blurb: 'בתחילת הדרך עם פאדל. עדיין בונה את הטכניקה הבסיסית — חבטה מהכף, מהגב, וולי בסיסי. זה הזמן הכי כיף לשחק — נמצא לך משחקים נינוחים עם שחקנים אחרים שלומדים.'
+  }
+};
+
+function scoreToLevel(score) {
+  // total max = 48 (12 questions × 4 pts max)
+  // החלוקה נותנת A1 רק לשחקנים שנותנים כמעט הכל "מעולה" + ניסיון רב
+  if (score >= 44) return 'A1';
+  if (score >= 38) return 'A2';
+  if (score >= 31) return 'B1';
+  if (score >= 23) return 'B2';
+  if (score >= 15) return 'C1';
+  return 'C2';
+}
+
+function nextQ() {
+  if (qIndex < QUESTIONS.length - 1) {
+    qIndex++;
+    renderQ();
+  } else {
+    const total = answers.reduce((a, b) => a + (b || 0), 0);
+    const level = scoreToLevel(total);
+    const data = LEVELS[level];
+
+    document.getElementById('resultScore').textContent = level;
+    document.getElementById('resultLabel').textContent = data.label;
+    document.getElementById('resultBlurb').textContent = data.blurb;
+    goto('quiz-result');
+  }
+}
+function prevQ() {
+  if (qIndex > 0) { qIndex--; renderQ(); }
+  else goto('zones');
+}
+
+renderQ();
+
+/* ============================================
+   REQUEST SHEET — "שלח בקשה" flow (שחקן)
+   ============================================ */
+function openRequestSheet() {
+  document.getElementById('requestSheetBg').classList.add('show');
+  document.getElementById('requestSheet').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeRequestSheet() {
+  document.getElementById('requestSheetBg').classList.remove('show');
+  document.getElementById('requestSheet').classList.remove('show');
+  document.body.style.overflow = '';
+}
+initDragDismiss(document.getElementById('requestSheet'), document.getElementById('requestSheetHandle'), closeRequestSheet);
+
+/* ============================================
+   PLAYER APPROVAL — מארגן approves / declines
+   ============================================ */
+function approvePlayer() {
+  const actions = document.getElementById('approvalActions');
+  actions.innerHTML = `
+    <div style="text-align:center; padding:16px 0 8px">
+      <div style="width:56px; height:56px; border-radius:50%; background:var(--brand-soft); display:flex; align-items:center; justify-content:center; margin:0 auto 12px">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1A4D2E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <div style="font-size:18px; font-weight:800; color:var(--brand); font-family:var(--font-display); margin-bottom:6px">אלון אושר! ✓</div>
+      <div style="font-size:14px; color:var(--text-mute); line-height:1.5; margin-bottom:20px">נשלחה לו הודעה — הוא יצטרף לצ'אט הקבוצה.</div>
+      <button class="btn-primary" onclick="goto('chat')" style="width:100%">פתח צ'אט קבוצתי</button>
+    </div>`;
+  if (navigator.vibrate) navigator.vibrate([12, 60, 18]);
+}
+
+function declinePlayer() {
+  const actions = document.getElementById('approvalActions');
+  actions.innerHTML = `
+    <div style="text-align:center; padding:16px 0 8px">
+      <div style="font-size:15px; color:var(--text-mute); margin-bottom:16px">הבקשה נדחתה. אלון יקבל הודעה שהמשחק כבר מלא.</div>
+      <button onclick="goBack()" style="width:100%; height:48px; border-radius:var(--r-pill); border:1.5px solid var(--border-strong); font-size:15px; font-weight:600; color:var(--text-mute); background:var(--surface); cursor:pointer">חזור להתראות</button>
+    </div>`;
+}
+
+// Quick approve/decline from inbox card (without navigating to full profile)
+function approvePlayerQuick(btn) {
+  const card = btn.closest('.notif');
+  card.innerHTML = `
+    <div style="display:flex; align-items:center; gap:12px; padding:2px 0">
+      <div class="notif-icon" style="background:var(--brand-soft)">
+        <svg viewBox="0 0 24 24" stroke="#1A4D2E"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title" style="color:var(--brand)"><strong>אלון פרי</strong> אושר ✓</div>
+        <div class="notif-meta">הוא יצטרף לצ'אט הקבוצה שלך</div>
+      </div>
+    </div>`;
+  if (navigator.vibrate) navigator.vibrate([10, 50, 15]);
+}
+
+function declinePlayerQuick(btn) {
+  const card = btn.closest('.notif');
+  card.innerHTML = `
+    <div style="display:flex; align-items:center; gap:12px; padding:2px 0; opacity:0.5">
+      <div class="notif-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div class="notif-body">
+        <div class="notif-title">בקשת <strong>אלון פרי</strong> נדחתה</div>
+        <div class="notif-meta">הוא קיבל הודעה שהמשחק כבר מלא</div>
+      </div>
+    </div>`;
+}
+
+/* ============================================
+   ADD GAME — approval hint + publish
+   ============================================ */
+function toggleApprovalHint(checkbox) {
+  document.getElementById('approvalHint').style.display = checkbox.checked ? 'block' : 'none';
+}
+
+function publishGame() {
+  closeSheet && closeSheet();
+  const manual = document.getElementById('manualApprovalToggle').checked;
+  const t = document.getElementById('toast');
+  if (t) {
+    t.textContent = manual ? '✓ פורסם עם אישור ידני — נודיע על כל בקשה' : '✓ המשחק פורסם';
+    t.classList.add('show');
+    setTimeout(() => { t.classList.remove('show'); t.textContent = '✓ הצטרפת למשחק'; }, 2400);
+  }
+  goto('find');
+}
+</script>
+
+</body>
+</html>

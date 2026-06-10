@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rally — פאדל ישראל 🎾</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* ======================================= */
+/*  DESIGN SYSTEM — RALLY                  */
+/* ======================================= */
+:root {
+  --bg:            #FFFFFF;
+  --bg-card:       #F7F8F5;
+  --text-1:        #111111;
+  --text-2:        #6B7280;
+  --accent:        #22C55E;
+  --accent-lt:     #D1FAE5;
+  --accent-dk:     #16A34A;
+  --navy:          #1A1A3E;
+  --navy-2:        #2A2A5E;
+  --border:        #E5E7EB;
+  --r-card:        16px;
+  --shadow-card:   0 2px 12px rgba(0,0,0,0.06);
+  --btn-h:         52px;
+  --safe-b:        env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'DM Sans', sans-serif;
+}
+
+body {
+  background: #C9CDD0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  direction: rtl;
+}
+
+/* ======================================= */
+/*  PHONE FRAME                            */
+/* ======================================= */
+.app {
+  width: 430px;
+  max-width: 100vw;
+  height: 932px;
+  max-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+  border-radius: 44px;
+}
+
+@media (max-width: 430px) {
+  body { background: var(--bg); align-items: flex-start; }
+  .app { border-radius: 0; box-shadow: none; height: 100vh; }
+}
+
+/* ======================================= */
+/*  SCREEN SYSTEM                          */
+/* ======================================= */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: none;
+  background: var(--bg);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active { display: block; animation: fadeSlide .22s ease forwards; }
+.screen.has-nav { padding-bottom: calc(76px + var(--safe-b)); }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ======================================= */
+/*  BOTTOM NAV                             */
+/* ======================================= */
+.bnav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: calc(68px + var(--safe-b));
+  background: #fff;
+  box-shadow: 0 -1px 0 var(--border), 0 -8px 24px rgba(0,0,0,0.06);
+  display: none;
+  align-items: flex-start;
+  padding-top: 10px;
+  z-index: 90;
+}
+.bnav.on { display: flex; }
+
+.ntab {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: pointer;
+  font-size: 11px; font-weight: 500; color: var(--text-2);
+  transition: color .15s;
+  padding: 2px 0; position: relative;
+}
+.ntab.active { color: var(--accent); font-weight: 700; }
+.ntab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+}
+.ntab-icon { font-size: 22px; line-height: 1; }
+
+.ntab-fab {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; margin-top: -20px;
+}
+.fab-circle {
+  width: 58px; height: 58px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: white;
+  box-shadow: 0 4px 18px rgba(34,197,94,.45);
+  transition: transform .12s;
+}
+.fab-circle:active { transform: scale(.93); }
+.fab-lbl { font-size: 11px; font-weight: 500; color: var(--text-2); margin-top: 5px; }
+
+/* ======================================= */
+/*  COMMON COMPONENTS                      */
+/* ======================================= */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: var(--btn-h);
+  border-radius: 12px; border: none; cursor: pointer;
+  font-size: 16px; font-weight: 700; transition: transform .1s, opacity .1s;
+}
+.btn:active { transform: scale(.97); }
+.btn-green { background: var(--accent); color: #fff; }
+.btn-green:active { background: var(--accent-dk); }
+.btn-navy  { background: var(--navy);  color: #fff; }
+.btn-outline-green {
+  background: transparent; color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+.btn-ghost {
+  background: transparent; color: var(--text-2); border: none;
+  font-size: 15px; font-weight: 500; width: auto; height: auto; cursor: pointer;
+}
+.btn-sm {
+  height: 40px; font-size: 14px; border-radius: 10px;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
+/* Header bar */
+.hdr {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 50px 20px 14px;
+}
+.hdr-title { font-size: 18px; font-weight: 700; color: var(--navy); }
+.back-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+}
+
+/* Input */
+.inp-lbl { font-size: 13px; font-weight: 600; color: var(--text-2); margin-bottom: 7px; display: block; }
+.inp {
+  width: 100%; height: 48px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 0 16px; font-size: 15px; color: var(--text-1);
+  background: var(--bg); outline: none; transition: border-color .15s; direction: rtl;
+}
+.inp:focus { border-color: var(--accent); }
+textarea.inp { height: 90px; padding: 12px 16px; resize: none; line-height: 1.5; }
+.inp-group { margin-bottom: 18px; }
+
+/* Tags / badges */
+.tag {
+  display: inline-block;
+  padding: 3px 9px; border-radius: 7px;
+  font-size: 11px; font-weight: 600;
+  background: white; border: 1px solid var(--border); color: var(--text-2);
+}
+.tag-green { background: var(--accent-lt); border-color: var(--accent); color: var(--accent-dk); }
+.tag-navy  { background: var(--navy); color: white; }
+.tag-orange { background: #FFF3CD; border-color: #F59E0B; color: #92400E; }
+
+.level-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--accent-lt); color: var(--accent-dk);
+  padding: 4px 11px; border-radius: 20px; font-size: 12px; font-weight: 700;
+}
+
+/* Avatar helpers */
+.av {
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: white; flex-shrink: 0;
+}
+.av-28 { width: 28px; height: 28px; font-size: 11px; }
+.av-36 { width: 36px; height: 36px; font-size: 14px; }
+.av-52 { width: 52px; height: 52px; font-size: 20px; }
+.av-80 { width: 80px; height: 80px; font-size: 32px; }
+.av-90 { width: 90px; height: 90px; font-size: 36px; }
+
+/* Skeleton */
+.skel {
+  background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite; border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Section header */
+.sec-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 20px; margin-bottom: 14px;
+}
+.sec-title { font-size: 17px; font-weight: 700; color: var(--navy); }
+.see-all { font-size: 13px; font-weight: 500; color: var(--accent); cursor: pointer; }
+
+/* ======================================= */
+/*  SCREEN 1 — SPLASH                     */
+/* ======================================= */
+#scr-splash {
+  background: linear-gradient(165deg, var(--navy) 0%, #0F0F2E 55%, #0A3A1A 100%);
+  display: none;
+}
+#scr-splash.active { display: flex; flex-direction: column; }
+
+.splash-inner {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 48px 36px;
+  text-align: center;
+}
+
+.splash-ball {
+  font-size: 72px; margin-bottom: 28px;
+  animation: ballBounce 2.2s ease-in-out infinite;
+}
+@keyframes ballBounce {
+  0%,100%{transform:translateY(0)} 45%{transform:translateY(-16px)} 60%{transform:translateY(-8px)}
+}
+
+.splash-logo {
+  font-size: 76px; font-weight: 700;
+  color: #fff; letter-spacing: -4px; line-height: 1;
+  margin-bottom: 10px;
+}
+.splash-logo .dot { color: var(--accent); }
+
+.splash-tag {
+  font-size: 18px; font-weight: 500; color: rgba(255,255,255,.6);
+  margin-bottom: 64px; letter-spacing: .3px;
+}
+
+.splash-btn-main {
+  width: 100%; height: 56px;
+  background: var(--accent); border: none; border-radius: 14px;
+  color: #fff; font-size: 19px; font-weight: 700;
+  cursor: pointer; margin-bottom: 14px;
+  transition: transform .1s;
+  box-shadow: 0 6px 24px rgba(34,197,94,.4);
+}
+.splash-btn-main:active { transform: scale(.97); }
+
+.splash-btn-sec {
+  width: 100%; height: 50px;
+  background: transparent; border: 1.5px solid rgba(255,255,255,.25);
+  border-radius: 14px; color: rgba(255,255,255,.8);
+  font-size: 16px; font-weight: 500; cursor: pointer;
+  transition: transform .1s;
+}
+.splash-btn-sec:active { transform: scale(.97); }
+
+.splash-foot {
+  font-size: 13px; color: rgba(255,255,255,.3); margin-top: 36px;
+}
+
+/* ======================================= */
+/*  SCREEN 2 — PROFILE STEP 1             */
+/* ======================================= */
+.setup-wrap {
+  min-height: 100%;
+  display: flex; flex-direction: column;
+}
+.setup-top {
+  padding: 52px 24px 24px;
+}
+.step-dots {
+  display: flex; gap: 6px; margin-bottom: 24px;
+}
+.sdot {
+  width: 8px; height: 8px; border-radius: 4px;
+  background: var(--border); transition: all .2s;
+}
+.sdot.on { width: 26px; background: var(--accent); }
+
+/* Visual step progress bar */
+.setup-progress {
+  display: flex; align-items: flex-start; margin-bottom: 28px;
+}
+.step-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.step-circle {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--border); color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; transition: all .25s;
+  border: 2px solid var(--border);
+}
+.step-circle.done {
+  background: var(--accent); color: white; border-color: var(--accent);
+}
+.step-circle.active {
+  background: var(--navy); color: white; border-color: var(--navy);
+  box-shadow: 0 3px 12px rgba(26,26,62,.25);
+}
+.step-lbl {
+  font-size: 10px; font-weight: 600; color: var(--text-2);
+  white-space: nowrap;
+}
+.step-lbl.active { color: var(--navy); }
+.step-lbl.done { color: var(--accent); }
+.step-connector {
+  flex: 1; height: 2px; background: var(--border);
+  margin: 16px 4px 0; transition: background .25s;
+}
+.step-connector.done { background: var(--accent); }
+
+.setup-title { font-size: 27px; font-weight: 700; color: var(--navy); line-height: 1.3; }
+.setup-sub   { font-size: 14px; color: var(--text-2); margin-top: 7px; }
+
+.setup-body { padding: 28px 24px; flex: 1; }
+.setup-footer { padding: 20px 24px; padding-bottom: calc(20px + var(--safe-b)); }
+
+/* Avatar upload */
+.av-upload {
+  display: flex; flex-direction: column; align-items: center; margin-bottom: 32px;
+}
+.av-circle {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: var(--bg-card); border: 2.5px dashed var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 32px; margin-bottom: 8px;
+  transition: border-color .15s;
+}
+.av-circle:active { border-color: var(--accent); }
+.av-circle.has-av { background: var(--accent); font-size: 40px; border-style: solid; border-color: var(--accent); }
+.av-lbl { font-size: 13px; color: var(--text-2); }
+
+/* ======================================= */
+/*  SCREEN 3 — SKILL QUIZ                 */
+/* ======================================= */
+.quiz-hdr { padding: 52px 24px 20px; }
+.quiz-prog-bar {
+  height: 5px; background: var(--border); border-radius: 3px;
+  margin-bottom: 6px; overflow: hidden;
+}
+.quiz-prog-fill {
+  height: 100%; background: var(--accent); border-radius: 3px;
+  transition: width .35s ease;
+}
+.quiz-prog-lbl { font-size: 12px; color: var(--text-2); text-align: left; margin-bottom: 28px; }
+.quiz-q {
+  font-size: 21px; font-weight: 700; color: var(--navy);
+  margin-bottom: 24px; line-height: 1.4;
+}
+.quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+.qopt {
+  display: flex; align-items: center; gap: 13px;
+  padding: 15px 16px; border-radius: 14px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  cursor: pointer; transition: all .15s;
+}
+.qopt:active { transform: scale(.98); }
+.qopt.sel { border-color: var(--accent); background: var(--accent-lt); }
+.qopt-em { font-size: 22px; width: 30px; text-align: center; }
+.qopt-txt { font-size: 14px; font-weight: 500; color: var(--text-1); }
+
+/* Quiz result */
+.quiz-result {
+  padding: 52px 32px 32px;
+  text-align: center; display: none; flex-direction: column; align-items: center;
+}
+.qr-em { font-size: 64px; margin-bottom: 16px; }
+.qr-lbl { font-size: 16px; color: var(--text-2); margin-bottom: 6px; }
+.qr-num { font-size: 88px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+.qr-name { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+.qr-desc { font-size: 15px; color: var(--text-2); line-height: 1.65; max-width: 280px; margin-bottom: 44px; }
+
+/* ======================================= */
+/*  SCREEN 4 — LOCATION SELECT            */
+/* ======================================= */
+.loc-chips {
+  display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 28px;
+}
+.lchip {
+  padding: 9px 15px; border-radius: 22px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-size: 14px; font-weight: 500; color: var(--text-1);
+  cursor: pointer; transition: all .15s;
+}
+.lchip.sel { background: var(--accent); border-color: var(--accent); color: white; }
+.lchip:active { transform: scale(.95); }
+
+.radius-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 14px; font-weight: 600; color: var(--text-1);
+  margin-bottom: 12px;
+}
+.radius-val { color: var(--accent); }
+
+input[type=range] {
+  width: 100%; height: 4px; background: var(--border);
+  border-radius: 2px; outline: none; appearance: none; direction: ltr;
+}
+input[type=range]::-webkit-slider-thumb {
+  appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  box-shadow: 0 2px 8px rgba(34,197,94,.4);
+}
+
+/* ======================================= */
+/*  SCREEN 5 — HOME                       */
+/* ======================================= */
+.home-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 50px 20px 14px;
+}
+.home-logo { font-size: 23px; font-weight: 700; color: var(--navy); letter-spacing: -.5px; }
+.home-logo .lg { color: var(--accent); }
+.notif-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 19px; position: relative;
+}
+.notif-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 8px; height: 8px; background: #EF4444;
+  border-radius: 50%; border: 1.5px solid white;
+}
+
+/* Emergency banner */
+.emg-banner {
+  margin: 0 16px 18px;
+  background: linear-gradient(135deg, #FFF0EB 0%, #FFE8E0 100%);
+  border: 1.5px solid #FF6B35;
+  border-radius: 14px; padding: 14px 16px; cursor: pointer;
+  animation: emgPulse 2s ease-in-out infinite;
+}
+@keyframes emgPulse {
+  0%,100%{ box-shadow: 0 0 0 0 rgba(255,107,53,.35); }
+  55%    { box-shadow: 0 0 0 10px rgba(255,107,53,0); }
+}
+.emg-top {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.emg-icon { font-size: 20px; animation: iconPulse .8s ease-in-out infinite; }
+@keyframes iconPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+.emg-title { font-size: 14px; font-weight: 700; color: #C0392B; flex: 1; }
+.emg-x { font-size: 16px; color: #C0392B; cursor: pointer; padding: 2px; line-height: 1; opacity:.7; }
+.emg-detail { font-size: 13px; color: #A93226; margin-bottom: 11px; font-weight: 500; }
+.emg-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #FF6B35; color: white; border: none; border-radius: 9px;
+  padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: transform .1s, background .1s;
+  box-shadow: 0 3px 10px rgba(255,107,53,.35);
+}
+.emg-btn:active { transform: scale(.97); background: #E55A25; }
+
+/* Player credibility card */
+.cred-card {
+  margin: 0 16px 22px;
+  background: var(--navy); border-radius: 20px;
+  padding: 18px 20px; cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  transition: transform .15s;
+}
+.cred-card:active { transform: scale(.98); }
+.cred-info { flex: 1; }
+.cred-greeting { font-size: 19px; font-weight: 700; color: white; margin-bottom: 5px; }
+.cred-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.cred-lvl {
+  background: rgba(34,197,94,.2); color: var(--accent);
+  padding: 3px 9px; border-radius: 10px; font-size: 12px; font-weight: 600;
+}
+.cred-score { color: rgba(255,255,255,.6); font-size: 12px; font-weight: 500; }
+.cred-bar-bg { height: 4px; background: rgba(255,255,255,.2); border-radius: 2px; overflow: hidden; }
+.cred-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+
+/* Action cards */
+.action-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 0 16px 24px;
+}
+.act-card {
+  border-radius: 18px; padding: 20px 16px;
+  cursor: pointer; display: flex; flex-direction: column; gap: 8px;
+  transition: transform .15s;
+}
+.act-card:active { transform: scale(.97); }
+.act-a { background: var(--accent); box-shadow: 0 4px 18px rgba(34,197,94,.3); }
+.act-b { background: var(--navy); }
+.act-icon { font-size: 32px; }
+.act-title { font-size: 16px; font-weight: 700; color: white; }
+.act-sub { font-size: 12px; color: rgba(255,255,255,.8); }
+
+/* Horizontal game cards */
+.games-scroll {
+  padding: 0 16px; overflow-x: auto;
+  display: flex; gap: 12px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.games-scroll::-webkit-scrollbar { display: none; }
+
+.gc-h {
+  min-width: 244px; flex-shrink: 0;
+  background: var(--bg-card); border-radius: var(--r-card);
+  border: 1px solid var(--border); padding: 16px;
+  cursor: pointer; box-shadow: var(--shadow-card);
+  transition: transform .15s;
+}
+.gc-h:active { transform: scale(.97); }
+.gc-club { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+.gc-time { font-size: 12px; color: var(--text-2); margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+.gc-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.gc-players { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.pdot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; }
+.pdot-empty { background: transparent; border: 2px dashed var(--border); }
+.gc-missing { font-size: 12px; color: var(--text-2); margin-right: 4px; }
+.join-btn {
+  width: 100%; height: 38px; background: var(--accent); color: white;
+  border: none; border-radius: 10px; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: transform .1s;
+}
+.join-btn:active { transform: scale(.97); }
+
+/* Demo trigger button */
+.demo-trigger {
+  margin: 8px 16px 0;
+  width: calc(100% - 32px); height: 40px;
+  border: 1.5px dashed #ccc; border-radius: 10px;
+  background: transparent; color: var(--text-2);
+  font-size: 13px; cursor: pointer; font-family: 'DM Sans',sans-serif;
+}
+
+/* ======================================= */
+/*  SCREEN 6 — FIND GAME                  */
+/* ======================================= */
+.filter-row {
+  padding: 14px 16px; overflow-x: auto; display: flex; gap: 8px;
+  border-bottom: 1px solid var(--border); scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.fchip {
+  white-space: nowrap; padding: 8px 16px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-size: 13px; font-weight: 500; color: var(--text-2);
+  cursor: pointer; transition: all .15s; flex-shrink: 0;
+}
+.fchip.on {
+  background: var(--accent); border-color: var(--accent); color: white;
+  font-weight: 700;
+}
+.fchip.on::before { content: '✓ '; font-size: 12px; }
+
+.games-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.gc-v {
+  background: var(--bg-card); border-radius: var(--r-card);
+  border: 1px solid var(--border); padding: 16px;
+  box-shadow: var(--shadow-card); transition: transform .15s; cursor: pointer;
+}
+.gc-v:active { transform: scale(.99); }
+.gc-v-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.gc-v-club { font-size: 16px; font-weight: 700; color: var(--navy); }
+.gc-price { background: var(--accent-lt); color: var(--accent-dk); padding: 5px 11px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.gc-v-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.gc-v-players { display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
+
+/* ======================================= */
+/*  SCREEN 7 — ADD GAME                   */
+/* ======================================= */
+.players-sel { display: flex; gap: 8px; }
+.psel-btn {
+  flex: 1; height: 48px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-size: 20px; font-weight: 700; color: var(--text-2); cursor: pointer;
+  transition: all .15s;
+}
+.psel-btn.sel { background: var(--accent); border-color: var(--accent); color: white; }
+
+.level-sel { display: flex; gap: 8px; }
+.lvl-btn {
+  flex: 1; height: 48px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-size: 13px; font-weight: 600; color: var(--text-2); cursor: pointer;
+  transition: all .15s;
+}
+.lvl-btn.sel { background: var(--navy); border-color: var(--navy); color: white; }
+
+/* ======================================= */
+/*  SCREEN 8 — MARKETPLACE                */
+/* ======================================= */
+.mkt-sub {
+  padding: 4px 20px 20px;
+  font-size: 14px; color: var(--text-2);
+}
+
+.mkt-card {
+  background: var(--bg-card); border-radius: var(--r-card);
+  border: 1px solid var(--border); padding: 16px;
+  box-shadow: var(--shadow-card); position: relative;
+  transition: transform .15s; cursor: pointer; margin-bottom: 12px;
+}
+.mkt-card:active { transform: scale(.99); }
+.mkt-price {
+  position: absolute; top: 16px; left: 16px;
+  background: var(--navy); color: white;
+  padding: 6px 13px; border-radius: 10px; font-size: 15px; font-weight: 700;
+}
+.mkt-seller {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.seller-inf .seller-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.seller-inf .seller-rating { font-size: 12px; color: var(--text-2); }
+.buy-btn {
+  width: 100%; height: 42px; background: var(--navy); color: white;
+  border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: transform .1s; margin-top: 12px;
+}
+.buy-btn:active { transform: scale(.97); }
+
+/* ======================================= */
+/*  SCREEN 9 — PLAYER PROFILE             */
+/* ======================================= */
+.prof-hero {
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 100%);
+  padding: 52px 24px 36px; text-align: center;
+}
+.prof-name { font-size: 25px; font-weight: 700; color: white; margin-bottom: 8px; }
+.prof-badges { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
+.prof-city { font-size: 13px; color: rgba(255,255,255,.55); margin-bottom: 10px; }
+.prof-locs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 0; }
+.ploc { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+.cred-badge-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 11px; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+}
+.cb-amber { background: rgba(245,158,11,.2); color: #F59E0B; }
+
+.stats-row {
+  display: flex; border-top: 1px solid rgba(255,255,255,.15);
+  padding-top: 20px; margin-top: 20px;
+}
+.stat-item { flex: 1; text-align: center; }
+.stat-v { font-size: 23px; font-weight: 700; color: white; }
+.stat-l { font-size: 11px; color: rgba(255,255,255,.55); }
+.stat-div { width: 1px; background: rgba(255,255,255,.15); }
+
+.hist-section { padding: 20px; }
+.hist-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
+.hist-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.hist-l .hist-club { font-size: 14px; font-weight: 600; color: var(--text-1); }
+.hist-l .hist-date { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.res-w { background: var(--accent-lt); color: var(--accent-dk); padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+.res-l { background: #FEE2E2; color: #DC2626; padding: 4px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; }
+
+.save-contact {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 4px 20px 20px;
+  height: 48px; border-radius: 12px;
+  border: 1.5px solid var(--accent); color: var(--accent);
+  background: transparent; font-size: 15px; font-weight: 700;
+  cursor: pointer; width: calc(100% - 40px);
+  transition: transform .1s;
+}
+.save-contact:active { transform: scale(.97); }
+
+/* ======================================= */
+/*  POST-GAME SCREENS                      */
+/* ======================================= */
+
+/* Ended */
+#scr-pg-ended {
+  background: var(--navy);
+  display: none;
+}
+#scr-pg-ended.active {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 36px; text-align: center;
+}
+.pg-ball { font-size: 80px; margin-bottom: 28px; animation: ballBounce 1.8s ease; }
+.pg-title { font-size: 32px; font-weight: 700; color: white; margin-bottom: 12px; }
+.pg-sub { font-size: 16px; color: var(--accent); font-weight: 500; margin-bottom: 44px; }
+
+/* Chat */
+#scr-pg-chat {
+  background: #0A0A2A;
+  display: none;
+}
+#scr-pg-chat.active { display: flex; flex-direction: column; }
+
+.chat-hdr {
+  padding: 52px 20px 16px;
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255,255,255,.1); flex-shrink: 0;
+}
+.chat-title { font-size: 16px; font-weight: 700; color: white; margin-bottom: 8px; }
+.chat-players-row { display: flex; align-items: center; gap: 4px; }
+.chat-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: white;
+  border: 2px solid var(--navy);
+}
+.chat-badge {
+  background: rgba(34,197,94,.2); color: var(--accent);
+  padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;
+  margin-right: auto;
+}
+
+.chat-msgs {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  scrollbar-width: none;
+}
+.chat-msgs::-webkit-scrollbar { display: none; }
+
+.cmsg-sys {
+  text-align: center; background: rgba(255,255,255,.07);
+  border-radius: 10px; padding: 10px 16px;
+  font-size: 13px; color: rgba(255,255,255,.55);
+}
+
+.cmsg { display: flex; gap: 8px; max-width: 82%; }
+.cmsg.me { align-self: flex-end; flex-direction: row-reverse; }
+.cmsg-col { display: flex; flex-direction: column; gap: 3px; }
+.cmsg-name { font-size: 11px; color: rgba(255,255,255,.45); }
+.cmsg.me .cmsg-name { text-align: left; }
+.cbubble {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 14px; line-height: 1.45; color: white;
+}
+.cmsg:not(.me) .cbubble { background: #1A1A40; border-bottom-right-radius: 4px; }
+.cmsg.me      .cbubble { background: var(--accent); border-bottom-left-radius: 4px; }
+.cmsg-time { font-size: 10px; color: rgba(255,255,255,.35); align-self: flex-end; }
+
+.chat-actions-bar {
+  padding: 12px 16px;
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; gap: 10px; flex-shrink: 0;
+}
+.chat-rate-btn {
+  flex: 1; height: 44px; background: var(--accent);
+  color: white; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  animation: rateGlow 2.2s ease-in-out infinite;
+}
+@keyframes rateGlow {
+  0%,100%{ box-shadow: 0 0 0 0 rgba(34,197,94,.4); }
+  55%    { box-shadow: 0 0 0 9px rgba(34,197,94,0); }
+}
+
+.chat-input-row {
+  display: flex; gap: 8px; padding: 12px 16px;
+  padding-bottom: calc(12px + var(--safe-b));
+  background: #0A0A2A; flex-shrink: 0; align-items: center;
+}
+.cinput {
+  flex: 1; height: 42px; border-radius: 21px;
+  border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.08);
+  color: white; padding: 0 16px; font-size: 14px; outline: none; direction: rtl;
+}
+.cinput::placeholder { color: rgba(255,255,255,.35); }
+.csend {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--accent); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+
+/* Rating */
+#scr-pg-rating {
+  background: var(--navy);
+  display: none;
+}
+#scr-pg-rating.active { display: block; }
+
+.rating-inner { padding: 52px 24px 40px; }
+.rating-prog-bar { height: 4px; background: rgba(255,255,255,.2); border-radius: 2px; margin-bottom: 6px; overflow: hidden; }
+.rating-prog-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .3s; }
+.rating-prog-lbl { font-size: 13px; color: rgba(255,255,255,.45); text-align: left; margin-bottom: 32px; }
+
+.rp-card {
+  background: rgba(255,255,255,.08); border-radius: 20px;
+  padding: 28px 24px; text-align: center; margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,.1); position: relative;
+}
+.rp-check {
+  display: none; position: absolute; top: 16px; left: 16px;
+  width: 28px; height: 28px; background: var(--accent); border-radius: 50%;
+  align-items: center; justify-content: center; font-size: 14px; color: white;
+}
+.rp-card.rated .rp-check { display: flex; }
+.rp-name { font-size: 21px; font-weight: 700; color: white; margin-bottom: 4px; }
+.rp-lvl { font-size: 13px; color: rgba(255,255,255,.5); margin-bottom: 20px; }
+.stars-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.star {
+  font-size: 38px; cursor: pointer;
+  filter: grayscale(1) opacity(.35); transition: transform .1s; user-select: none;
+}
+.star.on { filter: none; transform: scale(1.1); }
+.star:active { transform: scale(.9); }
+.add-phone-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,.2); background: transparent;
+  color: rgba(255,255,255,.65); font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all .15s;
+}
+.add-phone-btn:active { border-color: var(--accent); color: var(--accent); }
+
+.finish-btn {
+  width: 100%; height: var(--btn-h); border: none; border-radius: 12px;
+  font-size: 16px; font-weight: 700; cursor: pointer; transition: all .2s;
+}
+.finish-btn.enabled { background: var(--accent); color: white; }
+.finish-btn.disabled { background: rgba(255,255,255,.12); color: rgba(255,255,255,.35); cursor: not-allowed; }
+
+/* Summary */
+#scr-pg-summary {
+  background: var(--navy);
+  display: none;
+}
+#scr-pg-summary.active {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 48px 36px; text-align: center; position: relative; overflow: hidden;
+}
+.sum-check { font-size: 72px; margin-bottom: 20px; }
+.sum-title { font-size: 30px; font-weight: 700; color: white; margin-bottom: 8px; }
+.sum-sub { font-size: 15px; color: rgba(255,255,255,.6); margin-bottom: 36px; }
+.sum-avs { display: flex; justify-content: center; gap: 14px; margin-bottom: 32px; }
+.sum-av { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: white; border: 3px solid rgba(255,255,255,.3); }
+.points-box {
+  background: rgba(34,197,94,.15); border: 1.5px solid var(--accent);
+  border-radius: 16px; padding: 18px 28px; margin-bottom: 44px;
+}
+.points-v { font-size: 40px; font-weight: 700; color: var(--accent); }
+.points-l { font-size: 14px; color: rgba(255,255,255,.6); margin-top: 2px; }
+
+/* Confetti canvas */
+#confetti-canvas {
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
+}
+
+/* ======================================= */
+/*  BOTTOM SHEET OVERLAY                   */
+/* ======================================= */
+.bso {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200; display: none; align-items: flex-end;
+}
+.bso.open { display: flex; animation: fadeIn .2s; }
+
+.bsheet {
+  width: 100%; background: white;
+  border-radius: 22px 22px 0 0;
+  padding: 20px; padding-bottom: calc(20px + var(--safe-b));
+  animation: sheetUp .3s ease;
+}
+@keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+.bsheet-navy { background: #1A1A3E; }
+.bsheet-handle { width: 40px; height: 4px; background: rgba(255,255,255,.2); border-radius: 2px; margin: 0 auto 20px; }
+.bsheet-handle-dark { background: var(--border); }
+.bsheet-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+.bsheet-title-w { color: white; }
+.bsheet-phone { font-size: 26px; font-weight: 700; color: var(--accent); text-align: center; padding: 16px; background: var(--accent-lt); border-radius: 12px; margin-bottom: 16px; direction: ltr; }
+.bsheet-btns { display: flex; gap: 10px; }
+
+/* Cred sheet */
+.cred-sheet-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; color: rgba(255,255,255,.8); }
+.cred-sheet-divider { height: 1px; background: rgba(255,255,255,.1); margin: 16px 0; }
+.cred-sheet-score { font-size: 28px; font-weight: 700; color: var(--accent); text-align: center; }
+.cred-sheet-score-lbl { font-size: 13px; color: rgba(255,255,255,.5); text-align: center; }
+
+/* ======================================= */
+/*  TOAST                                  */
+/* ======================================= */
+.toast {
+  position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+  background: var(--navy); color: white; padding: 10px 20px;
+  border-radius: 20px; font-size: 14px; font-weight: 500;
+  z-index: 300; white-space: nowrap; opacity: 0; transition: opacity .25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* ======================================= */
+/*  SKELETON SCREENS                       */
+/* ======================================= */
+.skel-card { padding: 16px; background: var(--bg-card); border-radius: var(--r-card); border: 1px solid var(--border); margin-bottom: 12px; }
+.skel-line { height: 14px; border-radius: 7px; margin-bottom: 10px; }
+.skel-circle { border-radius: 50% !important; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- =========================================== -->
+<!-- SCREEN 1: SPLASH                            -->
+<!-- =========================================== -->
+<div class="screen active" id="scr-splash">
+  <div class="splash-inner">
+    <div class="splash-ball">🎾</div>
+    <div class="splash-logo">Rally<span class="dot">.</span></div>
+    <div class="splash-tag">פאדל. עכשיו. ברמה שלך.</div>
+    <button class="splash-btn-main" onclick="startOnboarding()">בואו נשחק 🚀</button>
+    <button class="splash-btn-sec" onclick="skipToHome()">כניסה עם Google</button>
+    <div class="splash-foot">ישראל · 2026</div>
+  </div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 2: PROFILE STEP 1 — NAME + AVATAR   -->
+<!-- =========================================== -->
+<div class="screen" id="scr-p1">
+  <div class="setup-wrap">
+    <div class="setup-top">
+      <div class="setup-progress">
+        <div class="step-item">
+          <div class="step-circle active">1</div>
+          <div class="step-lbl active">פרטים</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-lbl">רמה</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-lbl">מיקום</div>
+        </div>
+      </div>
+      <div class="setup-title">קצת עלייך 👋</div>
+      <div class="setup-sub">נתאים לך משחקים ברמה שלך</div>
+    </div>
+    <div class="setup-body">
+      <div class="av-upload">
+        <div class="av-circle" id="avCircle" onclick="pickAvatar()">📷</div>
+        <div class="av-lbl">הוסף תמונה</div>
+      </div>
+      <div class="inp-group">
+        <label class="inp-lbl">שם פרטי</label>
+        <input class="inp" type="text" id="inp-name" placeholder="למשל: אבישי" />
+      </div>
+      <div class="inp-group">
+        <label class="inp-lbl">שם משפחה</label>
+        <input class="inp" type="text" id="inp-surname" placeholder="למשל: מ׳" />
+      </div>
+    </div>
+    <div class="setup-footer">
+      <button class="btn btn-green" onclick="goToQuiz()">המשך →</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 3: SKILL QUIZ                       -->
+<!-- =========================================== -->
+<div class="screen" id="scr-p2">
+  <!-- Quiz mode -->
+  <div id="quiz-mode">
+    <div class="quiz-hdr">
+      <div class="quiz-prog-bar">
+        <div class="quiz-prog-fill" id="quiz-prog-fill"></div>
+      </div>
+      <div class="quiz-prog-lbl" id="quiz-prog-lbl">שאלה 1 מתוך 12</div>
+      <div class="quiz-q" id="quiz-q"></div>
+      <div class="quiz-opts" id="quiz-opts"></div>
+    </div>
+    <div style="padding: 20px 24px; display:flex; gap:10px;">
+      <button class="btn btn-ghost" id="quiz-back-btn" onclick="quizBack()" style="flex:0;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg-card);font-size:18px;">←</button>
+      <button class="btn btn-green" id="quiz-next-btn" onclick="quizNext()" style="opacity:.4" disabled>הבא →</button>
+    </div>
+  </div>
+  <!-- Result mode -->
+  <div id="quiz-result" class="quiz-result">
+    <div class="qr-em">🎾</div>
+    <div class="qr-lbl">הרמה שלך היא</div>
+    <div class="qr-num" id="qr-num">3</div>
+    <div class="qr-name" id="qr-name">בינוני</div>
+    <div class="qr-desc" id="qr-desc">אתה שחקן שמבין את המשחק ומוכן לקחת אותו לשלב הבא 💪</div>
+    <button class="btn btn-green" onclick="goToLocations()" style="width:100%;">המשך לאפליקציה →</button>
+  </div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 4: LOCATION SELECT                  -->
+<!-- =========================================== -->
+<div class="screen" id="scr-p3">
+  <div class="setup-wrap">
+    <div class="setup-top">
+      <div class="setup-progress">
+        <div class="step-item">
+          <div class="step-circle done">✓</div>
+          <div class="step-lbl done">פרטים</div>
+        </div>
+        <div class="step-connector done"></div>
+        <div class="step-item">
+          <div class="step-circle done">✓</div>
+          <div class="step-lbl done">רמה</div>
+        </div>
+        <div class="step-connector done"></div>
+        <div class="step-item">
+          <div class="step-circle active">3</div>
+          <div class="step-lbl active">מיקום</div>
+        </div>
+      </div>
+      <div class="setup-title">איפה אתה משחק? 📍</div>
+      <div class="setup-sub">בחר כמה אזורים שרוצה — נמצא לך משחקים בכל האזורים</div>
+    </div>
+    <div class="setup-body">
+      <div class="loc-chips" id="loc-chips"></div>
+      <div class="radius-row">
+        <span>רדיוס נסיעה</span>
+        <span class="radius-val" id="radius-lbl">30 דק׳</span>
+      </div>
+      <input type="range" min="15" max="60" step="15" value="30" id="radius-range"
+        oninput="document.getElementById('radius-lbl').textContent=this.value+' דק׳'">
+    </div>
+    <div class="setup-footer">
+      <button class="btn btn-green" onclick="finishSetup()">סיום — קדימה לאפליקציה! 🎾</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 5: HOME                             -->
+<!-- =========================================== -->
+<div class="screen has-nav" id="scr-home">
+  <!-- Header -->
+  <div class="home-hdr">
+    <div class="home-logo">Rall<span class="lg">y</span></div>
+    <button class="notif-btn" onclick="showToast('3 התראות חדשות')">
+      🔔<div class="notif-dot"></div>
+    </button>
+  </div>
+
+  <!-- Emergency Banner -->
+  <div class="emg-banner" id="emg-banner">
+    <div class="emg-top">
+      <span class="emg-icon">⚡</span>
+      <span class="emg-title">דחוף — חסר שחקן במשחק הערב!</span>
+      <span class="emg-x" onclick="closeEmergency()">✕</span>
+    </div>
+    <div class="emg-detail">Smash Club ת"א · רמה 3 · 20:00 הערב · נשאר מקום 1 בלבד · ₪45</div>
+    <button class="emg-btn" onclick="handleJoin('emg')">⚡ הצטרף עכשיו</button>
+  </div>
+
+  <!-- Credibility Card -->
+  <div class="cred-card" onclick="openCredSheet()">
+    <div class="av av-52" style="background:var(--accent);">א</div>
+    <div class="cred-info">
+      <div class="cred-greeting">היי אבישי 👋</div>
+      <div class="cred-meta">
+        <span class="cred-lvl">🎾 רמה 3</span>
+        <span class="cred-score">🟠 אמין · 67/100</span>
+      </div>
+      <div class="cred-bar-bg">
+        <div class="cred-bar-fill" style="width:67%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Cards -->
+  <div class="action-grid">
+    <div class="act-card act-a" onclick="showScreen('scr-find')">
+      <div class="act-icon">🎾</div>
+      <div class="act-title">אני רוצה לשחק</div>
+      <div class="act-sub">מצא משחק עכשיו</div>
+    </div>
+    <div class="act-card act-b" onclick="showScreen('scr-add')">
+      <div class="act-icon">📍</div>
+      <div class="act-title">יש לי מגרש</div>
+      <div class="act-sub">פרסם מגרש פנוי</div>
+    </div>
+  </div>
+
+  <!-- Upcoming Games Section -->
+  <div class="sec-hdr">
+    <div class="sec-title">משחקים קרובים באזורך</div>
+    <div class="see-all" onclick="showScreen('scr-find')">כל המשחקים</div>
+  </div>
+
+  <div class="games-scroll" id="home-games-scroll"></div>
+
+  <div style="height:20px"></div>
+
+  <!-- Demo trigger -->
+  <button class="demo-trigger" onclick="triggerPostGame()">🧪 סמלץ סיום משחק (Demo)</button>
+
+  <!-- Google Forms feedback button -->
+  <div style="padding:12px 16px 4px;text-align:center;">
+    <a href="https://forms.gle/REPLACE_WITH_REAL_ID" target="_blank"
+      style="display:inline-flex;align-items:center;gap:6px;padding:9px 20px;
+             border-radius:20px;background:var(--bg-card);border:1.5px solid var(--border);
+             color:var(--text-2);font-size:13px;font-weight:500;text-decoration:none;
+             transition:all .15s;"
+      onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">
+      📋 עזרו לנו לשפר
+    </a>
+  </div>
+  <div style="height:16px"></div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 6: FIND GAME                        -->
+<!-- =========================================== -->
+<div class="screen has-nav" id="scr-find">
+  <div class="hdr">
+    <div class="hdr-title">משחקים פתוחים 🎾</div>
+    <button class="back-btn" onclick="showScreen('scr-home')">✕</button>
+  </div>
+
+  <div class="filter-row" id="filter-row">
+    <button class="fchip on" onclick="filterGames('הכל',this)">הכל</button>
+    <button class="fchip" onclick="filterGames('רמה 2',this)">רמה 2</button>
+    <button class="fchip" onclick="filterGames('רמה 3',this)">רמה 3</button>
+    <button class="fchip" onclick="filterGames('רמה 4',this)">רמה 4</button>
+    <button class="fchip" onclick="filterGames('עכשיו',this)">⚡ עכשיו</button>
+    <button class="fchip" onclick="filterGames('היום',this)">היום</button>
+    <button class="fchip" onclick="filterGames('מחר',this)">מחר</button>
+    <button class="fchip" onclick="filterGames('ראשל"צ',this)">ראשל&quot;צ</button>
+    <button class="fchip" onclick="filterGames('ת"א',this)">ת&quot;א</button>
+  </div>
+
+  <div class="games-list" id="find-games-list"></div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 7: ADD GAME                         -->
+<!-- =========================================== -->
+<div class="screen has-nav" id="scr-add">
+  <div class="hdr">
+    <div class="hdr-title">פרסם משחק 📋</div>
+    <button class="back-btn" onclick="showScreen('scr-home')">✕</button>
+  </div>
+  <div style="padding:24px;">
+    <div class="inp-group">
+      <label class="inp-lbl">שם המועדון</label>
+      <input class="inp" type="text" placeholder="למשל: Smash Club ת&quot;א" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="inp-group">
+        <label class="inp-lbl">תאריך</label>
+        <input class="inp" type="date" />
+      </div>
+      <div class="inp-group">
+        <label class="inp-lbl">שעה</label>
+        <input class="inp" type="time" value="18:00" />
+      </div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-lbl">כמה שחקנים חסרים?</label>
+      <div class="players-sel">
+        <button class="psel-btn sel" onclick="selectPlayers(this)">1</button>
+        <button class="psel-btn" onclick="selectPlayers(this)">2</button>
+        <button class="psel-btn" onclick="selectPlayers(this)">3</button>
+      </div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-lbl">רמה נדרשת</label>
+      <div class="level-sel">
+        <button class="lvl-btn" onclick="selectLevel(this)">1</button>
+        <button class="lvl-btn sel" onclick="selectLevel(this)">2</button>
+        <button class="lvl-btn" onclick="selectLevel(this)">3</button>
+        <button class="lvl-btn" onclick="selectLevel(this)">4</button>
+        <button class="lvl-btn" onclick="selectLevel(this)">5</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="inp-group">
+        <label class="inp-lbl">מחיר לשחקן</label>
+        <input class="inp" type="number" placeholder="₪45" />
+      </div>
+      <div class="inp-group">
+        <label class="inp-lbl">משך</label>
+        <input class="inp" type="text" placeholder="90 דק׳" />
+      </div>
+    </div>
+    <div class="inp-group">
+      <label class="inp-lbl">הערות (אופציונלי)</label>
+      <textarea class="inp" placeholder="מידע נוסף על המשחק..."></textarea>
+    </div>
+    <button class="btn btn-green" onclick="publishGame()">פרסם משחק 🚀</button>
+  </div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 8: MARKETPLACE                      -->
+<!-- =========================================== -->
+<div class="screen has-nav" id="scr-market">
+  <div class="hdr">
+    <div class="hdr-title">שוק המגרשים 🏟️</div>
+    <button class="back-btn" onclick="showScreen('scr-home')">✕</button>
+  </div>
+  <div class="mkt-sub">לא יכול להגיע? תעביר במקום לאבד 💸</div>
+  <div style="padding:0 16px;" id="market-list"></div>
+</div>
+
+<!-- =========================================== -->
+<!-- SCREEN 9: PLAYER PROFILE                   -->
+<!-- =========================================== -->
+<div class="screen has-nav" id="scr-profile">
+  <div class="prof-hero">
+    <div class="av av-90" style="background:var(--accent);margin:0 auto 16px;border:3px solid rgba(255,255,255,.3);">א</div>
+    <div class="prof-name">אבישי מנגיסטו</div>
+    <div class="prof-badges">
+      <span class="level-badge">🎾 רמה 3</span>
+      <span class="cred-badge-pill cb-amber">🟠 אמין 67/100</span>
+    </div>
+    <div class="prof-city">📍 ישראל</div>
+    <div class="prof-locs">
+      <span class="ploc">תל אביב</span>
+      <span class="ploc">פתח תקווה</span>
+      <span class="ploc">ראשון לציון</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-v">24</div>
+        <div class="stat-l">משחקים</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat-item">
+        <div class="stat-v">15</div>
+        <div class="stat-l">ניצחונות</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat-item">
+        <div class="stat-v">⭐ 4.8</div>
+        <div class="stat-l">דירוג</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="save-contact" onclick="showToast('📱 מספר נשמר לאנשי קשר!')">
+    📱 שמור מספר טלפון
+  </button>
+
+  <div class="hist-section">
+    <div class="hist-title">משחקים אחרונים</div>
+    <div class="hist-item">
+      <div class="hist-l">
+        <div class="hist-club">Smash Club ת"א</div>
+        <div class="hist-date">אתמול · 20:00</div>
+      </div>
+      <span class="res-w">ניצחון</span>
+    </div>
+    <div class="hist-item">
+      <div class="hist-l">
+        <div class="hist-club">Padel Pro ר"ג</div>
+        <div class="hist-date">28/05 · 18:00</div>
+      </div>
+      <span class="res-l">הפסד</span>
+    </div>
+    <div class="hist-item">
+      <div class="hist-l">
+        <div class="hist-club">Arena ראשל"צ</div>
+        <div class="hist-date">25/05 · 21:00</div>
+      </div>
+      <span class="res-w">ניצחון</span>
+    </div>
+    <div class="hist-item">
+      <div class="hist-l">
+        <div class="hist-club">Smash Club ת"א</div>
+        <div class="hist-date">22/05 · 19:30</div>
+      </div>
+      <span class="res-w">ניצחון</span>
+    </div>
+    <div class="hist-item">
+      <div class="hist-l">
+        <div class="hist-club">City Padel חולון</div>
+        <div class="hist-date">20/05 · 17:00</div>
+      </div>
+      <span class="res-l">הפסד</span>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================== -->
+<!-- POST-GAME SCREENS                          -->
+<!-- =========================================== -->
+
+<!-- PG-1: Game Ended -->
+<div class="screen" id="scr-pg-ended">
+  <div class="pg-ball">🎾</div>
+  <div class="pg-title">המשחק הסתיים!</div>
+  <div class="pg-sub">Arena ראשל"צ · היום · 21:00</div>
+  <button class="btn btn-green" onclick="showScreen('scr-pg-chat')" style="width:calc(100% - 64px);">
+    דרג את המשחק →
+  </button>
+</div>
+
+<!-- PG-2: Group Chat -->
+<div class="screen" id="scr-pg-chat">
+  <div class="chat-hdr">
+    <div class="chat-title">קבוצת Arena ראשל"צ · היום</div>
+    <div class="chat-players-row">
+      <div class="chat-av" style="background:#22C55E">א</div>
+      <div class="chat-av" style="background:#3B82F6">ד</div>
+      <div class="chat-av" style="background:#F59E0B">י</div>
+      <div class="chat-av" style="background:#EC4899">מ</div>
+      <span class="chat-badge">4 שחקנים</span>
+    </div>
+  </div>
+
+  <div class="chat-msgs" id="chat-msgs"></div>
+
+  <div class="chat-actions-bar">
+    <button class="chat-rate-btn" onclick="showScreen('scr-pg-rating')">דרג שחקנים ★</button>
+  </div>
+
+  <div class="chat-input-row">
+    <button class="csend" onclick="sendChatMsg()">↑</button>
+    <input class="cinput" id="chat-input" placeholder="כתוב הודעה..." />
+  </div>
+</div>
+
+<!-- PG-3: Rate Players -->
+<div class="screen" id="scr-pg-rating">
+  <div class="rating-inner">
+    <div class="rating-prog-bar">
+      <div class="rating-prog-fill" id="r-prog-fill"></div>
+    </div>
+    <div class="rating-prog-lbl" id="r-prog-lbl">דירגת 0 מתוך 3 שחקנים</div>
+
+    <div id="rating-cards"></div>
+
+    <button class="finish-btn disabled" id="finish-rating-btn" onclick="finishRating()">
+      דרג את כל השחקנים
+    </button>
+  </div>
+</div>
+
+<!-- PG-4: Summary -->
+<div class="screen" id="scr-pg-summary">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="sum-check" style="position:relative;z-index:10;">✅</div>
+  <div class="sum-title" style="position:relative;z-index:10;">תודה!</div>
+  <div class="sum-sub" style="position:relative;z-index:10;">הדירוג שלך נשמר</div>
+  <div class="sum-avs" style="position:relative;z-index:10;">
+    <div class="sum-av" style="background:#3B82F6">ד</div>
+    <div class="sum-av" style="background:#F59E0B">י</div>
+    <div class="sum-av" style="background:#EC4899">מ</div>
+  </div>
+  <div class="points-box" style="position:relative;z-index:10;">
+    <div class="points-v">+12</div>
+    <div class="points-l">נקודות אמינות לפרופיל שלך 🌟</div>
+  </div>
+  <button class="btn btn-green" onclick="backToHome()" style="width:calc(100% - 0px);position:relative;z-index:10;">
+    חזור לאפליקציה 🎾
+  </button>
+</div>
+
+<!-- =========================================== -->
+<!-- BOTTOM NAV                                 -->
+<!-- =========================================== -->
+<nav class="bnav" id="bnav">
+  <div class="ntab active" id="ntab-home" onclick="navTo('scr-home','ntab-home')">
+    <div class="ntab-icon">🏠</div>
+    <div>בית</div>
+  </div>
+  <div class="ntab" id="ntab-find" onclick="navTo('scr-find','ntab-find')">
+    <div class="ntab-icon">🔍</div>
+    <div>חיפוש</div>
+  </div>
+  <div class="ntab-fab" onclick="navTo('scr-add','ntab-add')">
+    <div class="fab-circle">+</div>
+    <div class="fab-lbl">פרסם</div>
+  </div>
+  <div class="ntab" id="ntab-profile" onclick="navTo('scr-profile','ntab-profile')">
+    <div class="ntab-icon">👤</div>
+    <div>פרופיל</div>
+  </div>
+</nav>
+
+<!-- =========================================== -->
+<!-- BOTTOM SHEET OVERLAY                       -->
+<!-- =========================================== -->
+<div class="bso" id="bso" onclick="closeBso(event)">
+  <!-- Phone sheet -->
+  <div class="bsheet" id="bsheet-phone" style="display:none">
+    <div class="bsheet-handle bsheet-handle-dark"></div>
+    <div class="bsheet-title">📱 <span id="bsheet-pname">שחקן</span> רוצה לשמור איתך קשר?</div>
+    <div class="bsheet-phone" id="bsheet-pnum">050-000-0000</div>
+    <div class="bsheet-btns">
+      <button class="btn btn-green btn-sm" onclick="saveContact()">שמור לאנשי קשר</button>
+      <button class="btn btn-outline-green btn-sm" onclick="closeBso()">סגור</button>
+    </div>
+  </div>
+
+  <!-- Cred sheet -->
+  <div class="bsheet bsheet-navy" id="bsheet-cred" style="display:none">
+    <div class="bsheet-handle"></div>
+    <div class="bsheet-title bsheet-title-w">💚 ציון האמינות שלך</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:16px;line-height:1.6;">
+      ציון האמינות מראה לשחקנים אחרים כמה אפשר לסמוך עליך.
+    </div>
+    <div class="cred-sheet-item">✓ מסיים משחקים — <span style="color:var(--accent)">+5 נק׳</span></div>
+    <div class="cred-sheet-item">✓ מדרג שחקנים — <span style="color:var(--accent)">+3 נק׳</span></div>
+    <div class="cred-sheet-item">✓ מקבל דירוגים טובים — <span style="color:var(--accent)">+2 נק׳</span></div>
+    <div class="cred-sheet-divider"></div>
+    <div class="cred-sheet-item">✗ מבטל בשעה האחרונה — <span style="color:#EF4444">-10 נק׳</span></div>
+    <div class="cred-sheet-item">✗ לא מגיע למשחק — <span style="color:#EF4444">-5 נק׳</span></div>
+    <div class="cred-sheet-divider"></div>
+    <div class="cred-sheet-score">67 / 100</div>
+    <div class="cred-sheet-score-lbl" style="margin-bottom:20px;">הציון שלך כרגע — 🟠 אמין</div>
+    <button class="btn btn-green" onclick="closeBso()">סגור</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- =========================================== -->
+<!-- JAVASCRIPT                                 -->
+<!-- =========================================== -->
+<script>
+'use strict';
+
+// =============================================
+//  MOCK DATA
+// =============================================
+const COLORS = ['#22C55E','#3B82F6','#F59E0B','#EC4899','#8B5CF6','#EF4444','#06B6D4','#F97316'];
+
+const GAMES = [
+  {
+    id:1, club:'Smash Club ת"א', city:'תל אביב',
+    time:'היום · 19:00–20:30', level:3, dist:'12 דק׳ נסיעה',
+    players:[{n:'ד',c:'#3B82F6'},{n:'י',c:'#F59E0B'},{n:'מ',c:'#EC4899'}],
+    missing:1, price:'₪45', urgent:false, type:'today',
+    poster:{n:'ד', c:'#3B82F6', name:'דניאל כ׳'}
+  },
+  {
+    id:2, club:'Arena ראשל"צ', city:'ראשון לציון',
+    time:'היום · 21:00–22:30', level:3, dist:'18 דק׳ נסיעה',
+    players:[{n:'ד',c:'#3B82F6'},{n:'י',c:'#F59E0B'}],
+    missing:2, price:'₪40', urgent:false, type:'today',
+    poster:{n:'ד', c:'#3B82F6', name:'דניאל כ׳'}
+  },
+  {
+    id:3, club:'Padel Pro ר"ג', city:'רמת גן',
+    time:'מחר · 07:30–09:00', level:4, dist:'9 דק׳ נסיעה',
+    players:[{n:'ר',c:'#8B5CF6'},{n:'נ',c:'#06B6D4'},{n:'ש',c:'#F97316'}],
+    missing:1, price:'₪55', urgent:false, type:'tomorrow',
+    poster:{n:'ר', c:'#8B5CF6', name:'רון מ׳'}
+  },
+  {
+    id:4, club:'City Padel רחובות', city:'רחובות',
+    time:'מחר · 12:00–13:30', level:2, dist:'25 דק׳ נסיעה',
+    players:[{n:'ל',c:'#EC4899'}],
+    missing:3, price:'₪35', urgent:false, type:'tomorrow',
+    poster:{n:'ל', c:'#EC4899', name:'לירון א׳'}
+  },
+  {
+    id:5, club:'Pro Arena פ"ת', city:'פתח תקווה',
+    time:'היום · 17:00–18:30', level:2, dist:'22 דק׳ נסיעה',
+    players:[{n:'ב',c:'#EF4444'},{n:'כ',c:'#22C55E'}],
+    missing:2, price:'₪38', urgent:true, type:'today',
+    poster:{n:'ב', c:'#EF4444', name:'בן ג׳'}
+  }
+];
+
+const MARKET_COURTS = [
+  {
+    id:1, club:'Smash Club ת"א', city:'תל אביב',
+    time:'היום · 20:00–21:30', level:3, price:'₪120',
+    seller:{ name:'דניאל כ׳', rating:'⭐ 4.9 · 24 משחקים', av:'ד', color:'#3B82F6' }
+  },
+  {
+    id:2, club:'Padel Pro ר"ג', city:'רמת גן',
+    time:'מחר · 08:00–09:30', level:4, price:'₪160',
+    seller:{ name:'יוסי ל׳', rating:'⭐ 4.7 · 31 משחקים', av:'י', color:'#F59E0B' }
+  },
+  {
+    id:3, club:'Arena ראשל"צ', city:'ראשון לציון',
+    time:'מחר · 18:00–19:30', level:2, price:'₪90',
+    seller:{ name:'מיכל א׳', rating:'⭐ 5.0 · 18 משחקים', av:'מ', color:'#EC4899' }
+  }
+];
+
+const CITIES = [
+  'תל אביב','רמת גן','גבעתיים','פתח תקווה','ראשון לציון',
+  'חולון','בת ים','הרצליה','רעננה','נתניה',
+  'חיפה','ירושלים','אשדוד','באר שבע','מודיעין','ראש העין'
+];
+
+const QUIZ_Q = [
+  { q:'החזרה מהכיר (Forehand) — עד כמה ההחזרה שלך יציבה?',
+    opts:['✅ מעולה — שולט לגמרי','🟢 טוב — ברוב המקרים','🟡 בינוני — עובד עלי לפעמים','🔴 צריך לשפר — עדיין מתקשה'] },
+  { q:'החזרה מהגב (Backhand) — עד כמה ההחזרה שלך בטוחה?',
+    opts:['✅ מעולה','🟢 טוב','🟡 בינוני','🔴 צריך לשפר'] },
+  { q:'בנדחה (Bandeja) — האם אתה שולט בבנדחה מהאזור הגבוה?',
+    opts:['✅ שולט לגמרי','🟢 ברוב המקרים','🟡 לפעמים','🔴 עדיין לא'] },
+  { q:'ויבורה (Vibora) — האם אתה מסוגל לבצע ויבורה בביטחון?',
+    opts:['✅ בהחלט','🟢 בדרך כלל','🟡 לפעמים','🔴 בקושי'] },
+  { q:'משחק ברשת — האם אתה מרגיש בנוח ליד הרשת?',
+    opts:['✅ מאוד','🟢 כן','🟡 פחות','🔴 לא ממש'] },
+  { q:'וולי (Volley) — עד כמה אתה מדויק בוולי?',
+    opts:['✅ מדויק מאוד','🟢 ברוב הפעמים','🟡 לפעמים','🔴 מתקשה'] },
+  { q:'לוב (Lob) — האם אתה יודע מתי ואיך לשחק לוב?',
+    opts:['✅ ידיעה מלאה','🟢 ברוב המקרים','🟡 בסיסי','🔴 לא בטוח'] },
+  { q:'סמש (Smash) — האם אתה מסוגל לבצע סמש בעצמה ובדיוק?',
+    opts:['✅ כן, בכיף','🟢 בדרך כלל','🟡 לפעמים','🔴 עדיין לא'] },
+  { q:'מיקום במגרש — האם אתה יודע לנוע ולהתמצא טקטית?',
+    opts:['✅ ידיעה טקטית מלאה','🟢 ברוב הפעמים','🟡 בסיסי','🔴 אני עובד על זה'] },
+  { q:'משחק בשתיים — עד כמה אתה עובד טוב עם פרטנר?',
+    opts:['✅ שיתוף פעולה מצוין','🟢 טוב','🟡 בסיסי','🔴 קשה לי'] },
+  { q:'מנטליות תחת לחץ — האם אתה נשאר קר ראש בנקודות מכריעות?',
+    opts:['✅ תמיד','🟢 בדרך כלל','🟡 לפעמים','🔴 אני מחמיץ לחץ'] },
+  { q:'ניסיון כללי — כמה שנים אתה משחק פאדל?',
+    opts:['✅ יותר מ-5 שנים','🟢 3-5 שנים','🟡 1-2 שנים','🔴 פחות משנה'] }
+];
+
+const LEVEL_NAMES = ['מתחיל','בסיסי','בינוני','מתקדם','פרו'];
+const LEVEL_DESCS = [
+  'אתה בתחילת הדרך — כל צעד קדימה הוא ניצחון. ב-Rally נמצא לך שחקנים שיעזרו לך להתפתח 🌱',
+  'אתה מבין את הבסיס ומוכן להתקדם. שחקנים ברמה שלך מחכים לך! 💪',
+  'אתה שחקן שמבין את המשחק ומוכן לקחת אותו לשלב הבא. לא קל ולא בסיסי — בדיוק כמו שצריך 🎯',
+  'אתה שחקן מתקדם שמבין טקטיקה ומשחק בצוות. כיף לשחק מולך! 🔥',
+  'פרו. נגמרה האנרגיה של הפרטנר שלך לפני שנגמרה שלך. כבוד 🏆'
+];
+
+const RATE_PLAYERS = [
+  { name:'דניאל כ׳', level:'רמה 3', phone:'050-123-4567', av:'ד', color:'#3B82F6' },
+  { name:'יוסי ל׳',  level:'רמה 3', phone:'052-987-6543', av:'י', color:'#F59E0B' },
+  { name:'מיכל א׳', level:'רמה 2', phone:'054-456-7890', av:'מ', color:'#EC4899' }
+];
+
+// =============================================
+//  QUIZ STATE
+// =============================================
+let quizIdx = 0;
+let quizAnswers = new Array(12).fill(null);
+let quizScores  = [4,3,2,1]; // per option
+
+// =============================================
+//  RATING STATE
+// =============================================
+let ratingStars = [0,0,0];
+let ratedCount  = 0;
+
+// =============================================
+//  SCREEN NAVIGATION
+// =============================================
+const NAV_SCREENS = ['scr-home','scr-find','scr-add','scr-market','scr-profile'];
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const scr = document.getElementById(id);
+  if (scr) scr.classList.add('active');
+
+  const bnav = document.getElementById('bnav');
+  if (NAV_SCREENS.includes(id)) {
+    bnav.classList.add('on');
+  } else {
+    bnav.classList.remove('on');
+  }
+
+  // Scroll to top
+  if (scr) scr.scrollTop = 0;
+
+  // Trigger confetti if going to summary
+  if (id === 'scr-pg-summary') {
+    setTimeout(launchConfetti, 300);
+  }
+}
+
+function navTo(screenId, tabId) {
+  showScreen(screenId);
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+  const tab = document.getElementById(tabId);
+  if (tab) tab.classList.add('active');
+}
+
+// =============================================
+//  ONBOARDING FLOW
+// =============================================
+function startOnboarding() { showScreen('scr-p1'); }
+
+function skipToHome() {
+  showScreen('scr-home');
+  document.getElementById('bnav').classList.add('on');
+  document.getElementById('ntab-home').classList.add('active');
+}
+
+function pickAvatar() {
+  const circle = document.getElementById('avCircle');
+  circle.textContent = '😎';
+  circle.classList.add('has-av');
+  showToast('תמונה נבחרה!');
+}
+
+function goToQuiz() {
+  showScreen('scr-p2');
+  quizIdx = 0;
+  quizAnswers = new Array(12).fill(null);
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-mode').style.display = 'block';
+  renderQuizQ();
+}
+
+function renderQuizQ() {
+  const q = QUIZ_Q[quizIdx];
+  const pct = ((quizIdx) / 12 * 100).toFixed(0);
+  document.getElementById('quiz-prog-fill').style.width = pct + '%';
+  document.getElementById('quiz-prog-lbl').textContent = `שאלה ${quizIdx + 1} מתוך 12`;
+  document.getElementById('quiz-q').textContent = q.q;
+
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const parts = opt.split(' — ');
+    const em  = parts[0];
+    const txt = parts[1] || parts[0];
+    const div = document.createElement('div');
+    div.className = 'qopt' + (quizAnswers[quizIdx] === i ? ' sel' : '');
+    div.innerHTML = `<span class="qopt-em">${em}</span><span class="qopt-txt">${txt}</span>`;
+    div.onclick = () => selectQuizOpt(i);
+    opts.appendChild(div);
+  });
+
+  const nextBtn = document.getElementById('quiz-next-btn');
+  const backBtn = document.getElementById('quiz-back-btn');
+  if (quizAnswers[quizIdx] !== null) {
+    nextBtn.style.opacity = '1'; nextBtn.disabled = false;
+  } else {
+    nextBtn.style.opacity = '.4'; nextBtn.disabled = true;
+  }
+  backBtn.style.opacity = quizIdx === 0 ? '.3' : '1';
+  backBtn.disabled = quizIdx === 0;
+}
+
+function selectQuizOpt(i) {
+  quizAnswers[quizIdx] = i;
+  renderQuizQ();
+}
+
+function quizNext() {
+  if (quizAnswers[quizIdx] === null) return;
+  if (quizIdx < 11) {
+    quizIdx++;
+    renderQuizQ();
+  } else {
+    showQuizResult();
+  }
+}
+
+function quizBack() {
+  if (quizIdx > 0) { quizIdx--; renderQuizQ(); }
+}
+
+function showQuizResult() {
+  let score = 0;
+  quizAnswers.forEach(a => { if (a !== null) score += quizScores[a]; });
+  let level;
+  if      (score <= 18) level = 1;
+  else if (score <= 28) level = 2;
+  else if (score <= 36) level = 3;
+  else if (score <= 43) level = 4;
+  else                  level = 5;
+
+  document.getElementById('qr-num').textContent  = level;
+  document.getElementById('qr-name').textContent  = LEVEL_NAMES[level-1];
+  document.getElementById('qr-desc').textContent  = LEVEL_DESCS[level-1];
+  document.getElementById('quiz-mode').style.display   = 'none';
+  const res = document.getElementById('quiz-result');
+  res.style.display = 'flex';
+  document.getElementById('quiz-prog-fill').style.width = '100%';
+  document.getElementById('quiz-prog-lbl').textContent = 'הושלם! 🎉';
+}
+
+function goToLocations() { showScreen('scr-p3'); renderLocChips(); }
+
+function renderLocChips() {
+  const container = document.getElementById('loc-chips');
+  container.innerHTML = '';
+  const selected = ['תל אביב','פתח תקווה','ראשון לציון'];
+  CITIES.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'lchip' + (selected.includes(c) ? ' sel' : '');
+    chip.textContent = c;
+    chip.onclick = () => chip.classList.toggle('sel');
+    container.appendChild(chip);
+  });
+}
+
+function finishSetup() {
+  skipToHome();
+  showToast('ברוך הבא ל-Rally! 🎾');
+}
+
+// =============================================
+//  HOME SCREEN — GAME CARDS
+// =============================================
+function renderHomeGames() {
+  const container = document.getElementById('home-games-scroll');
+  container.innerHTML = '';
+  GAMES.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'gc-h';
+    card.onclick = () => handleJoin(g.id);
+
+    let playersHTML = '';
+    g.players.forEach(p => {
+      playersHTML += `<div class="pdot" style="background:${p.c}">${p.n}</div>`;
+    });
+    for (let i = 0; i < g.missing; i++) {
+      playersHTML += `<div class="pdot pdot-empty"></div>`;
+    }
+
+    const missingLabel = g.missing === 1 ? 'חסר 1' : `חסרים ${g.missing}`;
+    const missingStyle = g.missing === 1
+      ? 'background:#FFF0EB;color:#C0392B;border:1px solid #FF6B35;border-radius:12px;padding:3px 8px;font-size:11px;font-weight:700;'
+      : 'background:var(--accent-lt);color:var(--accent-dk);border:1px solid var(--accent);border-radius:12px;padding:3px 8px;font-size:11px;font-weight:700;';
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="gc-club">${g.urgent ? '⚡ ' : ''}${g.club}</div>
+        <span style="${missingStyle}">${missingLabel}</span>
+      </div>
+      <div class="gc-time">📍 ${g.city} · ${g.dist}</div>
+      <div class="gc-time">🕐 ${g.time}</div>
+      <div class="gc-tags" style="margin-top:8px;">
+        <span class="tag tag-green">רמה ${g.level}</span>
+        ${g.price ? `<span class="tag">${g.price}/שחקן</span>` : ''}
+      </div>
+      <div class="gc-players">
+        ${playersHTML}
+      </div>
+      <button class="join-btn" style="background:var(--accent);color:white;font-weight:700;">הצטרף →</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// =============================================
+//  FIND GAME SCREEN
+// =============================================
+function renderFindGames(filter) {
+  const container = document.getElementById('find-games-list');
+  container.innerHTML = '';
+
+  // Show skeleton briefly
+  for (let i = 0; i < 2; i++) {
+    container.innerHTML += `
+      <div class="skel-card">
+        <div class="skel skel-line" style="width:70%;height:18px;margin-bottom:12px"></div>
+        <div class="skel skel-line" style="width:50%;height:13px;margin-bottom:20px"></div>
+        <div style="display:flex;gap:8px;margin-bottom:20px">
+          <div class="skel skel-circle" style="width:36px;height:36px"></div>
+          <div class="skel skel-circle" style="width:36px;height:36px"></div>
+          <div class="skel skel-circle" style="width:36px;height:36px"></div>
+        </div>
+        <div class="skel skel-line" style="width:100%;height:40px;border-radius:10px"></div>
+      </div>`;
+  }
+
+  setTimeout(() => {
+    container.innerHTML = '';
+    let games = GAMES;
+    if (filter && filter !== 'הכל') {
+      if (filter.startsWith('רמה')) {
+        const lvl = parseInt(filter.split(' ')[1]);
+        games = games.filter(g => g.level === lvl);
+      } else if (filter === 'עכשיו' || filter === 'היום') {
+        games = games.filter(g => g.type === 'today');
+      } else if (filter === 'מחר') {
+        games = games.filter(g => g.type === 'tomorrow');
+      } else if (filter.includes('ראשל"צ') || filter.includes('ראשל')) {
+        games = games.filter(g => g.city === 'ראשון לציון');
+      } else if (filter.includes('ת"א')) {
+        games = games.filter(g => g.city === 'תל אביב');
+      }
+    }
+
+    if (games.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:48px;margin-bottom:16px">🎾</div>
+          <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px">אין משחקים עכשיו</div>
+          <div style="font-size:14px;color:var(--text-2)">נסה פילטר אחר או פרסם משחק משלך</div>
+        </div>`;
+      return;
+    }
+
+    games.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'gc-v';
+      card.onclick = () => handleJoin(g.id);
+
+      let playersHTML = '';
+      g.players.forEach(p => {
+        playersHTML += `<div class="pdot av-28" style="background:${p.c}">${p.n}</div>`;
+      });
+      for (let i = 0; i < g.missing; i++) {
+        playersHTML += `<div class="pdot pdot-empty av-28"></div>`;
+      }
+
+      const missingBadgeClass = g.missing === 1 ? 'tag-orange' : 'tag';
+      card.innerHTML = `
+        <div class="gc-v-hdr">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="av av-36" style="background:${g.poster.c};flex-shrink:0;">${g.poster.n}</div>
+            <div>
+              <div class="gc-v-club">${g.urgent ? '⚡ ' : ''}${g.club}</div>
+              <div style="font-size:12px;color:var(--text-2);margin-top:2px;">פתח: ${g.poster.name} · 📍 ${g.city}</div>
+            </div>
+          </div>
+          <div class="gc-price">${g.price}</div>
+        </div>
+        <div class="gc-v-row" style="margin-top:10px;">
+          <span class="tag">🕐 ${g.time}</span>
+          <span class="tag tag-green">רמה ${g.level}</span>
+          <span class="tag ${missingBadgeClass}" style="font-weight:700;">חסר ${g.missing}</span>
+        </div>
+        <div class="gc-v-players" style="margin-bottom:12px;margin-top:8px;">
+          ${playersHTML}
+          <span class="gc-missing" style="margin-right:6px;">${g.players.length}/${g.players.length + g.missing} שחקנים</span>
+        </div>
+        <button class="join-btn" onclick="event.stopPropagation();handleJoin(${g.id})">
+          הצטרף למשחק →
+        </button>
+      `;
+      container.appendChild(card);
+    });
+  }, 500);
+}
+
+function filterGames(filter, btn) {
+  document.querySelectorAll('.fchip').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  renderFindGames(filter);
+}
+
+// =============================================
+//  MARKETPLACE
+// =============================================
+function renderMarket() {
+  const container = document.getElementById('market-list');
+  container.innerHTML = '';
+  MARKET_COURTS.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'mkt-card';
+    card.innerHTML = `
+      <div class="mkt-price">${c.price}</div>
+      <div style="padding-left:80px">
+        <div class="gc-v-club">${c.club}</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:2px">${c.city}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <span class="tag">📅 ${c.time}</span>
+        <span class="tag tag-green">רמה ${c.level}</span>
+      </div>
+      <div class="mkt-seller">
+        <div class="av av-36" style="background:${c.seller.color}">${c.seller.av}</div>
+        <div class="seller-inf">
+          <div class="seller-name">${c.seller.name}</div>
+          <div class="seller-rating">${c.seller.rating}</div>
+        </div>
+      </div>
+      <button class="buy-btn" onclick="buyCard(${c.id})">קנה מגרש 💳</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function buyCard(id) {
+  showToast('✅ הבקשה נשלחה! ממתין לאישור המוכר');
+}
+
+// =============================================
+//  ACTIONS
+// =============================================
+function handleJoin(id) {
+  showToast('✅ הצטרפת למשחק! הפרטים נשלחו ל-WhatsApp');
+}
+
+function closeEmergency() {
+  const el = document.getElementById('emg-banner');
+  el.style.display = 'none';
+}
+
+function publishGame() {
+  showToast('🎾 המשחק פורסם בהצלחה!');
+  setTimeout(() => showScreen('scr-home'), 1200);
+}
+
+function selectPlayers(btn) {
+  document.querySelectorAll('.psel-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function selectLevel(btn) {
+  document.querySelectorAll('.lvl-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+// =============================================
+//  POST-GAME FLOW
+// =============================================
+function triggerPostGame() {
+  showScreen('scr-pg-ended');
+  renderChatMessages();
+  renderRatingCards();
+}
+
+function renderChatMessages() {
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML = '';
+
+  const chatData = [
+    { type:'sys', text:'🎾 המשחק הסתיים! איך היה? שתפו...' },
+    { type:'other', name:'דניאל כ׳', av:'ד', color:'#3B82F6', text:'כיף היה! תודה לכולם 🙏', time:'21:38' },
+    { type:'other', name:'יוסי ל׳',  av:'י', color:'#F59E0B', text:'ממש נהניתי, נעשה שוב!', time:'21:39' },
+    { type:'me', name:'אתה', text:'+1 היה מעולה 🔥', time:'21:40' },
+    { type:'other', name:'מיכל א׳', av:'מ', color:'#EC4899', text:'תודה לכולם, שיחקתם יפה 💪', time:'21:41' }
+  ];
+
+  chatData.forEach(m => {
+    const el = document.createElement('div');
+    if (m.type === 'sys') {
+      el.className = 'cmsg-sys'; el.textContent = m.text;
+    } else if (m.type === 'me') {
+      el.className = 'cmsg me';
+      el.innerHTML = `
+        <div class="cmsg-col" style="align-items:flex-end">
+          <div class="cmsg-name">${m.name}</div>
+          <div class="cbubble">${m.text}</div>
+          <div class="cmsg-time">${m.time}</div>
+        </div>`;
+    } else {
+      el.className = 'cmsg';
+      el.innerHTML = `
+        <div class="av av-28" style="background:${m.color}">${m.av}</div>
+        <div class="cmsg-col">
+          <div class="cmsg-name">${m.name}</div>
+          <div class="cbubble">${m.text}</div>
+          <div class="cmsg-time">${m.time}</div>
+        </div>`;
+    }
+    msgs.appendChild(el);
+  });
+
+  setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 100);
+}
+
+function sendChatMsg() {
+  const inp = document.getElementById('chat-input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const msgs = document.getElementById('chat-msgs');
+  const el = document.createElement('div');
+  el.className = 'cmsg me';
+  const now = new Date();
+  const t = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  el.innerHTML = `
+    <div class="cmsg-col" style="align-items:flex-end">
+      <div class="cmsg-name">אתה</div>
+      <div class="cbubble">${txt}</div>
+      <div class="cmsg-time">${t}</div>
+    </div>`;
+  msgs.appendChild(el);
+  inp.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// =============================================
+//  RATING
+// =============================================
+function renderRatingCards() {
+  ratingStars = [0,0,0];
+  ratedCount  = 0;
+  const container = document.getElementById('rating-cards');
+  container.innerHTML = '';
+
+  RATE_PLAYERS.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'rp-card';
+    card.id = `rp-card-${idx}`;
+
+    let starsHTML = '';
+    for (let s = 1; s <= 5; s++) {
+      starsHTML += `<span class="star" data-idx="${idx}" data-star="${s}" onclick="rateStar(${idx},${s})">⭐</span>`;
+    }
+
+    card.innerHTML = `
+      <div class="rp-check">✓</div>
+      <div class="av av-80" style="background:${p.color};margin:0 auto 14px">${p.av}</div>
+      <div class="rp-name">${p.name}</div>
+      <div class="rp-lvl">${p.level}</div>
+      <div class="stars-row" id="stars-${idx}">${starsHTML}</div>
+      <button class="add-phone-btn" onclick="openPhoneSheet(${idx})">📱 הוסף מספר טלפון</button>
+    `;
+    container.appendChild(card);
+  });
+
+  updateRatingProgress();
+}
+
+function rateStar(playerIdx, starVal) {
+  const wasRated = ratingStars[playerIdx] > 0;
+  ratingStars[playerIdx] = starVal;
+
+  // Update stars display
+  const starsContainer = document.getElementById(`stars-${playerIdx}`);
+  starsContainer.querySelectorAll('.star').forEach(s => {
+    const sv = parseInt(s.dataset.star);
+    s.classList.toggle('on', sv <= starVal);
+  });
+
+  // Mark card as rated
+  const card = document.getElementById(`rp-card-${playerIdx}`);
+  if (!wasRated) {
+    ratedCount++;
+    card.classList.add('rated');
+  }
+
+  updateRatingProgress();
+}
+
+function updateRatingProgress() {
+  const fill = document.getElementById('r-prog-fill');
+  const lbl  = document.getElementById('r-prog-lbl');
+  const btn  = document.getElementById('finish-rating-btn');
+  const pct  = (ratedCount / 3 * 100).toFixed(0);
+  fill.style.width = pct + '%';
+  lbl.textContent  = `דירגת ${ratedCount} מתוך 3 שחקנים`;
+
+  if (ratedCount === 3) {
+    btn.className = 'finish-btn enabled';
+    btn.textContent = 'סיים וחזור →';
+  } else {
+    btn.className = 'finish-btn disabled';
+    btn.textContent = 'דרג את כל השחקנים';
+  }
+}
+
+function finishRating() {
+  if (ratedCount < 3) return;
+  showScreen('scr-pg-summary');
+}
+
+function backToHome() {
+  showScreen('scr-home');
+  document.getElementById('bnav').classList.add('on');
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ntab-home').classList.add('active');
+}
+
+// =============================================
+//  PHONE SHEET
+// =============================================
+function openPhoneSheet(idx) {
+  const p = RATE_PLAYERS[idx];
+  document.getElementById('bsheet-pname').textContent = p.name;
+  document.getElementById('bsheet-pnum').textContent  = p.phone;
+  document.getElementById('bsheet-phone').style.display = 'block';
+  document.getElementById('bsheet-cred').style.display  = 'none';
+  document.getElementById('bso').classList.add('open');
+}
+
+function openCredSheet() {
+  document.getElementById('bsheet-phone').style.display = 'none';
+  document.getElementById('bsheet-cred').style.display  = 'block';
+  document.getElementById('bso').classList.add('open');
+}
+
+function closeBso(e) {
+  if (!e || e.target === document.getElementById('bso')) {
+    document.getElementById('bso').classList.remove('open');
+  }
+}
+
+function saveContact() {
+  closeBso();
+  showToast('📱 נשמר לאנשי קשר!');
+}
+
+// =============================================
+//  TOAST
+// =============================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// =============================================
+//  CONFETTI
+// =============================================
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+
+  const pieces = [];
+  const colors = ['#22C55E','#3B82F6','#F59E0B','#EC4899','#8B5CF6','#FFFFFF','#FFF176'];
+
+  for (let i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rot: Math.random() * 360,
+      rots: (Math.random() - 0.5) * 6,
+      vy: Math.random() * 4 + 2,
+      vx: (Math.random() - 0.5) * 2
+    });
+  }
+
+  let frame;
+  let tick = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y  += p.vy;
+      p.x  += p.vx;
+      p.rot += p.rots;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - tick / 180);
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    tick++;
+    if (tick < 200) {
+      frame = requestAnimationFrame(draw);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      cancelAnimationFrame(frame);
+    }
+  }
+
+  draw();
+}
+
+// =============================================
+//  INIT
+// =============================================
+function init() {
+  renderHomeGames();
+  renderFindGames('הכל');
+  renderMarket();
+}
+
+// Start
+document.addEventListener('DOMContentLoaded', init);
+init();
+</script>
+</div><!-- /app -->
+</body>
+</html>
