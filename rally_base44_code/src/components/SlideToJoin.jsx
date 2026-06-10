@@ -19,7 +19,7 @@ export default function SlideToJoin({ matchId, label = 'החלק להצטרפו�
     if (x.get() <= -maxDrag * 0.75) {
       animate(x, -maxDrag, { type: 'spring', stiffness: 400, damping: 40 });
       setDone(true);
-      toast.success('הצטרפת למשחק! 🎾', { description: 'נשלחה הודעה לשאר השחקנים' });
+      toast.success('הצטרפת למשחק!', { description: 'נשלחה הודעה לשאר השחקנים' });
       onJoin?.(matchId);
     } else {
       animate(x, 0, { type: 'spring', stiffness: 400, damping: 40 });

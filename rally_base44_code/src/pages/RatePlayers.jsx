@@ -154,7 +154,7 @@ export default function RatePlayers() {
     <span className={`inline-flex items-center gap-1.5 text-[12px] font-bold rounded-full px-3 py-1 ${
       margin.type === 'close' ? 'bg-gold-soft text-[#8a6d3b]' : margin.won ? 'bg-brand-softer text-brand' : 'bg-muted text-muted-foreground'
     }`}>
-      {margin.type === 'close' ? '🔥' : margin.won ? '🏆' : '🎯'} {margin.label} · {sets.filter(s => s.us + s.them > 0).map(s => `${s.us}-${s.them}`).join(', ')}
+      {margin.label} · {sets.filter(s => s.us + s.them > 0).map(s => `${s.us}-${s.them}`).join(', ')}
     </span>
   );
 
@@ -180,7 +180,7 @@ export default function RatePlayers() {
           {/* ---- Score entry ---- */}
           {phase === 'score' && (
             <motion.div key="score" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={spring} className="pt-4">
-              <h2 className="font-display text-[24px] font-black leading-snug mb-1">מה הייתה התוצאה? 🎾</h2>
+              <h2 className="font-display text-[24px] font-black leading-snug mb-1">מה הייתה התוצאה?</h2>
               <p className="text-[13.5px] text-muted-foreground mb-6">
                 התוצאה מעדכנת את דירוג ה-Rally שלך — והשאלות שתקבל מותאמות לאיך שהמשחק באמת נראה
               </p>
@@ -233,7 +233,6 @@ export default function RatePlayers() {
                     <div className="font-bold text-[15px]">{player.full_name}</div>
                     <LevelTag level={player.level} size="xs" />
                   </div>
-                  <div className="text-[24px]">{question.emoji}</div>
                 </div>
 
                 <h2 className="font-display text-[21px] font-black leading-snug mb-5">{question.text}</h2>
@@ -262,7 +261,7 @@ export default function RatePlayers() {
           {phase === 'diag' && (
             <motion.div key="diag" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={spring} className="pt-3">
               <div className="mb-4">{marginChip}</div>
-              <h2 className="font-display text-[22px] font-black leading-snug mb-1">{diagnostic.emoji} {diagnostic.text}</h2>
+              <h2 className="font-display text-[22px] font-black leading-snug mb-1">{diagnostic.text}</h2>
               <p className="text-[13px] text-muted-foreground mb-5">תשובה אחת — זה מה שהופך את הדירוג לחכם</p>
 
               <div className="space-y-2.5">
@@ -287,7 +286,7 @@ export default function RatePlayers() {
           {/* ---- Fair-play (shared quick question) ---- */}
           {phase === 'fair' && (
             <motion.div key="fp" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={spring} className="pt-4">
-              <h2 className="font-display text-[22px] font-black leading-snug mb-1">{FAIRPLAY_QUESTION.emoji} {FAIRPLAY_QUESTION.text}</h2>
+              <h2 className="font-display text-[22px] font-black leading-snug mb-1">{FAIRPLAY_QUESTION.text}</h2>
               <p className="text-[13px] text-muted-foreground mb-6">תשובה מהירה על כל אחד</p>
 
               <div className="space-y-3 mb-8">
@@ -297,18 +296,18 @@ export default function RatePlayers() {
                     <span className="font-bold text-[14px] flex-1 truncate">{player.full_name}</span>
                     <div className="flex gap-1.5">
                       {[
-                        { v: 'yes', e: '😍', t: 'בכיף' },
-                        { v: 'maybe', e: '🤷', t: 'אולי' },
-                        { v: 'no', e: '🙅', t: 'לא' },
+                        { v: 'yes', t: 'בכיף' },
+                        { v: 'maybe', t: 'אולי' },
+                        { v: 'no', t: 'לא' },
                       ].map(opt => (
                         <button
                           key={opt.v}
                           onClick={() => setFairplay(f => ({ ...f, [rateeId]: opt.v }))}
-                          className={`px-2.5 py-1.5 rounded-xl border-2 text-[12px] transition-all active:scale-95 ${
-                            fairplay[rateeId] === opt.v ? 'border-brand bg-brand-softer font-bold' : 'border-border bg-card'
+                          className={`px-3 py-1.5 rounded-xl border-2 text-[12.5px] font-medium transition-all active:scale-95 ${
+                            fairplay[rateeId] === opt.v ? 'border-brand bg-brand-softer font-bold text-brand' : 'border-border bg-card'
                           }`}
                         >
-                          {opt.e} {opt.t}
+                          {opt.t}
                         </button>
                       ))}
                     </div>
@@ -329,7 +328,11 @@ export default function RatePlayers() {
           {/* ---- Summary: rating delta + improvement schema ---- */}
           {phase === 'done' && (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ ...spring, delay: 0.1 }} className="pt-8 text-center">
-              <div className="text-[52px] mb-3">{ratingResult?.delta >= 0 ? '📈' : '📉'}</div>
+              <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${
+                ratingResult?.delta >= 0 ? 'bg-brand-softer text-brand' : 'bg-muted text-muted-foreground'
+              }`}>
+                {ratingResult?.delta >= 0 ? <TrendingUp size={28} strokeWidth={2.2} /> : <TrendingDown size={28} strokeWidth={2.2} />}
+              </div>
               <h2 className="font-display text-[26px] font-black mb-2">הדירוג נקלט!</h2>
 
               {/* Rating delta — the result actually moved the number */}

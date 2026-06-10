@@ -26,12 +26,12 @@ export default function Profile() {
     <div className="pb-28 min-h-screen">
       {/* Hero */}
       <div className="bg-brand-gradient ring-gold px-5 pt-6 pb-16 rounded-b-[32px] shadow-luxe relative overflow-hidden">
+        {/* soft champagne glow instead of a grid texture */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
+            background:
+              'radial-gradient(80% 60% at 15% 0%, hsl(41 55% 70% / 0.14) 0%, transparent 60%)',
           }}
         />
         <div className="relative z-10">

@@ -37,7 +37,13 @@ export default function SkillRadar({ current, previous, ratersCount, windowLabel
       <div dir="ltr" className="-mx-2">
         <ResponsiveContainer width="100%" height={250}>
           <RadarChart data={data} outerRadius="72%">
-            <PolarGrid stroke="hsl(var(--border))" />
+            <defs>
+              <linearGradient id="skillRadarFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="hsl(var(--gold))" stopOpacity={0.5} />
+                <stop offset="100%" stopColor="hsl(var(--brand))" stopOpacity={0.3} />
+              </linearGradient>
+            </defs>
+            <PolarGrid stroke="hsl(var(--border))" strokeOpacity={0.7} />
             <PolarAngleAxis
               dataKey="axis"
               tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))', fontWeight: 600 }}
@@ -47,15 +53,15 @@ export default function SkillRadar({ current, previous, ratersCount, windowLabel
               dataKey="previous"
               stroke="hsl(var(--gold))"
               strokeDasharray="4 4"
-              fill="hsl(var(--gold))"
-              fillOpacity={0.08}
+              strokeOpacity={0.8}
+              fill="none"
             />
             <Radar
               dataKey="current"
               stroke="hsl(var(--brand))"
-              strokeWidth={2}
-              fill="hsl(var(--brand))"
-              fillOpacity={0.28}
+              strokeWidth={2.5}
+              fill="url(#skillRadarFill)"
+              dot={{ r: 3, fill: 'hsl(var(--brand))', strokeWidth: 0 }}
             />
           </RadarChart>
         </ResponsiveContainer>
@@ -76,7 +82,7 @@ export default function SkillRadar({ current, previous, ratersCount, windowLabel
           <Zap size={16} className="text-brand mt-0.5 flex-shrink-0" />
           <div>
             <div className="text-[13px] font-bold text-brand">
-              הנשק שלך: {SKILL_AXES[strongest.key].emoji} {strongest.axis} ({strongest.current})
+              הנשק שלך: {strongest.axis} ({strongest.current})
             </div>
           </div>
         </div>
@@ -84,7 +90,7 @@ export default function SkillRadar({ current, previous, ratersCount, windowLabel
           <Target size={16} className="text-[#8a6d3b] mt-0.5 flex-shrink-0" />
           <div>
             <div className="text-[13px] font-bold text-[#8a6d3b] mb-0.5">
-              הכי שווה לעבוד על: {SKILL_AXES[weakest.key].emoji} {weakest.axis} ({weakest.current})
+              הכי שווה לעבוד על: {weakest.axis} ({weakest.current})
             </div>
             <p className="text-[12px] text-[#8a6d3b]/80 leading-relaxed">{INSIGHTS[weakest.key]}</p>
           </div>

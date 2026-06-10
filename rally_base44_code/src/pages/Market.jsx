@@ -36,11 +36,10 @@ export default function Market() {
       {/* Header */}
       <div className="bg-brand-gradient ring-gold px-5 pt-6 pb-7 rounded-b-[32px] shadow-luxe relative overflow-hidden">
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
+            background:
+              'radial-gradient(80% 60% at 15% 0%, hsl(41 55% 70% / 0.14) 0%, transparent 60%)',
           }}
         />
         <div className="relative z-10">
@@ -111,7 +110,7 @@ function ListingCard({ listing }) {
     : 0;
 
   const buy = () =>
-    toast.success(isTransfer ? 'בקשה נשלחה למוכר 🎾' : 'המגרש נתפס!', {
+    toast.success(isTransfer ? 'בקשה נשלחה למוכר' : 'המגרש נתפס!', {
       description: `${listing.club_name} · ${formatMatchTime(listing.start_time)}`,
     });
 
@@ -180,7 +179,7 @@ function SellSheet({ open, onClose }) {
   const [price, setPrice] = useState('');
 
   const submit = () => {
-    toast.success('המגרש פורסם בשוק! 🎾', {
+    toast.success('המגרש פורסם בשוק!', {
       description: 'נודיע לך ברגע שמישהו ירצה לתפוס אותו',
     });
     onClose();

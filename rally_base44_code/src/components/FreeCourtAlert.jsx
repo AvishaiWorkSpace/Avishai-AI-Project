@@ -45,7 +45,7 @@ export default function FreeCourtAlert() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
               </span>
-              <span className="text-[12.5px] font-black text-white flex-1">מגרש התפנה ליד שלך! 🎾</span>
+              <span className="text-[12.5px] font-black text-white flex-1">מגרש התפנה ליד שלך</span>
               <button onClick={() => setShow(false)} className="text-white/80 active:scale-90" aria-label="סגור">
                 <X size={16} />
               </button>

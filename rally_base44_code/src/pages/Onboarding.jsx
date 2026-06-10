@@ -6,6 +6,7 @@ import { ArrowRight, Hand, MapPin, Car, Sparkles } from 'lucide-react';
 import { CLUBS } from '@/data/mockData';
 import { QUIZ_QUESTIONS, scoreQuiz } from '@/data/levelQuiz';
 import LevelTag from '@/components/LevelTag';
+import { RallyMark } from '@/components/RallyLogo';
 
 const CITIES = [
   'תל אביב', 'רמת גן', 'גבעתיים', 'הרצליה', 'רעננה', 'כפר סבא',
@@ -175,7 +176,7 @@ export default function Onboarding() {
           {/* ---------- PROFILE STEPS ---------- */}
           {phase === 'profile' && profileStep === 0 && (
             <motion.div key="p0" {...stepAnim}>
-              <h2 className="font-display text-[26px] font-black mb-1">נעים להכיר 👋</h2>
+              <h2 className="font-display text-[26px] font-black mb-1">נעים להכיר</h2>
               <p className="text-[14px] text-muted-foreground mb-6">איך קוראים לך?</p>
               <div className="space-y-3 mb-6">
                 <input
@@ -246,7 +247,9 @@ export default function Onboarding() {
               <div className="grid grid-cols-2 gap-3">
                 {['ימין', 'שמאל'].map(h => (
                   <OptionCard key={h} selected={form.hand === h || pendingChoice === h} onClick={() => pick({ hand: h })} className="text-center py-8">
-                    <div className="text-[40px] mb-2">{h === 'ימין' ? '🫱' : '🫲'}</div>
+                    <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-brand-softer text-brand">
+                      <Hand size={30} strokeWidth={1.6} className={h === 'שמאל' ? '-scale-x-100' : ''} />
+                    </div>
                     <div className="font-bold text-[16px]">{h}</div>
                   </OptionCard>
                 ))}
@@ -256,7 +259,7 @@ export default function Onboarding() {
 
           {phase === 'profile' && profileStep === 3 && (
             <motion.div key="p3" {...stepAnim}>
-              <h2 className="font-display text-[26px] font-black mb-1">איזה צד אתה אוהב? 🎾</h2>
+              <h2 className="font-display text-[26px] font-black mb-1">איזה צד אתה אוהב?</h2>
               <p className="text-[14px] text-muted-foreground mb-6">הצד שלך במגרש</p>
               <div className="space-y-3">
                 {[
@@ -315,7 +318,7 @@ export default function Onboarding() {
           {/* ---------- QUIZ INTRO ---------- */}
           {phase === 'quiz-intro' && (
             <motion.div key="qi" {...stepAnim} className="pt-10 text-center">
-              <div className="text-[56px] mb-4">🎯</div>
+              <div className="mb-5 flex justify-center text-brand"><RallyMark size={72} /></div>
               <h2 className="font-display text-[28px] font-black mb-3">בוא נכייל את הרמה שלך</h2>
               <p className="text-[15px] text-muted-foreground leading-relaxed mb-2 px-2">
                 12 שאלות קצרות על המשחק שלך — בלי תשובות נכונות, רק כנות.
@@ -341,7 +344,7 @@ export default function Onboarding() {
                   שאלה {quizStep + 1} מתוך {QUIZ_QUESTIONS.length}
                 </div>
                 <h2 className="font-display text-[24px] font-black mb-6 leading-snug">
-                  <span className="ml-2">{q.emoji}</span>{q.title}
+                  {q.title}
                 </h2>
                 <div className="space-y-2.5">
                   {q.options.map((opt, i) => {
@@ -417,7 +420,7 @@ export default function Onboarding() {
                 onClick={finish}
                 className="w-full h-[54px] rounded-2xl bg-brand text-white font-bold text-[16px] shadow-lg active:scale-[0.98] transition-all"
               >
-                יאללה, למגרש 🎾
+                יאללה, למגרש
               </button>
             </motion.div>
           )}

@@ -18,11 +18,10 @@ export default function RatingExplained() {
       {/* Header */}
       <div className="bg-brand-gradient ring-gold px-5 pt-5 pb-8 rounded-b-[32px] shadow-luxe relative overflow-hidden">
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
+            background:
+              'radial-gradient(80% 60% at 15% 0%, hsl(41 55% 70% / 0.14) 0%, transparent 60%)',
           }}
         />
         <div className="relative z-10">

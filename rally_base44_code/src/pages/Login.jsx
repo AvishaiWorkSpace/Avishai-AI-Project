@@ -83,7 +83,7 @@ export default function Login() {
         {/* Brand */}
         <div className="text-center mb-2">
           <div className="inline-flex items-center gap-2 text-[11px] tracking-wide bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-6">
-            🎾 קהילת הפאדל הישראלית
+            קהילת הפאדל הישראלית
           </div>
           <h1 className="mb-4">
             <RallyLogo mark={76} text={26} underline={false} />

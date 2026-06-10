@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Zap, ChevronLeft, Users, Star } from 'lucide-react';
+import { Bell, Zap, ChevronLeft, Users, Star, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import MatchCard from '@/components/MatchCard';
@@ -8,15 +8,15 @@ import SlideToJoin from '@/components/SlideToJoin';
 import LevelTag from '@/components/LevelTag';
 import RacketHero from '@/components/RacketHero';
 import ThemeToggle from '@/components/ThemeToggle';
-import { BellIcon } from '@/components/icons';
+import { BellIcon, BallIcon, CourtIcon, TrophyIcon, LevelUpIcon, SearchIcon } from '@/components/icons';
 import RallyLogo from '@/components/RallyLogo';
 import FreeCourtAlert from '@/components/FreeCourtAlert';
 
 const QUICK_ACTIONS = [
-  { label: 'הזמן מגרש', to: '/book-court', color: 'bg-brand', emoji: '🎾' },
-  { label: 'שפר משחק', to: '/leaderboard', color: 'bg-gold', emoji: '⭐' },
-  { label: 'תחרות', to: '/tournaments', color: 'bg-brand', emoji: '🏆' },
-  { label: 'מצא משחק', to: '/find', color: 'bg-sage', emoji: '🔍' },
+  { label: 'הזמן מגרש', to: '/book-court', color: 'bg-brand text-white', Icon: CourtIcon },
+  { label: 'שפר משחק', to: '/leaderboard', color: 'bg-gold text-brand-deep', Icon: LevelUpIcon },
+  { label: 'תחרות', to: '/tournaments', color: 'bg-brand text-white', Icon: TrophyIcon },
+  { label: 'מצא משחק', to: '/find', color: 'bg-sage text-white', Icon: SearchIcon },
 ];
 
 const COMPAT = {
@@ -113,11 +113,11 @@ export default function Home() {
       {/* Quick Actions */}
       <div className="px-5 mb-6">
         <div className="grid grid-cols-4 gap-3">
-          {QUICK_ACTIONS.map(({ label, to, color, emoji }) => (
+          {QUICK_ACTIONS.map(({ label, to, color, Icon }) => (
             <Link key={to} to={to}
               className="flex flex-col items-center gap-2 active:scale-90 transition-transform">
-              <div className={`w-14 h-14 rounded-full ${color} flex items-center justify-center shadow-lg text-2xl`}>
-                {emoji}
+              <div className={`w-14 h-14 rounded-full ${color} flex items-center justify-center shadow-lg`}>
+                <Icon size={24} strokeWidth={1.8} />
               </div>
               <span className="text-[11px] font-bold text-center leading-tight text-foreground">{label}</span>
             </Link>
@@ -153,8 +153,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="px-3 py-2.5 flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">🎾 {club.courts_count || 3} מגרשים</span>
-                  <span className="flex items-center gap-1">⏰ {club.hours || '07:00–22:00'}</span>
+                  <span className="flex items-center gap-1"><BallIcon size={13} strokeWidth={2} /> {club.courts_count || 3} מגרשים</span>
+                  <span className="flex items-center gap-1"><Clock size={12} /> {club.hours || '07:00–22:00'}</span>
                 </div>
               </div>
             ))}
@@ -208,13 +208,13 @@ export default function Home() {
               </div>
               <div className="flex gap-2.5 mb-4">
                 {[
-                  { icon: '🎾', count: matches.filter(m=>m.level?.startsWith('B')).length || 1 },
-                  { icon: '🏆', count: matches.filter(m=>m.level?.startsWith('A')).length || 5 },
-                  { icon: '👥', count: matches.length || 7 },
-                ].map((item, i) => (
+                  { Icon: BallIcon, count: matches.filter(m=>m.level?.startsWith('B')).length || 1 },
+                  { Icon: TrophyIcon, count: matches.filter(m=>m.level?.startsWith('A')).length || 5 },
+                  { Icon: Users, count: matches.length || 7 },
+                ].map(({ Icon, count }, i) => (
                   <div key={i} className="flex-1 flex items-center gap-2 bg-bgWarm rounded-xl px-3 py-2.5 cursor-pointer active:scale-95 transition-transform">
-                    <span>{item.icon}</span>
-                    <span className="font-display text-[18px] font-black">{item.count}</span>
+                    <Icon size={17} strokeWidth={1.8} className="text-brand" />
+                    <span className="font-display text-[18px] font-black">{count}</span>
                     <ChevronLeft size={12} className="text-muted-foreground mr-auto" />
                   </div>
                 ))}

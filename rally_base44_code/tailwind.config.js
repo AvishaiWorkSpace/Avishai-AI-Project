@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['Frank Ruhl Libre', 'serif'],
-        body: ['Assistant', 'Heebo', 'system-ui', 'sans-serif'],
+        display: ['Chillax', 'Rubik', 'system-ui', 'sans-serif'],
+        body: ['Chillax', 'Rubik', 'Assistant', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',

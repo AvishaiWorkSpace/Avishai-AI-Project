@@ -17,7 +17,7 @@ export default function Notifications() {
       id: 'n_free_court',
       hero: true,
       icon: Zap,
-      title: 'מגרש התפנה ליד שלך! 🎾',
+      title: 'מגרש התפנה ליד שלך',
       body: `${urgent.club_name} · ${formatMatchTime(urgent.start_time)} · ₪${urgent.price} במקום ₪${urgent.original_price}`,
       time: 'לפני 2 דק׳',
       unread: true,
@@ -36,7 +36,7 @@ export default function Notifications() {
     {
       id: 'n_rating_up',
       icon: TrendingUp,
-      title: 'הדירוג שלך מטפס 📈',
+      title: 'הדירוג שלך מטפס',
       body: 'עלית 3 מקומות בדירוג הארצי השבוע — אתה במגמה הכי טובה שלך',
       time: 'אתמול',
       unread: false,
@@ -63,7 +63,7 @@ export default function Notifications() {
     {
       id: 'n_market',
       icon: Tag,
-      title: 'המגרש שפרסמת נמכר ✅',
+      title: 'המגרש שפרסמת נמכר',
       body: 'הכסף בדרך אליך — ₪120 על מגרש 3 בפאדל פוינט',
       time: 'לפני 3 ימים',
       unread: false,

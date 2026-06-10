@@ -138,6 +138,17 @@ export function SparkIcon(props) {
   );
 }
 
+// "Improve your game" — a rating line climbing, ball at the peak.
+export function LevelUpIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M4.2 16.8 L9.4 11.6 L13 14.6 L19.8 7.4" />
+      <path d="M15.4 7.2 H19.9 V11.7" />
+      <circle cx="9.4" cy="11.6" r="1.5" fill={GOLD} stroke="none" />
+    </Svg>
+  );
+}
+
 export function SearchIcon(props) {
   return (
     <Svg {...props}>
