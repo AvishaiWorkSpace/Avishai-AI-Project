@@ -184,6 +184,96 @@ export function reliabilityLabel(pct) {
   return { text: 'ראשוני', tone: 'low' };
 }
 
+// ============================================================================
+// Match result → rating loop
+// ============================================================================
+
+// Classify how one-sided a match was from its set scores.
+// sets: [{ us, them }] in games, e.g. [{us:6,them:4},{us:7,them:6}]
+// The margin drives which peer-question bank raters get — a tight match asks
+// about clutch points, a blowout asks what created the gap.
+export function classifyMargin(sets) {
+  const played = sets.filter(s => s.us + s.them > 0);
+  if (!played.length) return null;
+
+  const usGames = played.reduce((n, s) => n + s.us, 0);
+  const themGames = played.reduce((n, s) => n + s.them, 0);
+  const usSets = played.filter(s => s.us > s.them).length;
+  const themSets = played.length - usSets;
+  const won = usSets > themSets;
+  const diff = Math.abs(usGames - themGames);
+  const hadTiebreak = played.some(s => Math.min(s.us, s.them) >= 6);
+
+  let type = 'normal';
+  if (hadTiebreak || diff <= 2) type = 'close';
+  else if (diff >= 6) type = 'blowout';
+
+  const label =
+    type === 'close' ? 'משחק צמוד' :
+    type === 'blowout' ? (won ? 'ניצחון מוחץ' : 'הפסד כבד') :
+    won ? 'ניצחון' : 'הפסד';
+
+  return { type, won, label, usGames, themGames, usSets, themSets, diff };
+}
+
+// Apply one match result to the current user's rating profile.
+// opponents: [{ rally_rating, rd? }] — the two players across the net.
+// Returns { before, after, delta, level } and persists nothing (caller decides).
+export function applyMatchResult(profile, opponents, won) {
+  const before = {
+    rating: profile.rating ?? DEFAULT.rating,
+    rd: profile.rd ?? 120,
+    vol: profile.vol ?? DEFAULT.vol,
+  };
+  const results = opponents.map(o => ({
+    rating: o.rally_rating ?? o.rating ?? 1500,
+    rd: o.rd ?? 100,
+    score: won ? 1 : 0,
+  }));
+  const after = glicko2Update(before, results);
+  return {
+    before: before.rating,
+    after: after.rating,
+    delta: after.rating - before.rating,
+    rd: after.rd,
+    vol: after.vol,
+    level: ratingToLevel(after.rating),
+  };
+}
+
+// ---- localStorage persistence for the demo (until the real backend) ----
+const HISTORY_KEY = 'rally_rating_history';
+
+export function loadRatingProfile(fallback) {
+  try {
+    const user = JSON.parse(localStorage.getItem('rally_user') || '{}');
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null');
+    return {
+      rating: user.rally_rating ?? fallback.rating,
+      rd: user.rally_rd ?? fallback.rd,
+      vol: user.rally_vol ?? fallback.vol,
+      history: history ?? fallback.history,
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+export function saveRatingResult(result) {
+  try {
+    const user = JSON.parse(localStorage.getItem('rally_user') || '{}');
+    user.rally_rating = result.after;
+    user.rally_rd = result.rd;
+    user.rally_vol = result.vol;
+    user.level = result.level.code;
+    localStorage.setItem('rally_user', JSON.stringify(user));
+
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    history.push({ rating: result.after, at: Date.now() });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch { /* demo mode: never block the flow on storage */ }
+}
+
 // Worked reference examples used in the explanation screen.
 export const RELIABILITY_EXAMPLES = [
   // 20 games vs 18 different opponents → very reliable

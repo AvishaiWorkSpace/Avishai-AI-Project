@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Phone, Loader2 } from 'lucide-react';
+import RallyLogo from '@/components/RallyLogo';
 
 // Provider logos inline — no network dependency, crisp at any size.
 function GoogleLogo({ size = 20 }) {
@@ -84,7 +85,9 @@ export default function Login() {
           <div className="inline-flex items-center gap-2 text-[11px] tracking-wide bg-white/10 border border-white/15 rounded-full px-3 py-1 mb-6">
             🎾 קהילת הפאדל הישראלית
           </div>
-          <h1 className="font-display text-[64px] font-black leading-none mb-3">Rally</h1>
+          <h1 className="mb-4">
+            <RallyLogo mark={76} text={26} underline={false} />
+          </h1>
           <p className="font-display text-[22px] font-bold text-[hsl(var(--gold-light))]">שחק. תתחבר. תשתפר.</p>
         </div>
 

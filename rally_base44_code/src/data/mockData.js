@@ -149,9 +149,10 @@ export const LEADERBOARD_PLAYERS = [
 
 // Peer-feedback axis history for the current user (0–100 per axis).
 // previous = the window before last; current = latest aggregated window.
+// Axes match SKILL_AXES in peerQuestions.js (the 6-dimension radar).
 export const PEER_AXES_HISTORY = {
-  previous: { attack: 54, defense: 63, brain: 49, spirit: 88 },
-  current: { attack: 61, defense: 65, brain: 58, spirit: 92 },
+  previous: { net: 55, smash: 48, wall: 62, tactics: 50, positioning: 57, consistency: 63 },
+  current: { net: 62, smash: 51, wall: 64, tactics: 58, positioning: 60, consistency: 66 },
   raters_count: 9,
   window_label: 'מאז 5 המשחקים האחרונים',
 };

@@ -98,7 +98,10 @@ export default function Onboarding() {
   };
 
   // Select with a brief highlight before auto-advancing.
+  // pendingChoice doubles as a lock: ignore clicks while an advance is mid-flight,
+  // otherwise a fast double-tap queues two advances and skips (or overruns) a step.
   const pick = (patch, advance = true) => {
+    if (pendingChoice !== null) return;
     set(patch);
     if (!advance) return;
     setPendingChoice(Object.values(patch)[0]);
@@ -106,13 +109,17 @@ export default function Onboarding() {
   };
 
   const answerQuiz = optionIdx => {
+    if (pendingChoice !== null) return;
     const q = QUIZ_QUESTIONS[quizStep];
     setAnswers(a => ({ ...a, [q.id]: optionIdx }));
     setPendingChoice(`${q.id}:${optionIdx}`);
     setTimeout(() => {
       setPendingChoice(null);
-      if (quizStep < QUIZ_QUESTIONS.length - 1) setQuizStep(s => s + 1);
-      else setPhase('result');
+      setQuizStep(s => {
+        if (s < QUIZ_QUESTIONS.length - 1) return s + 1;
+        setPhase('result');
+        return s;
+      });
     }, 380);
   };
 
@@ -327,7 +334,7 @@ export default function Onboarding() {
 
           {/* ---------- QUIZ ---------- */}
           {phase === 'quiz' && (() => {
-            const q = QUIZ_QUESTIONS[quizStep];
+            const q = QUIZ_QUESTIONS[Math.min(quizStep, QUIZ_QUESTIONS.length - 1)];
             return (
               <motion.div key={`q${quizStep}`} {...stepAnim}>
                 <div className="text-[12px] font-bold text-[hsl(var(--gold-deep))] mb-2 tracking-wide">

@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { BadgeCheck, TrendingUp, Trophy, ChevronLeft, Users2, Sparkles, Info } from 'lucide-react';
-import { RATING_PROFILE } from '@/data/mockData';
+import { RATING_PROFILE, PEER_AXES_HISTORY } from '@/data/mockData';
 import { reliability, ratingToLevel, levelProgress, levelRange, reliabilityLabel, LEVELS } from '@/lib/rating';
 import ReliabilityRing from '@/components/ReliabilityRing';
+import SkillRadar from '@/components/SkillRadar';
 import Sparkline from '@/components/Sparkline';
 import LevelTag from '@/components/LevelTag';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -112,6 +113,16 @@ export default function Profile() {
             <Sparkline data={p.history} />
           </div>
         </div>
+      </div>
+
+      {/* Skill radar — what peers actually see on court */}
+      <div className="px-5 mt-4">
+        <SkillRadar
+          current={PEER_AXES_HISTORY.current}
+          previous={PEER_AXES_HISTORY.previous}
+          ratersCount={PEER_AXES_HISTORY.raters_count}
+          windowLabel={PEER_AXES_HISTORY.window_label}
+        />
       </div>
 
       {/* Reliability card */}

@@ -1,4 +1,7 @@
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Toaster } from "@/components/ui/toaster"
+import SplashScreen from '@/components/SplashScreen';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -118,6 +121,7 @@ const AuthenticatedApp = () => {
 };
 
 function App() {
+  const [booted, setBooted] = useState(false);
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
@@ -126,6 +130,9 @@ function App() {
           <AuthenticatedApp />
         </Router>
         <Toaster />
+        <AnimatePresence>
+          {!booted && <SplashScreen onDone={() => setBooted(true)} />}
+        </AnimatePresence>
       </QueryClientProvider>
     </AuthProvider>
   )

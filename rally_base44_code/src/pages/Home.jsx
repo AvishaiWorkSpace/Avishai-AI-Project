@@ -9,6 +9,8 @@ import LevelTag from '@/components/LevelTag';
 import RacketHero from '@/components/RacketHero';
 import ThemeToggle from '@/components/ThemeToggle';
 import { BellIcon } from '@/components/icons';
+import RallyLogo from '@/components/RallyLogo';
+import FreeCourtAlert from '@/components/FreeCourtAlert';
 
 const QUICK_ACTIONS = [
   { label: 'הזמן מגרש', to: '/book-court', color: 'bg-brand', emoji: '🎾' },
@@ -63,9 +65,10 @@ export default function Home() {
 
   return (
     <div className="pb-28 bg-background">
+      <FreeCourtAlert />
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-4">
-        <span className="font-display text-[28px] font-black text-brand leading-none">Rally</span>
+        <RallyLogo layout="horizontal" mark={26} text={17} className="text-brand" />
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button onClick={() => navigate('/notifications')}
