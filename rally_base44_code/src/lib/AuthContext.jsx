@@ -1,22 +1,20 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { DEFAULT_USER } from '@/data/mockData';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Offline/dev mode: seed a user into localStorage so the app behaves
-  // as if onboarding already completed.
+  // A user exists once onboarding completed (rally_user written by the
+  // Onboarding result screen). New visitors go through /login → /onboarding.
   useEffect(() => {
-    if (!localStorage.getItem('rally_user')) {
-      localStorage.setItem('rally_user', JSON.stringify(DEFAULT_USER));
-    }
+    setIsAuthenticated(!!localStorage.getItem('rally_user'));
     setIsLoadingAuth(false);
   }, []);
 
   const value = {
-    isAuthenticated: true,
+    isAuthenticated,
     isLoadingAuth,
     isLoadingPublicSettings: false,
     authError: null,

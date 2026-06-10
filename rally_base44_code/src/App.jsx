@@ -49,7 +49,7 @@ function HomeOrOnboarding() {
   const { isAuthenticated, isLoadingAuth } = useAuth();
   if (isLoadingAuth) return null;
   if (isAuthenticated || localStorage.getItem('rally_user')) return <Home />;
-  return <Navigate to="/onboarding" replace />;
+  return <Navigate to="/login" replace />;
 }
 
 const AuthenticatedApp = () => {

@@ -16,14 +16,14 @@ export const CLUBS = [
 ];
 
 export const PLAYERS = [
-  { id: 'p1', full_name: 'דניאל כהן', level: 'B1', city: 'תל אביב', avatar_url: face('1507003211169-0a1dd7228f2d'), rally_rating: 1820, verified: true, preferred_hand: 'ימין', games_played: 47 },
-  { id: 'p2', full_name: 'נועה לוי', level: 'B2', city: 'הרצליה', avatar_url: face('1494790108377-be9c29b29330'), rally_rating: 1710, verified: true, preferred_hand: 'שמאל', games_played: 32 },
-  { id: 'p3', full_name: 'יותם אברהם', level: 'A2', city: 'תל אביב', avatar_url: face('1500648767791-00dcc994a43e'), rally_rating: 1990, verified: true, preferred_hand: 'ימין', games_played: 88 },
-  { id: 'p4', full_name: 'שירה פרידמן', level: 'C1', city: 'רעננה', avatar_url: face('1438761681033-6461ffad8d80'), rally_rating: 1540, verified: false, preferred_hand: 'ימין', games_played: 18 },
-  { id: 'p5', full_name: 'איתי מזרחי', level: 'B1', city: 'ראשון לציון', avatar_url: face('1633332755192-727a05c4013d'), rally_rating: 1795, verified: true, preferred_hand: 'ימין', games_played: 54 },
-  { id: 'p6', full_name: 'מאיה גולן', level: 'B2', city: 'תל אביב', avatar_url: face('1534528741775-53994a69daeb'), rally_rating: 1680, verified: true, preferred_hand: 'שמאל', games_played: 29 },
-  { id: 'p7', full_name: 'עומר שלום', level: 'A1', city: 'הרצליה', avatar_url: face('1506794778202-cad84cf45f1d'), rally_rating: 2080, verified: true, preferred_hand: 'ימין', games_played: 120 },
-  { id: 'p8', full_name: 'טל בן דוד', level: 'C1', city: 'נתניה', avatar_url: face('1539571696357-5a69c17a67c6'), rally_rating: 1510, verified: false, preferred_hand: 'ימין', games_played: 12 },
+  { id: 'p1', full_name: 'דניאל כהן', level: 'B1', city: 'תל אביב', avatar_url: face('1507003211169-0a1dd7228f2d'), rally_rating: 1820, verified: true, preferred_hand: 'ימין', games_played: 47, phone: '052-8431176' },
+  { id: 'p2', full_name: 'נועה לוי', level: 'B2', city: 'הרצליה', avatar_url: face('1494790108377-be9c29b29330'), rally_rating: 1710, verified: true, preferred_hand: 'שמאל', games_played: 32, phone: '054-7209348' },
+  { id: 'p3', full_name: 'יותם אברהם', level: 'A2', city: 'תל אביב', avatar_url: face('1500648767791-00dcc994a43e'), rally_rating: 1990, verified: true, preferred_hand: 'ימין', games_played: 88, phone: '050-3318622' },
+  { id: 'p4', full_name: 'שירה פרידמן', level: 'C1', city: 'רעננה', avatar_url: face('1438761681033-6461ffad8d80'), rally_rating: 1540, verified: false, preferred_hand: 'ימין', games_played: 18, phone: '053-6627491' },
+  { id: 'p5', full_name: 'איתי מזרחי', level: 'B1', city: 'ראשון לציון', avatar_url: face('1633332755192-727a05c4013d'), rally_rating: 1795, verified: true, preferred_hand: 'ימין', games_played: 54, phone: '058-5104836' },
+  { id: 'p6', full_name: 'מאיה גולן', level: 'B2', city: 'תל אביב', avatar_url: face('1534528741775-53994a69daeb'), rally_rating: 1680, verified: true, preferred_hand: 'שמאל', games_played: 29, phone: '052-9947210' },
+  { id: 'p7', full_name: 'עומר שלום', level: 'A1', city: 'הרצליה', avatar_url: face('1506794778202-cad84cf45f1d'), rally_rating: 2080, verified: true, preferred_hand: 'ימין', games_played: 120, phone: '050-2275983' },
+  { id: 'p8', full_name: 'טל בן דוד', level: 'C1', city: 'נתניה', avatar_url: face('1539571696357-5a69c17a67c6'), rally_rating: 1510, verified: false, preferred_hand: 'ימין', games_played: 12, phone: '054-8812057' },
 ];
 
 // helper to build matches relative to "now"
@@ -73,6 +73,88 @@ export const MATCHES = [
     court_type: 'מקורה', match_type: 'תחרותי',
   },
 ];
+
+// A match that just ended — drives the post-match rating demo flow.
+// The current user played with p1+p6 against p2 (host is p1).
+export const FINISHED_MATCH = {
+  id: 'm0', club_id: 'c1', club_name: 'פאדל פוינט תל אביב', club_image: img('1554068865-24cecd4e34b8'),
+  city: 'תל אביב', level: 'B2', status: 'completed', drive_minutes: 12,
+  start_time: hoursFromNow(-2.5), duration_min: 90, price_per_player: 45,
+  players: [PLAYERS[0], PLAYERS[1], PLAYERS[5]], max_players: 4, gender: 'mixed',
+  court_type: 'מקורה', match_type: 'תחרותי', host_id: 'p1', approved: true,
+};
+
+// Group chat for the finished match.
+export const CHAT_MESSAGES = [
+  { id: 'msg1', sender_id: 'p1', text: 'ערב טוב חברים! המגרש שלנו, מגרש 3 מקורה 🎾', minutes_ago: 195 },
+  { id: 'msg2', sender_id: 'p2', text: 'מעולה, אני מביאה כדורים חדשים', minutes_ago: 190 },
+  { id: 'msg3', sender_id: 'me', text: 'אני בדרך, 10 דקות', minutes_ago: 180 },
+  { id: 'msg4', sender_id: 'p6', text: 'חניה יש בשפע מאחורה למי שמגיע ברכב', minutes_ago: 178 },
+  { id: 'msg5', sender_id: 'p1', text: 'איזה משחק היה! כל הכבוד לכולם 🔥', minutes_ago: 15 },
+  { id: 'msg6', sender_id: 'p2', text: 'הסט השני היה צמוד ברמות', minutes_ago: 12 },
+];
+
+// ---- National leaderboard pool ----
+// Deterministic extra players so the table feels like a real national ranking.
+const POOL_NAMES = [
+  'אורי ברק', 'רועי שפירא', 'גיא דהן', 'ליאור קצב', 'רון הראל', 'אסף נחום',
+  'יובל פרץ', 'אלון שגיא', 'נדב עוז', 'תומר אשכנזי', 'עידו רביב', 'ברק לוין',
+  'שחר אדלר', 'אביב טל', 'ניר חזן', 'דור ימיני', 'אופיר סלע', 'מתן ארד',
+  'עמית גורן', 'יהונתן צור', 'ענבר שדה', 'רותם קדם', 'הילה ברנע', 'דנה אלמוג',
+];
+const POOL_CITIES = ['תל אביב', 'הרצליה', 'רעננה', 'ראשון לציון', 'נתניה', 'רמת גן', 'כפר סבא', 'חולון'];
+
+// Simple deterministic PRNG so the table is stable between reloads.
+const mulberry32 = (seed) => () => {
+  seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
+const rand = mulberry32(2026);
+const POOL_PLAYERS = POOL_NAMES.map((name, i) => {
+  const rating = Math.round(1280 + rand() * 820); // 1280–2100
+  const games = Math.round(8 + rand() * 90);
+  const opponents = Math.max(2, Math.round(games * (0.25 + rand() * 0.5)));
+  const wins = Math.round(games * (0.3 + rand() * 0.4));
+  return {
+    id: `lb${i}`,
+    full_name: name,
+    city: POOL_CITIES[Math.floor(rand() * POOL_CITIES.length)],
+    avatar_url: null,
+    rally_rating: rating,
+    rd: Math.round(55 + rand() * 200),
+    games_played: games,
+    distinct_opponents: opponents,
+    wins,
+    losses: games - wins,
+    verified: rand() > 0.35,
+    trend: Math.round((rand() - 0.45) * 40), // rating delta over last 5 games
+  };
+});
+
+// Known players (richer profiles) merged with the generated pool.
+export const LEADERBOARD_PLAYERS = [
+  ...PLAYERS.map((p, i) => ({
+    ...p,
+    rd: [72, 88, 60, 140, 75, 92, 55, 165][i],
+    distinct_opponents: Math.max(3, Math.round(p.games_played * 0.4)),
+    wins: Math.round(p.games_played * (0.4 + (p.rally_rating - 1400) / 2000)),
+    losses: 0, // filled below
+    trend: [12, -8, 21, 5, 9, -14, 18, 3][i],
+  })),
+  ...POOL_PLAYERS,
+].map(p => ({ ...p, losses: p.losses || Math.max(0, p.games_played - p.wins) }));
+
+// Peer-feedback axis history for the current user (0–100 per axis).
+// previous = the window before last; current = latest aggregated window.
+export const PEER_AXES_HISTORY = {
+  previous: { attack: 54, defense: 63, brain: 49, spirit: 88 },
+  current: { attack: 61, defense: 65, brain: 58, spirit: 92 },
+  raters_count: 9,
+  window_label: 'מאז 5 המשחקים האחרונים',
+};
 
 // Court marketplace listings.
 // type: 'transfer' = a player reselling a slot they can't use (last-minute),
