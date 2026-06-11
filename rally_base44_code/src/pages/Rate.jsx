@@ -1,5 +1,7 @@
-import ComingSoon from '@/components/ComingSoon';
+import { Navigate, useLocation } from 'react-router-dom';
 
+// Legacy route — the post-match rating flow lives at /rate-players.
 export default function Rate() {
-  return <ComingSoon title="דירוג משחק" emoji="⭐" />;
+  const location = useLocation();
+  return <Navigate to={`/rate-players${location.search}`} replace />;
 }
