@@ -7,7 +7,6 @@ import { base44 } from '@/api/base44Client';
 import MatchCard from '@/components/MatchCard';
 import SlideToJoin from '@/components/SlideToJoin';
 import LevelTag from '@/components/LevelTag';
-import { addJoinedMatchId } from '@/data/gamesHistory';
 import { formatMatchTime, timeUntil } from '@/lib/format';
 import { BallIcon, SparkIcon } from '@/components/icons';
 
@@ -175,7 +174,7 @@ export default function QuickMatch() {
                   </div>
                   <span className="text-[13px] text-muted-foreground">₪{best.price_per_player} · {best.duration_min} דק׳</span>
                 </div>
-                <SlideToJoin matchId={best.id} onJoin={(id) => addJoinedMatchId(id)} />
+                <SlideToJoin matchId={best.id} />
               </div>
             </div>
 

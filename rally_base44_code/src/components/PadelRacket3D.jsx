@@ -19,7 +19,7 @@ export default function PadelRacket3D({ className = '', autoRotate = true }) {
     let renderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    } catch (e) {
+    } catch {
       setFailed(true);
       return;
     }
@@ -47,7 +47,7 @@ export default function PadelRacket3D({ className = '', autoRotate = true }) {
         const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
         pmrem = new THREE.PMREMGenerator(renderer);
         scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      } catch (e) {
+      } catch {
         /* lights below are enough on their own */
       }
     })();

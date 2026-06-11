@@ -1,4 +1,3 @@
-import React from 'react';
 import { cn } from '@/lib/utils';
 
 // Aceternity spotlight — an animated soft beam for hero sections.

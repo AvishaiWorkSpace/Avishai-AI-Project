@@ -1,10 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Banknote } from 'lucide-react';
 import LevelTag from '@/components/LevelTag';
-import RallyImage from '@/components/RallyImage';
 import { formatMatchTime } from '@/lib/format';
-
-const GENDER_LABEL = { men: 'גברים', women: 'נשים', mixed: 'מעורב' };
 
 // Reusable match card used across Home and Find.
 // Surfaces the "missing a player" state prominently — the #1 survey pain.

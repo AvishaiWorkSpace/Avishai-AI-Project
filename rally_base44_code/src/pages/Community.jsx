@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Users, MapPin } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { FEED_POSTS, POST_TYPE_META } from '@/data/socialFeed';
 import { SOCIAL_GROUPS } from '@/data/socialGroups';

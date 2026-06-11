@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Plus, Clock, MapPin } from 'lucide-react';
+import { ArrowRight, Plus, MapPin } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import LevelTag from '@/components/LevelTag';

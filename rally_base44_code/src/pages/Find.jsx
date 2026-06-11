@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, Zap, X, Check, Calendar, MapPin, Users2 } from 'lucide-react';
@@ -30,7 +29,6 @@ const GENDERS = [
 ];
 
 export default function Find() {
-  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('rally_user') || '{}');
   const userLevel = user.level || 'B2';
 
@@ -49,18 +47,17 @@ export default function Find() {
 
   const compatLevels = COMPAT[userLevel] || [userLevel];
 
-  const inWindow = (iso) => {
-    const d = new Date(iso);
-    const now = new Date();
-    const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
-    const diff = Math.round((day(d) - day(now)) / 86400000);
-    if (when === 'today') return diff === 0;
-    if (when === 'tomorrow') return diff === 1;
-    if (when === 'week') return diff >= 0 && diff < 7;
-    return true;
-  };
-
   const filtered = useMemo(() => {
+    const inWindow = (iso) => {
+      const d = new Date(iso);
+      const now = new Date();
+      const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+      const diff = Math.round((day(d) - day(now)) / 86400000);
+      if (when === 'today') return diff === 0;
+      if (when === 'tomorrow') return diff === 1;
+      if (when === 'week') return diff >= 0 && diff < 7;
+      return true;
+    };
     return matches
       .filter((m) => (city === 'הכל' ? true : m.city === city))
       .filter((m) => (gender === 'all' ? true : m.gender === gender))

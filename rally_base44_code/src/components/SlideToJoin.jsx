@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useMotionValue, animate } from 'framer-motion';
 import { ChevronsLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
+import { addJoinedMatchId } from '@/data/gamesHistory';
 
 // Slide-to-join confirmation. RTL: the handle starts on the right and
 // the user drags it left to confirm.
@@ -20,6 +21,7 @@ export default function SlideToJoin({ matchId, label = 'החלק להצטרפו�
       animate(x, -maxDrag, { type: 'spring', stiffness: 400, damping: 40 });
       setDone(true);
       toast.success('הצטרפת למשחק!', { description: 'נשלחה הודעה לשאר השחקנים' });
+      addJoinedMatchId(matchId); // the match now shows up in המשחקים שלי + the calendar
       onJoin?.(matchId);
     } else {
       animate(x, 0, { type: 'spring', stiffness: 400, damping: 40 });

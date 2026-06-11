@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Toaster } from "@/components/ui/toaster"
 import SplashScreen from '@/components/SplashScreen';
@@ -11,42 +11,55 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import { Navigate } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
+
+// Eager: the first-paint path (login → onboarding → home).
 import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
 import Onboarding from './pages/Onboarding';
 import Home from './pages/Home';
-import Find from './pages/Find';
-import Market from './pages/Market';
-import Profile from './pages/Profile';
-import Players from './pages/Players';
-import Leaderboard from './pages/Leaderboard';
-import MatchChat from './pages/MatchChat';
-import QuickMatch from './pages/QuickMatch';
-import Rate from './pages/Rate';
-import AddMatch from './pages/AddMatch';
-import SellCourt from './pages/SellCourt';
-import Admin from './pages/Admin';
-import Stats from './pages/Stats';
-import CalendarPage from './pages/CalendarPage';
-import Community from './pages/Community';
-import ClubDashboard from './pages/ClubDashboard';
-import RatePlayers from './pages/RatePlayers';
-import MyGames from './pages/MyGames';
-import Clubs from './pages/Clubs';
-import ClubsMap from './pages/ClubsMap';
-import Notifications from './pages/Notifications';
-import Tournaments from './pages/Tournaments';
-import Groups from './pages/Groups';
-import BookCourt from './pages/BookCourt';
-import ClubAdmin from './pages/ClubAdmin';
-import GroupDetail from './pages/GroupDetail';
-import WalletPage from './pages/Wallet';
-import PlayerPreferences from './pages/PlayerPreferences';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import RatingExplained from './pages/RatingExplained';
+
+// Lazy: everything else loads on navigation, keeping the initial bundle lean.
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Find = lazy(() => import('./pages/Find'));
+const Market = lazy(() => import('./pages/Market'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Players = lazy(() => import('./pages/Players'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const MatchChat = lazy(() => import('./pages/MatchChat'));
+const QuickMatch = lazy(() => import('./pages/QuickMatch'));
+const Rate = lazy(() => import('./pages/Rate'));
+const AddMatch = lazy(() => import('./pages/AddMatch'));
+const SellCourt = lazy(() => import('./pages/SellCourt'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Stats = lazy(() => import('./pages/Stats'));
+const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+const Community = lazy(() => import('./pages/Community'));
+const ClubDashboard = lazy(() => import('./pages/ClubDashboard'));
+const RatePlayers = lazy(() => import('./pages/RatePlayers'));
+const MyGames = lazy(() => import('./pages/MyGames'));
+const Clubs = lazy(() => import('./pages/Clubs'));
+const ClubsMap = lazy(() => import('./pages/ClubsMap'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Tournaments = lazy(() => import('./pages/Tournaments'));
+const Groups = lazy(() => import('./pages/Groups'));
+const BookCourt = lazy(() => import('./pages/BookCourt'));
+const ClubAdmin = lazy(() => import('./pages/ClubAdmin'));
+const GroupDetail = lazy(() => import('./pages/GroupDetail'));
+const WalletPage = lazy(() => import('./pages/Wallet'));
+const PlayerPreferences = lazy(() => import('./pages/PlayerPreferences'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const RatingExplained = lazy(() => import('./pages/RatingExplained'));
+
+// Minimal route-transition fallback — brand spinner, matches the splash mood.
+function RouteFallback() {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-background">
+      <div className="loader" />
+    </div>
+  );
+}
 
 function HomeOrOnboarding() {
   const { isAuthenticated, isLoadingAuth } = useAuth();
@@ -76,6 +89,7 @@ const AuthenticatedApp = () => {
   }
 
   return (
+    <Suspense fallback={<RouteFallback />}>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -117,6 +131,7 @@ const AuthenticatedApp = () => {
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 

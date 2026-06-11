@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, Zap, ChevronLeft, Users, Star, Clock } from 'lucide-react';
+import { ChevronLeft, Users, Star, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import MatchCard from '@/components/MatchCard';
@@ -59,7 +59,7 @@ export default function Home() {
       .filter(m => m.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 3);
-  }, [matches, userLevel, userCity]);
+  }, [matches, compatLevels, userCity]);
 
   const hasPrefs = user.preferred_hand;
 

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, TrendingUp, TrendingDown, Settings, BadgeCheck, Tag } from 'lucide-react';
@@ -37,7 +36,7 @@ function Kpi({ kpi, delay }) {
 
 export default function ClubDashboard() {
   const navigate = useNavigate();
-  const [courts, setCourts] = useState(COURTS_STATUS);
+  const courts = COURTS_STATUS;
 
   const publishCourt = (court) => {
     if (court.status !== 'free') return;
