@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BadgeCheck, TrendingUp, Trophy, ChevronLeft, Users2, Sparkles, Info } from 'lucide-react';
 import { RATING_PROFILE, PEER_AXES_HISTORY } from '@/data/mockData';
-import { reliability, ratingToLevel, levelProgress, levelRange, reliabilityLabel, LEVELS } from '@/lib/rating';
+import {
+  reliability, ratingToLevel, levelProgress, levelRange, reliabilityLabel, LEVELS,
+  getLevelLang, setLevelLang, levelDisplay, ratingToNum,
+} from '@/lib/rating';
 import ReliabilityRing from '@/components/ReliabilityRing';
 import SkillRadar from '@/components/SkillRadar';
 import Sparkline from '@/components/Sparkline';
@@ -12,6 +16,12 @@ export default function Profile() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('rally_user') || '{}');
   const p = RATING_PROFILE;
+  const [lang, setLang] = useState(getLevelLang);
+
+  const pickLang = (next) => {
+    setLevelLang(next); // updates every LevelTag in the app
+    setLang(next);
+  };
 
   const level = ratingToLevel(p.rating);
   const range = levelRange(level.code);
@@ -70,11 +80,17 @@ export default function Profile() {
         <div className="bg-card rounded-3xl border border-border shadow-luxe p-5">
           <div className="flex items-start justify-between">
             <div>
-              <div className="text-[12px] text-muted-foreground mb-1">דירוג Rally</div>
-              <div className="flex items-end gap-2">
-                <span className="font-display text-[44px] font-black leading-none text-brand tabular-nums">{p.rating}</span>
-                <span className="inline-flex items-center gap-0.5 text-[13px] font-bold text-emerald-600 mb-1.5">
-                  <TrendingUp size={14} /> {monthGain > 0 ? '+' : ''}{monthGain}
+              <div className="text-[12px] text-muted-foreground mb-1">הרמה שלך</div>
+              <div className="flex items-end gap-2.5">
+                <span className="font-display text-[44px] font-black leading-none text-brand tabular-nums">
+                  {lang === 'numbers' ? ratingToNum(p.rating) : level.code}
+                </span>
+                <span className="text-[13px] font-bold text-muted-foreground mb-1.5">{level.tier}</span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-2 text-[12px] text-muted-foreground">
+                <span>דירוג Rally: <b className="text-foreground tabular-nums">{p.rating}</b></span>
+                <span className="inline-flex items-center gap-0.5 font-bold text-emerald-600">
+                  <TrendingUp size={13} /> {monthGain > 0 ? '+' : ''}{monthGain} החודש
                 </span>
               </div>
             </div>
@@ -91,9 +107,11 @@ export default function Profile() {
           {nextLevel && (
             <div className="mt-4">
               <div className="flex items-center justify-between text-[11px] mb-1.5">
-                <span className="text-muted-foreground">{range.min}</span>
-                <span className="font-bold text-brand">עוד {range.max + 1 - p.rating} לרמה {nextLevel.code}</span>
-                <span className="text-muted-foreground">{range.max + 1}</span>
+                <span className="text-muted-foreground tabular-nums">{range.min}</span>
+                <span className="font-bold text-brand">
+                  עוד {range.max + 1 - p.rating} נק׳ לרמה {levelDisplay(nextLevel.code, lang)}
+                </span>
+                <span className="text-muted-foreground tabular-nums">{range.max + 1}</span>
               </div>
               <div className="h-2.5 rounded-full bg-muted overflow-hidden">
                 <div
@@ -103,6 +121,27 @@ export default function Profile() {
               </div>
             </div>
           )}
+
+          {/* level language picker — letters (A–D) or global 0–7 numbers */}
+          <div className="mt-4 flex items-center justify-between rounded-2xl bg-bgWarm px-3.5 py-2.5">
+            <span className="text-[12px] font-bold text-muted-foreground">איך להציג רמות?</span>
+            <div className="flex items-center gap-1 bg-card border border-border rounded-full p-0.5">
+              {[
+                { id: 'letters', label: 'A–D' },
+                { id: 'numbers', label: '0–7' },
+              ].map((o) => (
+                <button
+                  key={o.id}
+                  onClick={() => pickLang(o.id)}
+                  className={`h-7 px-3 rounded-full text-[11.5px] font-black transition-colors active:scale-95 ${
+                    lang === o.id ? 'bg-brand text-white' : 'text-muted-foreground'
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* sparkline */}
           <div className="mt-5">

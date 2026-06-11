@@ -106,3 +106,36 @@ export const POST_TYPE_META = {
   looking: { label: 'מחפשים רביעי' },
   event: { label: 'אירוע' },
 };
+
+// Replies per post — opens when tapping the comment action (X-style thread).
+export const POST_REPLIES = {
+  f1: [
+    { id: 'r1a', author: PLAYERS[0], time: 'לפני 8 דק׳', text: 'אם זה נסגר ל-19:30 אני בפנים. שולח הודעה.' },
+    { id: 'r1b', author: PLAYERS[4], time: 'לפני 4 דק׳', text: 'B2 מתאים לי בול, יש עוד מקום?' },
+  ],
+  f2: [
+    { id: 'r2a', author: PLAYERS[6], time: 'לפני 30 דק׳', text: 'הסט השלישי הזה היה שיעור בפאדל. כבוד.' },
+    { id: 'r2b', author: PLAYERS[1], time: 'לפני 22 דק׳', text: 'המאמץ בנקודה האחרונה היה מטורף 👏' },
+  ],
+  f3: [
+    { id: 'r3a', author: PLAYERS[2], time: 'לפני 40 דק׳', text: 'הטיפ הכי טוב ששמעתי החודש. רוב השחקנים רודפים במקום להחזיק עמדה.' },
+  ],
+  f4: [
+    { id: 'r4a', author: PLAYERS[5], time: 'לפני שעתיים', text: 'נרשמנו! מי עוד מהצפון מגיע?' },
+    { id: 'r4b', author: PLAYERS[7], time: 'לפני שעה', text: 'יש עוד מקומות לזוגות B1?' },
+  ],
+  f5: [
+    { id: 'r5a', author: PLAYERS[3], time: 'לפני 4 שע׳', text: 'מאמצת את זה מהיום. תודה נועה!' },
+  ],
+  f9: [
+    { id: 'r9a', author: PLAYERS[5], time: 'אתמול', text: 'הלוב לפינה השמאלית שינה לי את המשחק. ממליצה בחום.' },
+  ],
+};
+
+// "מה קורה בפאדל" — trending topics, X-style.
+export const TRENDS = [
+  { id: 't1', tag: 'טורניר החוף נתניה', category: 'טורנירים · ישראל', posts: 218, to: '/tournaments' },
+  { id: 't2', tag: 'ליגת חמישי', category: 'ליגות · ראשון לציון', posts: 142, to: '/tournaments' },
+  { id: 't3', tag: 'Premier Padel', category: 'עולמי · טרנדי', posts: 1830, to: '/community' },
+  { id: 't4', tag: 'מחפשים רביעי', category: 'משחקים פתוחים', posts: 96, to: '/find' },
+];

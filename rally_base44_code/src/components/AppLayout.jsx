@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { NavBar } from '@/components/ui/tubelight-navbar';
-import { HomeIcon, RacketIcon, TagIcon, TrophyIcon, UserIcon } from '@/components/icons';
+import { HomeIcon, RacketIcon, TagIcon, CommunityIcon, TrophyIcon, UserIcon } from '@/components/icons';
 import { FINISHED_MATCH } from '@/data/mockData';
 
 const NAV_ITEMS = [
   { name: 'בית', url: '/', icon: HomeIcon },
   { name: 'משחקים', url: '/find', icon: RacketIcon },
   { name: 'שוק', url: '/market', icon: TagIcon },
+  { name: 'קהילה', url: '/community', icon: CommunityIcon },
   { name: 'דירוג', url: '/leaderboard', icon: TrophyIcon },
   { name: 'פרופיל', url: '/profile', icon: UserIcon },
 ];

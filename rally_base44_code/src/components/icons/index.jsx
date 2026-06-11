@@ -149,6 +149,19 @@ export function LevelUpIcon(props) {
   );
 }
 
+// Community — two players side by side, gold ball between them.
+export function CommunityIcon(props) {
+  return (
+    <Svg {...props}>
+      <circle cx="8.6" cy="8.4" r="2.9" />
+      <path d="M3.4 19.4 a5.2 5.2 0 0 1 10.4 0" />
+      <circle cx="16.6" cy="9.2" r="2.4" />
+      <path d="M15.6 14.6 a4.7 4.7 0 0 1 5 4.8" />
+      <circle cx="13.2" cy="13" r="1.1" fill={GOLD} stroke="none" />
+    </Svg>
+  );
+}
+
 export function SearchIcon(props) {
   return (
     <Svg {...props}>

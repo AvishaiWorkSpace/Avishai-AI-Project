@@ -14,20 +14,51 @@
 // ---------- Level mapping (Israeli A1 … מתחיל) ----------
 // Internal skill scale is Glicko-style (~1100–2100). These thresholds map it to
 // the unified Rally level language used across the app.
+// `num` is the same band expressed on the global 0–7 scale (Playtomic-style),
+// for players who prefer numbers over letters — Israeli A1 ≈ 6.5 Playtomic.
 export const LEVELS = [
-  { code: 'A1', min: 2000, label: 'A1', tier: 'עילית' },
-  { code: 'A2', min: 1900, label: 'A2', tier: 'מתקדם+' },
-  { code: 'B1', min: 1780, label: 'B1', tier: 'מתקדם' },
-  { code: 'B2', min: 1660, label: 'B2', tier: 'בינוני+' },
-  { code: 'C1', min: 1540, label: 'C1', tier: 'בינוני' },
-  { code: 'C2', min: 1420, label: 'C2', tier: 'בסיסי+' },
-  { code: 'D1', min: 1300, label: 'D1', tier: 'בסיסי' },
-  { code: 'D2', min: 1150, label: 'D2', tier: 'מתחיל+' },
-  { code: 'מתחיל', min: 0, label: 'מתחיל', tier: 'מתחיל' },
+  { code: 'A1', min: 2000, label: 'A1', tier: 'עילית', num: '6.5' },
+  { code: 'A2', min: 1900, label: 'A2', tier: 'מתקדם+', num: '5.5' },
+  { code: 'B1', min: 1780, label: 'B1', tier: 'מתקדם', num: '4.8' },
+  { code: 'B2', min: 1660, label: 'B2', tier: 'בינוני+', num: '4.0' },
+  { code: 'C1', min: 1540, label: 'C1', tier: 'בינוני', num: '3.2' },
+  { code: 'C2', min: 1420, label: 'C2', tier: 'בסיסי+', num: '2.5' },
+  { code: 'D1', min: 1300, label: 'D1', tier: 'בסיסי', num: '1.8' },
+  { code: 'D2', min: 1150, label: 'D2', tier: 'מתחיל+', num: '1.0' },
+  { code: 'מתחיל', min: 0, label: 'מתחיל', tier: 'מתחיל', num: '0.5' },
 ];
 
 export function ratingToLevel(rating) {
   return LEVELS.find((l) => rating >= l.min) || LEVELS[LEVELS.length - 1];
+}
+
+// ---------- Level display language (letters vs numbers) ----------
+// One unified scale, two ways to read it: Israeli letters (A1…מתחיל) or the
+// global 0–7 numeric scale. The user picks once; every LevelTag in the app
+// follows via the 'rally:level-lang' event.
+const LEVEL_LANG_KEY = 'rally_level_lang';
+
+export function getLevelLang() {
+  try { return localStorage.getItem(LEVEL_LANG_KEY) === 'numbers' ? 'numbers' : 'letters'; } catch { return 'letters'; }
+}
+
+export function setLevelLang(lang) {
+  try { localStorage.setItem(LEVEL_LANG_KEY, lang); } catch { /* keep in-memory default */ }
+  window.dispatchEvent(new Event('rally:level-lang'));
+}
+
+// Display string for a level code in the chosen language.
+export function levelDisplay(code, lang = getLevelLang()) {
+  const lvl = LEVELS.find((l) => l.code === code);
+  if (!lvl) return code;
+  return lang === 'numbers' ? lvl.num : lvl.label;
+}
+
+// Precise 0–7 value for a specific rating (own profile shows this; tags of
+// other players show their band's `num`). 1150→0.0, 2200→7.0.
+export function ratingToNum(rating) {
+  const v = Math.min(7, Math.max(0, (rating - 1150) / 150));
+  return (Math.round(v * 10) / 10).toFixed(1);
 }
 
 export function levelRange(code) {

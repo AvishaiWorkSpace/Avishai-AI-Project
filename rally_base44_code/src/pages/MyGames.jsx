@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, CalendarDays, Clock, MapPin, Banknote, ChevronLeft,
-  TrendingUp, TrendingDown, Star, Percent, Timer,
+  TrendingUp, TrendingDown, Star, Percent, Timer, Eye, Share2, BadgeCheck,
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { getPurchases, getMyListings, listingViews } from '@/lib/marketStore';
 import { FINISHED_MATCH, DEFAULT_USER } from '@/data/mockData';
 import {
   GAMES_HISTORY, getJoinedMatchIds, getHistorySummary, historyDateLabel,
@@ -32,6 +33,13 @@ export default function MyGames() {
     queryKey: ['matches', 'all'],
     queryFn: () => base44.entities.Match.list('start_time', 100),
   });
+
+  // Market activity — courts I bought + courts I'm selling (still listed).
+  const purchases = useMemo(
+    () => getPurchases().filter((p) => new Date(p.start_time).getTime() > Date.now() - 30 * 60000),
+    [],
+  );
+  const myListings = useMemo(() => getMyListings(), []);
 
   const joinedIds = useMemo(() => getJoinedMatchIds(), []);
   const upcoming = useMemo(
@@ -105,7 +113,9 @@ export default function MyGames() {
             >
               {t.label}
               <span className="mr-1.5 text-[11px] font-black tabular-nums opacity-60">
-                {t.id === 'upcoming' ? upcoming.length : GAMES_HISTORY.length + 1}
+                {t.id === 'upcoming'
+                  ? upcoming.length + purchases.length + myListings.length
+                  : GAMES_HISTORY.length + 1}
               </span>
             </span>
           </button>
@@ -122,9 +132,11 @@ export default function MyGames() {
             transition={spring}
             className="px-5 flex flex-col gap-3.5"
           >
+            {myListings.map((l) => <ForSaleCard key={l.id} listing={l} />)}
+            {purchases.map((p, i) => <PurchasedCard key={p.id} purchase={p} index={i} />)}
             {upcoming.length > 0 ? (
-              upcoming.map((m, i) => <UpcomingCard key={m.id} match={m} index={i} />)
-            ) : (
+              upcoming.map((m, i) => <UpcomingCard key={m.id} match={m} index={i + purchases.length} />)
+            ) : myListings.length + purchases.length > 0 ? null : (
               <EmptyState
                 title="אין משחקים קרובים"
                 body="הצטרף למשחק פתוח או פתח אחד משלך — המגרש מחכה."
@@ -172,6 +184,108 @@ function SummaryStat({ Icon, value, label }) {
       <span className="font-display text-[22px] font-black text-white leading-none tabular-nums">{value}</span>
       <span className="text-[10.5px] text-white/60 font-semibold">{label}</span>
     </div>
+  );
+}
+
+// A court I'm selling — still listed on the market.
+function ForSaleCard({ listing }) {
+  const views = listingViews(listing);
+  const offerText = encodeURIComponent(
+    `היי! יש לי מגרש ב${listing.club_name} (${listing.court_label}) ${formatMatchTime(listing.start_time)} שאני לא מגיע אליו — ₪${listing.price} במקום ₪${listing.original_price}. רוצה לתפוס אותו? אני ב-Rally`,
+  );
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring}
+      className="bg-card rounded-3xl border border-[hsl(var(--gold))]/40 ring-gold shadow-gold p-4"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft text-gold-deep text-[11px] font-black px-2.5 py-1">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[hsl(var(--gold-deep))] opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[hsl(var(--gold-deep))]" />
+          </span>
+          מגרש למכירה · מוצג
+        </span>
+        <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground font-semibold">
+          <Eye size={12} /> {views} צפיות
+        </span>
+      </div>
+      <div className="font-bold text-[14.5px]">{listing.club_name} · {listing.court_label}</div>
+      <div className="flex items-center gap-3 mt-1 text-[12.5px] text-muted-foreground">
+        <span className="flex items-center gap-1"><CalendarDays size={12} /> {formatMatchTime(listing.start_time)}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-display text-[15px] font-black text-brand">₪{listing.price}</span>
+          <span className="line-through text-[11.5px]">₪{listing.original_price}</span>
+        </span>
+      </div>
+      <a
+        href={`https://wa.me/?text=${offerText}`}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-brand text-white text-[13px] font-bold h-10 active:scale-95 transition-transform"
+      >
+        <Share2 size={14} />
+        הצע לאנשים בהודעה
+      </a>
+    </motion.div>
+  );
+}
+
+// A court I bought on the market — booking confirmation lives here.
+function PurchasedCard({ purchase, index }) {
+  const inviteText = encodeURIComponent(
+    `היי! סגרתי מגרש ב${purchase.club_name} (${purchase.court_label}) ${formatMatchTime(purchase.start_time)} — בא לשחק איתנו? מצטרפים דרך Rally`,
+  );
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...spring, delay: index * 0.06 }}
+      className="bg-card rounded-3xl overflow-hidden border border-border shadow-sm"
+    >
+      <div className="relative h-28">
+        <RallyImage src={purchase.image_url} alt={purchase.club_name} className="absolute inset-0" />
+        <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-gold text-brand-deep text-[11px] font-bold px-2.5 py-1 shadow-gold">
+          <BadgeCheck size={11} strokeWidth={2.5} />
+          נרכש בשוק
+        </span>
+        <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-black/35 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1">
+          <Clock size={11} strokeWidth={2.5} />
+          {timeUntil(purchase.start_time)}
+        </span>
+        <div className="absolute bottom-2.5 right-4 left-4 text-white">
+          <div className="font-display text-[16px] font-black leading-tight">{purchase.club_name}</div>
+          <div className="text-[11.5px] text-white/80 flex items-center gap-1">
+            <MapPin size={11} /> {purchase.city} · {purchase.court_label}
+          </div>
+        </div>
+      </div>
+      <div className="p-3.5">
+        <div className="flex items-center gap-3 text-[12.5px] text-muted-foreground">
+          <span className="flex items-center gap-1 font-semibold text-foreground">
+            <Clock size={12} strokeWidth={2} />
+            {formatMatchTime(purchase.start_time)}
+          </span>
+          <span className="flex items-center gap-1">
+            <Banknote size={12} strokeWidth={2} />
+            ₪{purchase.price}
+          </span>
+          <span>{purchase.duration_min} דק׳</span>
+          <span className="mr-auto text-[10.5px] font-bold text-muted-foreground">{purchase.order_number}</span>
+        </div>
+        <a
+          href={`https://wa.me/?text=${inviteText}`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-full border border-brand/30 bg-brand-softer text-brand text-[13px] font-bold h-10 active:scale-95 transition-transform"
+        >
+          <Share2 size={14} />
+          הזמן שחקנים למשחק
+        </a>
+      </div>
+    </motion.div>
   );
 }
 

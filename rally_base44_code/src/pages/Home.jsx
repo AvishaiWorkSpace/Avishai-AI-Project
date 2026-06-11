@@ -11,6 +11,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { BellIcon, BallIcon, CourtIcon, TrophyIcon, LevelUpIcon, SearchIcon } from '@/components/icons';
 import RallyLogo from '@/components/RallyLogo';
 import FreeCourtAlert from '@/components/FreeCourtAlert';
+import LiveCourtVideo from '@/components/LiveCourtVideo';
 
 const QUICK_ACTIONS = [
   { label: 'הזמן מגרש', to: '/book-court', color: 'bg-brand text-white', Icon: CourtIcon },
@@ -184,13 +185,13 @@ export default function Home() {
             <span className="font-display text-[20px] font-black">פתוחים עכשיו</span>
           </div>
           <div className="mx-5 bg-card rounded-[24px] overflow-hidden shadow-md border border-border">
-            <div className="relative h-40">
-              <img
-                src={heroMatch.club_image || 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&h=300&fit=crop'}
-                className="w-full h-full object-cover"
-                alt={heroMatch.club_name}
+            {/* Live padel footage rotating behind the open match — bg-brand-gradient
+                under the video prevents a white flash while clips load. */}
+            <div className="relative h-40 bg-brand-gradient">
+              <LiveCourtVideo
+                poster={heroMatch.club_image || 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&h=300&fit=crop'}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-black/25" />
               <div className="absolute bottom-4 right-4 left-4 text-white">
                 <div className="font-display text-[20px] font-black leading-tight">{heroMatch.club_name}</div>
                 <div className="text-[12px] text-white/75 mt-0.5">{heroMatch.drive_minutes} דק׳ נסיעה · {heroMatch.city}</div>
