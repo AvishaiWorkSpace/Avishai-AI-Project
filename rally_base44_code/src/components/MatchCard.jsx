@@ -5,7 +5,11 @@ import { formatMatchTime } from '@/lib/format';
 
 // Reusable match card used across Home and Find.
 // Surfaces the "missing a player" state prominently — the #1 survey pain.
-export default function MatchCard({ match, onClick }) {
+//
+// joinStatus (optional) overrides the spots badge for approval-gated joining:
+//   'pending'             — request sent, waiting for the host
+//   'approved' | 'member' — you're in the game
+export default function MatchCard({ match, onClick, joinStatus }) {
   const navigate = useNavigate();
   const players = match.players || [];
   const max = match.max_players || 4;
@@ -81,7 +85,15 @@ export default function MatchCard({ match, onClick }) {
               </div>
             </div>
 
-            {spotsLeft > 0 ? (
+            {joinStatus === 'member' || joinStatus === 'approved' ? (
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-brand text-white">
+                אתה במשחק ✓
+              </span>
+            ) : joinStatus === 'pending' ? (
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-gold-soft text-[#8a6d3b] animate-pulse">
+                ממתין לאישור המנהל
+              </span>
+            ) : spotsLeft > 0 ? (
               <span
                 className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${
                   almostFull

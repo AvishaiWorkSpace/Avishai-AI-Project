@@ -3,14 +3,21 @@ import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { ChevronsLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { addJoinedMatchId } from '@/data/gamesHistory';
+import { requestJoin } from '@/data/joinRequests';
 
 // Slide-to-join confirmation. RTL: the handle starts on the right and
 // the user drags it left to confirm.
 //
+// Two modes:
+//   default     — instant join: the match is added to המשחקים שלי.
+//   requestMode — approval-gated (quick-fill): sends a join request to the
+//                 match host; membership arrives only when he approves.
+//
 // Constraints are explicit pixel values (not a ref) — measuring the track
 // element through dragConstraints={ref} computes wrong bounds in RTL layouts,
 // which froze the knob in place.
-export default function SlideToJoin({ matchId, label = 'החלק להצטרפות', onJoin }) {
+export default function SlideToJoin({ matchId, label, requestMode = false, onJoin }) {
+  const idleLabel = label || (requestMode ? 'החלק לבקשת הצטרפות' : 'החלק להצטרפות');
   const trackRef = useRef(null);
   const x = useMotionValue(0);
   const [done, setDone] = useState(false);
@@ -30,12 +37,18 @@ export default function SlideToJoin({ matchId, label = 'החלק להצטרפו�
   const trailWidth = useTransform(x, (v) => `${Math.min(100, (Math.abs(v) / Math.max(1, maxDrag)) * 100 + 14)}%`);
 
   const handleDragEnd = () => {
-    // In RTL we drag toward negative x (leftwards).
-    if (x.get() <= -maxDrag * 0.7) {
+    // In RTL we drag toward negative x (leftwards). maxDrag > 0 guards the
+    // unmeasured state — otherwise 0 <= -0 passes and a single tap "joins".
+    if (maxDrag > 0 && x.get() <= -maxDrag * 0.7) {
       animate(x, -maxDrag, { type: 'spring', stiffness: 400, damping: 40 });
       setDone(true);
-      toast.success('הצטרפת למשחק!', { description: 'נשלחה הודעה לשאר השחקנים' });
-      addJoinedMatchId(matchId); // the match now shows up in המשחקים שלי + the calendar
+      if (requestMode) {
+        requestJoin(matchId);
+        toast('הבקשה נשלחה למנהל המשחק', { description: 'נעדכן אותך ברגע שיאשר אותך' });
+      } else {
+        toast.success('הצטרפת למשחק!', { description: 'נשלחה הודעה לשאר השחקנים' });
+        addJoinedMatchId(matchId); // the match now shows up in המשחקים שלי + the calendar
+      }
       onJoin?.(matchId);
     } else {
       animate(x, 0, { type: 'spring', stiffness: 500, damping: 35 });
@@ -46,7 +59,7 @@ export default function SlideToJoin({ matchId, label = 'החלק להצטרפו�
     <div
       ref={trackRef}
       className={`relative h-14 rounded-full overflow-hidden select-none ${
-        done ? 'bg-green-500' : 'bg-brand'
+        done ? (requestMode ? 'bg-[hsl(var(--gold-deep))]' : 'bg-green-500') : 'bg-brand'
       } transition-colors`}
     >
       {/* Gold trail filling behind the knob as it travels */}
@@ -59,7 +72,7 @@ export default function SlideToJoin({ matchId, label = 'החלק להצטרפו�
 
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <motion.span style={done ? undefined : { opacity: labelOpacity }} className="text-white font-bold text-[15px]">
-          {done ? 'הצטרפת בהצלחה ✓' : label}
+          {done ? (requestMode ? 'הבקשה נשלחה למנהל ✓' : 'הצטרפת בהצלחה ✓') : idleLabel}
         </motion.span>
       </div>
 
@@ -85,7 +98,7 @@ export default function SlideToJoin({ matchId, label = 'החלק להצטרפו�
           transition={{ type: 'spring', stiffness: 400, damping: 18 }}
           className="absolute top-1 left-1 w-[52px] h-[52px] rounded-full bg-white flex items-center justify-center shadow-md"
         >
-          <Check size={22} className="text-green-500" strokeWidth={3} />
+          <Check size={22} className={requestMode ? 'text-[hsl(var(--gold-deep))]' : 'text-green-500'} strokeWidth={3} />
         </motion.div>
       )}
     </div>

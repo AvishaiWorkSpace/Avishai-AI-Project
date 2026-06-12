@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, Zap, X, Check, Calendar, MapPin, Users2 } from 'lucide-react';
@@ -6,6 +6,9 @@ import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import MatchCard from '@/components/MatchCard';
 import LevelTag from '@/components/LevelTag';
+import QuickJoinSheet from '@/components/QuickJoinSheet';
+import { getJoinRequest } from '@/data/joinRequests';
+import { getJoinedMatchIds } from '@/data/gamesHistory';
 
 // Level compatibility — a player can comfortably play one tier up/down.
 const COMPAT = {
@@ -39,6 +42,18 @@ export default function Find() {
   const [levelMode, setLevelMode] = useState('mine'); // 'mine' | 'all'
   const [showFilters, setShowFilters] = useState(false);
   const [available, setAvailable] = useState(false);
+
+  // Quick-fill approval flow: which match the join popup shows, plus a tick
+  // that re-reads request state (the demo host approves a few seconds later).
+  const [quickJoin, setQuickJoin] = useState(null);
+  const [reqTick, setReqTick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setReqTick((x) => x + 1), 1500);
+    return () => clearInterval(t);
+  }, []);
+  const joinedIds = useMemo(() => getJoinedMatchIds(), [reqTick]); // eslint-disable-line react-hooks/exhaustive-deps
+  const joinStatusOf = (m) =>
+    joinedIds.includes(m.id) ? 'member' : getJoinRequest(m.id)?.status;
 
   const { data: matches = [], isLoading } = useQuery({
     queryKey: ['matches', 'open'],
@@ -170,17 +185,29 @@ export default function Find() {
         </button>
       </div>
 
-      {/* Fill-the-spot section */}
+      {/* Fill-the-spot section — joining here is approval-gated */}
       {needOnePlayer.length > 0 && (
         <section className="mb-6">
-          <div className="flex items-center gap-2 px-5 mb-3">
+          <div className="flex items-center gap-2 px-5 mb-1">
             <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
             <h2 className="font-display text-[20px] font-black">מילוי מהיר — חסר שחקן אחד</h2>
           </div>
+          <p className="px-5 text-[12px] text-muted-foreground mb-3">
+            החלק לבקשת הצטרפות — מנהל המשחק מאשר, ואז נפתח לך צ׳אט המשחק
+          </p>
           <div className="px-5 flex flex-col gap-3">
-            {needOnePlayer.map((m) => (
-              <MatchCard key={m.id} match={m} />
-            ))}
+            {needOnePlayer.map((m) => {
+              const st = joinStatusOf(m);
+              const inGame = st === 'member' || st === 'approved';
+              return (
+                <MatchCard
+                  key={m.id}
+                  match={m}
+                  joinStatus={st}
+                  onClick={inGame ? undefined : () => setQuickJoin(m)}
+                />
+              );
+            })}
           </div>
         </section>
       )}
@@ -209,6 +236,14 @@ export default function Find() {
           <EmptyState onReset={() => { setCity('הכל'); setWhen('all'); setGender('all'); setLevelMode('all'); setSearch(''); }} />
         ) : null}
       </section>
+
+      {/* Quick-fill join popup */}
+      <QuickJoinSheet
+        match={quickJoin}
+        open={!!quickJoin}
+        onClose={() => setQuickJoin(null)}
+        onChanged={() => setReqTick((x) => x + 1)}
+      />
 
       {/* Filter sheet */}
       <FilterSheet

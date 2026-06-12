@@ -84,7 +84,7 @@ export default function AddMatch() {
     if (!valid || submitting) return;
     setSubmitting(true);
     try {
-      await base44.entities.Match.create({
+      const row = await base44.entities.Match.create({
         status: 'open',
         club_id: club.id,
         club_name: club.name,
@@ -100,9 +100,10 @@ export default function AddMatch() {
         court_type: club.indoor ? 'מקורה' : 'חוץ',
         match_type: matchType,
         drive_minutes: 15,
+        host_id: 'me', // you manage this match — join requests come to you
       });
-      toast.success('המשחק פורסם!', { description: 'שחקנים מתאימים יקבלו התראה' });
-      navigate('/find');
+      toast.success('המשחק פורסם!', { description: 'בקשות הצטרפות של שחקנים יגיעו אליך לאישור' });
+      navigate(`/match/${row.id}`);
     } finally {
       setSubmitting(false);
     }
