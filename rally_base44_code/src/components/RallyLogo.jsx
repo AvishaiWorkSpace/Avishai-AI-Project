@@ -1,26 +1,38 @@
-import { useId } from 'react';
-
-// Rally brand mark — padel racket with a diamond lattice, drawn in currentColor
-// so the same component works on ivory (emerald) and on emerald (ivory).
+// Rally brand mark — a real padel racket: teardrop frame, solid hitting face
+// with drilled holes (padel, not tennis strings), wrapped grip and butt cap.
+// Drawn in currentColor so the same component works on ivory and on emerald.
 // Geometry is exported so SplashScreen can animate the exact same paths.
 
 export const MARK_VIEWBOX = '0 0 96 132';
-export const MARK_HEAD = 'M48 7 C71 7 87 24 87 49 C87 75 69 91 48 91 C27 91 9 75 9 49 C9 24 25 7 48 7 Z';
-export const MARK_HANDLE = { x: 41.5, y: 90, width: 13, height: 33, rx: 6.5 };
 
-// Diagonal lattice lines, clipped to the head. Generated once — both diagonals.
-export const MARK_LATTICE = (() => {
-  const lines = [];
-  for (let i = -3; i <= 3; i++) {
-    const o = i * 15;
-    lines.push({ x1: 48 + o - 55, y1: -6, x2: 48 + o + 55, y2: 104 }); // ↘
-    lines.push({ x1: 48 + o + 55, y1: -6, x2: 48 + o - 55, y2: 104 }); // ↙
-  }
-  return lines;
-})();
+// Outer frame silhouette (teardrop head melting into the throat).
+export const MARK_HEAD =
+  'M48 5 C69 5 86 21 86 45 C86 68 74 84 60 90 C56 91.6 52 92.4 48 92.4 C44 92.4 40 91.6 36 90 C22 84 10 68 10 45 C10 21 27 5 48 5 Z';
 
-export function RallyMark({ size = 64, strokeWidth = 6.5, className = '' }) {
-  const clipId = useId();
+// Inner edge of the frame = the hitting face.
+export const MARK_FACE =
+  'M48 11 C65.5 11 80 24.5 80 45 C80 65 69.5 79 58 84 C54.5 85.5 51 86.2 48 86.2 C45 86.2 41.5 85.5 38 84 C26.5 79 16 65 16 45 C16 24.5 30.5 11 48 11 Z';
+
+// Drilled-hole grid: [row y, max offset steps] — steps of 8px around x=48,
+// row widths follow the teardrop taper.
+const HOLE_ROWS = [
+  [16, 1], [24, 2], [32, 3], [40, 3], [48, 3], [56, 3], [64, 2], [72, 2], [80, 1],
+];
+export const MARK_HOLES = HOLE_ROWS.flatMap(([cy, n]) => {
+  const row = [];
+  for (let k = -n; k <= n; k++) row.push({ cx: 48 + k * 8, cy, r: 2.2 });
+  return row;
+});
+
+// Wrapped grip: three tape segments + a wider butt cap.
+export const MARK_GRIP = [
+  { x: 43, y: 90, width: 10, height: 8, rx: 3 },
+  { x: 43, y: 100, width: 10, height: 8, rx: 3 },
+  { x: 43, y: 110, width: 10, height: 8, rx: 3 },
+  { x: 41, y: 120, width: 14, height: 7, rx: 3.5 },
+];
+
+export function RallyMark({ size = 64, className = '' }) {
   const width = (size * 96) / 132;
   return (
     <svg
@@ -32,18 +44,14 @@ export function RallyMark({ size = 64, strokeWidth = 6.5, className = '' }) {
       className={className}
       aria-hidden
     >
-      <defs>
-        <clipPath id={clipId}>
-          <path d="M48 16 C66 16 78 30 78 49 C78 70 64 82 48 82 C32 82 18 70 18 49 C18 30 30 16 48 16 Z" />
-        </clipPath>
-      </defs>
-      <g clipPath={`url(#${clipId})`}>
-        {MARK_LATTICE.map((l, i) => (
-          <line key={i} {...l} stroke="currentColor" strokeWidth={3.2} strokeLinecap="round" />
-        ))}
-      </g>
-      <path d={MARK_HEAD} stroke="currentColor" strokeWidth={strokeWidth} />
-      <rect {...MARK_HANDLE} fill="currentColor" />
+      <path d={MARK_FACE} fill="currentColor" opacity={0.16} />
+      {MARK_HOLES.map((h, i) => (
+        <circle key={i} {...h} fill="currentColor" opacity={0.5} />
+      ))}
+      <path d={`${MARK_HEAD} ${MARK_FACE}`} fill="currentColor" fillRule="evenodd" />
+      {MARK_GRIP.map((g, i) => (
+        <rect key={i} {...g} fill="currentColor" />
+      ))}
     </svg>
   );
 }
@@ -75,7 +83,7 @@ export default function RallyLogo({
   if (layout === 'horizontal') {
     return (
       <span className={`inline-flex items-center gap-2.5 ${className}`}>
-        <RallyMark size={mark} strokeWidth={8} />
+        <RallyMark size={mark} />
         {wordmark}
       </span>
     );

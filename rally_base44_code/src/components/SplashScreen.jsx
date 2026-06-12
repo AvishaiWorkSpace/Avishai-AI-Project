@@ -1,14 +1,14 @@
-import { useEffect, useId, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { MARK_VIEWBOX, MARK_HEAD, MARK_HANDLE, MARK_LATTICE } from './RallyLogo';
+import { MARK_VIEWBOX, MARK_HEAD, MARK_FACE, MARK_HOLES, MARK_GRIP } from './RallyLogo';
 
-// Boot splash: the racket draws itself, RALLY staggers in, the gold ball
-// drops into place as the brand dot. Unmounted by App via AnimatePresence.
+// Boot splash: the racket frame draws itself, the face holes get "drilled"
+// one by one, the grip wraps on, RALLY staggers in and the gold ball drops
+// into place as the brand dot. Unmounted by App via AnimatePresence.
 
 const LETTERS = ['R', 'A', 'L', 'L', 'Y'];
 
 export default function SplashScreen({ onDone }) {
-  const clipId = useId();
   const reduced = useMemo(
     () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
     [],
@@ -37,43 +37,45 @@ export default function SplashScreen({ onDone }) {
         <div className="absolute top-[400px] left-1/2 -translate-x-1/2 w-[480px] h-[2px] bg-white" />
       </motion.div>
 
-      {/* Racket mark, drawn stroke by stroke */}
+      {/* Racket mark: frame draws on, holes get drilled, grip wraps */}
       <svg width={120} height={165} viewBox={MARK_VIEWBOX} fill="none" aria-hidden>
-        <defs>
-          <clipPath id={clipId}>
-            <path d="M48 16 C66 16 78 30 78 49 C78 70 64 82 48 82 C32 82 18 70 18 49 C18 30 30 16 48 16 Z" />
-          </clipPath>
-        </defs>
-        <g clipPath={`url(#${clipId})`}>
-          {MARK_LATTICE.map((l, i) => (
-            <motion.line
-              key={i}
-              {...l}
-              stroke="currentColor"
-              strokeWidth={3.2}
-              strokeLinecap="round"
-              initial={reduced ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.65 + i * 0.035, duration: 0.3 }}
-            />
-          ))}
-        </g>
+        <motion.path
+          d={MARK_FACE}
+          fill="currentColor"
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 0.16 }}
+          transition={{ delay: 0.55, duration: 0.4 }}
+        />
+        {MARK_HOLES.map((h, i) => (
+          <motion.circle
+            key={i}
+            {...h}
+            fill="currentColor"
+            initial={reduced ? false : { opacity: 0, scale: 0 }}
+            animate={{ opacity: 0.5, scale: 1 }}
+            style={{ originX: `${h.cx}px`, originY: `${h.cy}px` }}
+            transition={{ delay: 0.6 + i * 0.018, duration: 0.25 }}
+          />
+        ))}
         <motion.path
           d={MARK_HEAD}
           stroke="currentColor"
-          strokeWidth={6.5}
+          strokeWidth={6}
           initial={reduced ? false : { pathLength: 0 }}
           animate={{ pathLength: 1 }}
           transition={{ delay: 0.1, duration: 0.9, ease: 'easeInOut' }}
         />
-        <motion.rect
-          {...MARK_HANDLE}
-          fill="currentColor"
-          initial={reduced ? false : { scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          style={{ originY: 0, originX: '50%' }}
-          transition={{ delay: 0.85, duration: 0.35, ease: 'easeOut' }}
-        />
+        {MARK_GRIP.map((g, i) => (
+          <motion.rect
+            key={i}
+            {...g}
+            fill="currentColor"
+            initial={reduced ? false : { scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            style={{ originY: 0, originX: '50%' }}
+            transition={{ delay: 0.85 + i * 0.1, duration: 0.25, ease: 'easeOut' }}
+          />
+        ))}
       </svg>
 
       {/* Wordmark + dropping gold ball */}

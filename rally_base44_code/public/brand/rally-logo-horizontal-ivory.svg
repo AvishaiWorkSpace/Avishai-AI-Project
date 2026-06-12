@@ -1,23 +1,22 @@
 <svg width="348" height="110" viewBox="0 0 348 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <clipPath id="headHI">
-      <path d="M48 16 C66 16 78 30 78 49 C78 70 64 82 48 82 C32 82 18 70 18 49 C18 30 30 16 48 16 Z" transform="translate(8 7) scale(0.72)"/>
-    </clipPath>
-  </defs>
-  <g clip-path="url(#headHI)" stroke="#FAF8F3" stroke-linecap="round" opacity="0.9">
-    <g transform="translate(8 7) scale(0.72)" stroke-width="3.2">
-      <line x1="-52" y1="-6" x2="58" y2="104"/><line x1="58" y1="-6" x2="-52" y2="104"/>
-      <line x1="-37" y1="-6" x2="73" y2="104"/><line x1="73" y1="-6" x2="-37" y2="104"/>
-      <line x1="-22" y1="-6" x2="88" y2="104"/><line x1="88" y1="-6" x2="-22" y2="104"/>
-      <line x1="-7" y1="-6" x2="103" y2="104"/><line x1="103" y1="-6" x2="-7" y2="104"/>
-      <line x1="8" y1="-6" x2="118" y2="104"/><line x1="118" y1="-6" x2="8" y2="104"/>
-      <line x1="23" y1="-6" x2="133" y2="104"/><line x1="133" y1="-6" x2="23" y2="104"/>
-      <line x1="38" y1="-6" x2="148" y2="104"/><line x1="148" y1="-6" x2="38" y2="104"/>
-    </g>
-  </g>
   <g transform="translate(8 7) scale(0.72)">
-    <path d="M48 7 C71 7 87 24 87 49 C87 75 69 91 48 91 C27 91 9 75 9 49 C9 24 25 7 48 7 Z" stroke="#FAF8F3" stroke-width="7.5"/>
-    <rect x="41.5" y="90" width="13" height="33" rx="6.5" fill="#FAF8F3"/>
+    <path d="M48 11 C65.5 11 80 24.5 80 45 C80 65 69.5 79 58 84 C54.5 85.5 51 86.2 48 86.2 C45 86.2 41.5 85.5 38 84 C26.5 79 16 65 16 45 C16 24.5 30.5 11 48 11 Z" fill="#FAF8F3" opacity="0.14"/>
+    <g fill="#FAF8F3" opacity="0.55">
+      <circle cx="40" cy="16" r="2.2"/><circle cx="48" cy="16" r="2.2"/><circle cx="56" cy="16" r="2.2"/>
+      <circle cx="32" cy="24" r="2.2"/><circle cx="40" cy="24" r="2.2"/><circle cx="48" cy="24" r="2.2"/><circle cx="56" cy="24" r="2.2"/><circle cx="64" cy="24" r="2.2"/>
+      <circle cx="24" cy="32" r="2.2"/><circle cx="32" cy="32" r="2.2"/><circle cx="40" cy="32" r="2.2"/><circle cx="48" cy="32" r="2.2"/><circle cx="56" cy="32" r="2.2"/><circle cx="64" cy="32" r="2.2"/><circle cx="72" cy="32" r="2.2"/>
+      <circle cx="24" cy="40" r="2.2"/><circle cx="32" cy="40" r="2.2"/><circle cx="40" cy="40" r="2.2"/><circle cx="48" cy="40" r="2.2"/><circle cx="56" cy="40" r="2.2"/><circle cx="64" cy="40" r="2.2"/><circle cx="72" cy="40" r="2.2"/>
+      <circle cx="24" cy="48" r="2.2"/><circle cx="32" cy="48" r="2.2"/><circle cx="40" cy="48" r="2.2"/><circle cx="48" cy="48" r="2.2"/><circle cx="56" cy="48" r="2.2"/><circle cx="64" cy="48" r="2.2"/><circle cx="72" cy="48" r="2.2"/>
+      <circle cx="24" cy="56" r="2.2"/><circle cx="32" cy="56" r="2.2"/><circle cx="40" cy="56" r="2.2"/><circle cx="48" cy="56" r="2.2"/><circle cx="56" cy="56" r="2.2"/><circle cx="64" cy="56" r="2.2"/><circle cx="72" cy="56" r="2.2"/>
+      <circle cx="32" cy="64" r="2.2"/><circle cx="40" cy="64" r="2.2"/><circle cx="48" cy="64" r="2.2"/><circle cx="56" cy="64" r="2.2"/><circle cx="64" cy="64" r="2.2"/>
+      <circle cx="32" cy="72" r="2.2"/><circle cx="40" cy="72" r="2.2"/><circle cx="48" cy="72" r="2.2"/><circle cx="56" cy="72" r="2.2"/><circle cx="64" cy="72" r="2.2"/>
+      <circle cx="40" cy="80" r="2.2"/><circle cx="48" cy="80" r="2.2"/><circle cx="56" cy="80" r="2.2"/>
+    </g>
+    <path fill-rule="evenodd" fill="#FAF8F3" d="M48 5 C69 5 86 21 86 45 C86 68 74 84 60 90 C56 91.6 52 92.4 48 92.4 C44 92.4 40 91.6 36 90 C22 84 10 68 10 45 C10 21 27 5 48 5 Z M48 11 C65.5 11 80 24.5 80 45 C80 65 69.5 79 58 84 C54.5 85.5 51 86.2 48 86.2 C45 86.2 41.5 85.5 38 84 C26.5 79 16 65 16 45 C16 24.5 30.5 11 48 11 Z"/>
+    <rect x="43" y="90" width="10" height="8" rx="3" fill="#FAF8F3"/>
+    <rect x="43" y="100" width="10" height="8" rx="3" fill="#FAF8F3"/>
+    <rect x="43" y="110" width="10" height="8" rx="3" fill="#FAF8F3"/>
+    <rect x="41" y="120" width="14" height="7" rx="3.5" fill="#FAF8F3"/>
   </g>
   <g transform="translate(110 35)" stroke="#FAF8F3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
     <path d="M3 2.5 V37.5"/>
