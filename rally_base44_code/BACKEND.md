@@ -1,3 +1,5 @@
+<div dir="rtl" markdown="1">
+
 # Rally — חיבור Backend (Base44)
 
 האפליקציה רצה היום על **mock store** עם persistence ל-localStorage — אותו API בדיוק כמו ה-SDK האמיתי.
@@ -128,3 +130,5 @@
 - [ ] להעביר את עדכון הדירוג לצד-שרת (Base44 function) — היום הוא מחושב בקליינט
 - [ ] אגרגציית PeerRating לרדאר מהשרת (היום: PEER_AXES_HISTORY mock)
 - [ ] Push אמיתי להתראת "מגרש התפנה" (web push / OneSignal)
+
+</div>

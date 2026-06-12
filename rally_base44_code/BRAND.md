@@ -1,3 +1,5 @@
+<div dir="rtl" markdown="1">
+
 # Rally — Brand & Store Listing
 
 נכסי המותג יושבים ב-`public/brand/` (SVG, וקטורי — ניתן לייצא לכל גודל):
@@ -60,3 +62,5 @@ Full:
 ## מילות מפתח (ASO)
 
 פאדל, padel, מגרש פאדל, padel israel, racket sports, הזמנת מגרש, טניס, מצא שחקנים, דירוג שחקנים, טורניר פאדל, מועדון פאדל, תל אביב פאדל
+
+</div>
