@@ -81,6 +81,22 @@ export function clubHash(str) {
   return h;
 }
 
+// Real-world coordinates (lat, lng) per city — drives the interactive
+// navigation map and the Google Maps directions deep-links.
+export const CLUB_LATLNG = {
+  'חיפה': [32.794, 34.9896],
+  'נתניה': [32.3215, 34.8532],
+  'כפר סבא': [32.175, 34.907],
+  'רעננה': [32.1848, 34.8713],
+  'הרצליה': [32.1663, 34.8436],
+  'תל אביב': [32.0853, 34.7818],
+  'ראשון לציון': [31.973, 34.7925],
+  'מודיעין': [31.8928, 35.0124],
+  'ירושלים': [31.7683, 35.2137],
+  'אשדוד': [31.8014, 34.6434],
+  'באר שבע': [31.253, 34.7915],
+};
+
 // Approximate geography on the stylized SVG map (viewBox 0 0 320 600).
 // West coast on the left, Jerusalem inland, Beer Sheva south.
 export const CLUB_GEO = {

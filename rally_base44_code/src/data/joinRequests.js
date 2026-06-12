@@ -13,9 +13,17 @@
 //     (rally_host_decisions). The candidate is deterministic per match.
 import { PLAYERS } from '@/data/mockData';
 import { addJoinedMatchId } from '@/data/gamesHistory';
+import { base44, isLiveBackend } from '@/api/base44Client';
 
 const REQUESTS_KEY = 'rally_join_requests';
 const DECISIONS_KEY = 'rally_host_decisions';
+
+// Fire-and-forget mirror to the Base44 data center (live mode only) — the
+// sync localStorage copy stays the demo source of truth either way.
+const mirror = (fn) => {
+  if (!isLiveBackend) return;
+  Promise.resolve().then(fn).catch(() => { /* offline — keep local copy */ });
+};
 
 // How long the demo host "thinks" before approving.
 export const DEMO_APPROVAL_MS = 10000;
@@ -35,6 +43,7 @@ export function requestJoin(matchId) {
   const all = readJSON(REQUESTS_KEY);
   all[matchId] = { status: 'pending', requested_at: Date.now() };
   writeJSON(REQUESTS_KEY, all);
+  mirror(() => base44.entities.JoinRequest.create({ match_id: matchId, status: 'pending' }));
   return all[matchId];
 }
 
@@ -49,6 +58,10 @@ export function getJoinRequest(matchId) {
     req.approved_at = Date.now();
     writeJSON(REQUESTS_KEY, all);
     addJoinedMatchId(matchId);
+    mirror(async () => {
+      const rows = await base44.entities.JoinRequest.filter({ match_id: matchId });
+      if (rows[0]) await base44.entities.JoinRequest.update(rows[0].id, { status: 'approved' });
+    });
   }
   return req;
 }
@@ -85,4 +98,5 @@ export function decideIncoming(matchId, playerId, decision) {
   const decisions = readJSON(DECISIONS_KEY);
   decisions[matchId] = { ...(decisions[matchId] || {}), [playerId]: decision };
   writeJSON(DECISIONS_KEY, decisions);
+  mirror(() => base44.entities.JoinRequest.create({ match_id: matchId, player_id: playerId, status: decision, incoming: true }));
 }

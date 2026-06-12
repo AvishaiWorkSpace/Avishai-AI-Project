@@ -27,8 +27,11 @@ const SEED = {
   CourtListing: () => [...COURT_LISTINGS],
   MatchResult: () => [],
   PeerRating: () => [],
+  JoinRequest: () => [],
+  PlayerInvite: () => [],
+  Booking: () => [],
 };
-const PERSISTED = new Set(['MatchResult', 'PeerRating']);
+const PERSISTED = new Set(['MatchResult', 'PeerRating', 'JoinRequest', 'PlayerInvite', 'Booking']);
 
 function loadDB() {
   let saved = {};

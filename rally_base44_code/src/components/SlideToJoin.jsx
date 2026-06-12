@@ -70,10 +70,24 @@ export default function SlideToJoin({ matchId, label, requestMode = false, onJoi
         />
       )}
 
+      {/* Two separate spans — reusing one span leaves the drag-driven opacity
+          (0 at full drag) stuck on the element, hiding the success label. */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <motion.span style={done ? undefined : { opacity: labelOpacity }} className="text-white font-bold text-[15px]">
-          {done ? (requestMode ? 'הבקשה נשלחה למנהל ✓' : 'הצטרפת בהצלחה ✓') : idleLabel}
-        </motion.span>
+        {!done && (
+          <motion.span style={{ opacity: labelOpacity }} className="text-white font-bold text-[15px]">
+            {idleLabel}
+          </motion.span>
+        )}
+        {done && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+            className="text-white font-bold text-[15px]"
+          >
+            {requestMode ? 'הבקשה נשלחה למנהל ✓' : 'הצטרפת בהצלחה ✓'}
+          </motion.span>
+        )}
       </div>
 
       {!done && (

@@ -1,102 +1,55 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Star, Clock, MapPin, X } from 'lucide-react';
+import { ArrowRight, Star, Clock, MapPin, X, Navigation } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { base44 } from '@/api/base44Client';
-import { enrichClubs, CLUB_GEO, clubHash } from '@/data/clubsExtra';
+import { enrichClubs, CLUB_LATLNG, clubHash } from '@/data/clubsExtra';
 import { BallIcon } from '@/components/icons';
 
 const spring = { type: 'spring', stiffness: 280, damping: 26 };
 
-// Stylized map of Israel — simplified coastline, drawn to feel crafted
-// rather than cartographically exact. viewBox matches CLUB_GEO coordinates.
-function IsraelMap({ clubs, selectedId, onSelect }) {
-  return (
-    <svg viewBox="0 0 320 600" className="w-full h-full" role="img" aria-label="מפת מועדוני פאדל בישראל">
-      <defs>
-        <linearGradient id="landFill" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--brand-softer))" />
-          <stop offset="100%" stopColor="hsl(var(--sage-soft))" />
-        </linearGradient>
-        <linearGradient id="seaFill" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="hsl(197 40% 88%)" />
-          <stop offset="100%" stopColor="hsl(197 35% 92%)" />
-        </linearGradient>
-      </defs>
+// Israel fits a phone-tall viewport around this frame.
+const ISRAEL_CENTER = [32.0, 34.95];
+const ISRAEL_ZOOM = 8;
 
-      {/* Sea */}
-      <rect x="0" y="0" width="320" height="600" fill="url(#seaFill)" opacity="0.45" />
+// divIcon per pin state — gold = open courts today, brand = regular club.
+const pinIcon = (gold, selected) =>
+  L.divIcon({
+    className: '', // kill leaflet's default white box
+    html: `<div class="club-pin${gold ? ' gold' : ''}${selected ? ' selected' : ''}">${gold ? '<span class="ring"></span>' : ''}<span class="dot"></span></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+  });
 
-      {/* Land — simplified Israel outline */}
-      <path
-        d="M 118 40
-           C 130 55, 138 75, 134 95
-           C 130 112, 118 120, 116 138
-           C 114 156, 108 170, 104 190
-           C 100 210, 98 228, 100 248
-           C 102 266, 96 282, 100 300
-           C 104 318, 116 330, 124 348
-           C 132 366, 138 386, 142 408
-           C 146 430, 150 452, 146 474
-           C 142 496, 132 516, 124 536
-           C 118 550, 112 562, 110 574
-           L 150 574
-           C 158 550, 170 520, 178 492
-           C 186 464, 192 436, 196 408
-           C 200 380, 204 352, 206 324
-           C 208 296, 210 268, 208 240
-           C 206 212, 200 186, 194 162
-           C 188 138, 180 112, 172 92
-           C 164 72, 154 52, 146 40
-           Z"
-        fill="url(#landFill)"
-        stroke="hsl(var(--brand))"
-        strokeWidth="1.6"
-        strokeOpacity="0.4"
-      />
-
-      {/* Subtle grid */}
-      {[120, 200, 280, 360, 440, 520].map((y) => (
-        <line key={y} x1="40" y1={y} x2="280" y2={y} stroke="hsl(var(--brand))" strokeOpacity="0.06" strokeWidth="1" />
-      ))}
-
-      {/* City pins */}
-      {clubs.map((club) => {
-        const geo = CLUB_GEO[club.city];
-        if (!geo) return null;
-        const hasOpenSlot = clubHash(club.id) % 3 !== 0;
-        const selected = selectedId === club.id;
-        return (
-          <g key={club.id} transform={`translate(${geo.x}, ${geo.y})`} onClick={() => onSelect(club)} style={{ cursor: 'pointer' }}>
-            {hasOpenSlot && (
-              <circle r="11" fill="hsl(var(--gold))" opacity="0.25">
-                <animate attributeName="r" values="8;15;8" dur="2.2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.3;0.05;0.3" dur="2.2s" repeatCount="indefinite" />
-              </circle>
-            )}
-            <circle
-              r={selected ? 8 : 6}
-              fill={hasOpenSlot ? 'hsl(var(--gold))' : 'hsl(var(--brand))'}
-              stroke="white"
-              strokeWidth="2.5"
-              style={{ transition: 'r 0.15s' }}
-            />
-            {selected && (
-              <circle r="12" fill="none" stroke="hsl(var(--brand))" strokeWidth="1.5" strokeOpacity="0.5" />
-            )}
-          </g>
-        );
-      })}
-
-      {/* Region labels */}
-      <text x="226" y="258" fontSize="11" fill="hsl(var(--brand))" opacity="0.45" fontWeight="700">ירושלים</text>
-      <text x="40" y="256" fontSize="11" fill="hsl(var(--brand))" opacity="0.45" fontWeight="700">תל אביב</text>
-      <text x="158" y="116" fontSize="11" fill="hsl(var(--brand))" opacity="0.45" fontWeight="700">חיפה</text>
-      <text x="172" y="356" fontSize="11" fill="hsl(var(--brand))" opacity="0.45" fontWeight="700">באר שבע</text>
-    </svg>
-  );
+// Imperative fly-to when a club is picked from the list or a pin.
+function FlyTo({ target }) {
+  const map = useMap();
+  useEffect(() => {
+    if (target) map.flyTo(target, Math.max(map.getZoom(), 11), { duration: 0.8 });
+  }, [target, map]);
+  return null;
 }
+
+// On mount: fix the measured size (the container animates in) and frame all
+// club pins — Haifa down to Beer Sheva — inside the viewport.
+function FitAllClubs() {
+  const map = useMap();
+  useEffect(() => {
+    const t = setTimeout(() => {
+      map.invalidateSize();
+      map.fitBounds(L.latLngBounds(Object.values(CLUB_LATLNG)), { padding: [26, 26] });
+    }, 250);
+    return () => clearTimeout(t);
+  }, [map]);
+  return null;
+}
+
+const googleNavUrl = ([lat, lng]) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
 
 export default function ClubsMap() {
   const navigate = useNavigate();
@@ -109,6 +62,7 @@ export default function ClubsMap() {
   });
 
   const clubs = useMemo(() => enrichClubs(baseClubs), [baseClubs]);
+  const selectedLatLng = selected ? CLUB_LATLNG[selected.city] : null;
 
   return (
     <div dir="rtl" className="min-h-screen bg-background max-w-md mx-auto pb-10">
@@ -145,8 +99,38 @@ export default function ClubsMap() {
 
       {view === 'map' ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-5">
-          <div className="rounded-[28px] overflow-hidden border border-border shadow-luxe bg-card" style={{ height: '58vh', minHeight: 380 }}>
-            <IsraelMap clubs={clubs} selectedId={selected?.id} onSelect={setSelected} />
+          <div
+            dir="ltr"
+            className="rounded-[28px] overflow-hidden border border-border shadow-luxe bg-card relative"
+            style={{ height: '58vh', minHeight: 380 }}
+          >
+            <MapContainer
+              center={ISRAEL_CENTER}
+              zoom={ISRAEL_ZOOM}
+              style={{ height: '100%', width: '100%' }}
+              scrollWheelZoom
+              attributionControl
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              />
+              {clubs.map((club) => {
+                const latlng = CLUB_LATLNG[club.city];
+                if (!latlng) return null;
+                const hasOpenSlot = clubHash(club.id) % 3 !== 0;
+                return (
+                  <Marker
+                    key={club.id}
+                    position={latlng}
+                    icon={pinIcon(hasOpenSlot, selected?.id === club.id)}
+                    eventHandlers={{ click: () => setSelected(club) }}
+                  />
+                );
+              })}
+              <FitAllClubs />
+              <FlyTo target={selectedLatLng} />
+            </MapContainer>
           </div>
         </motion.div>
       ) : (
@@ -207,17 +191,31 @@ export default function ClubsMap() {
                   </div>
                 </div>
               </div>
-              <div className="p-3.5 flex items-center justify-between gap-3">
-                <div className="text-[12px] text-muted-foreground">
-                  <span className="flex items-center gap-1"><Clock size={12} /> {selected.hours}</span>
-                  <span className="block mt-1 font-bold text-foreground">{selected.price_range} לשעה וחצי</span>
+              <div className="p-3.5">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <div className="text-[12px] text-muted-foreground">
+                    <span className="flex items-center gap-1"><Clock size={12} /> {selected.hours}</span>
+                    <span className="block mt-1 font-bold text-foreground">{selected.price_range} לשעה וחצי</span>
+                  </div>
+                  <button
+                    onClick={() => navigate('/book-court')}
+                    className="bg-brand text-white px-5 py-2.5 rounded-full font-bold text-[13.5px] active:scale-95 transition-transform shadow-sm"
+                  >
+                    הזמן מגרש
+                  </button>
                 </div>
-                <button
-                  onClick={() => navigate('/book-court')}
-                  className="bg-brand text-white px-5 py-2.5 rounded-full font-bold text-[13.5px] active:scale-95 transition-transform shadow-sm"
-                >
-                  הזמן מגרש
-                </button>
+                {/* Real-world navigation — opens Google Maps driving directions */}
+                {selectedLatLng && (
+                  <a
+                    href={googleNavUrl(selectedLatLng)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 rounded-full border border-brand/30 bg-brand-softer text-brand font-bold text-[13.5px] flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                  >
+                    <Navigation size={15} />
+                    נווט עם Google Maps
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

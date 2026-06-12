@@ -84,6 +84,44 @@
 | statement | string | המשפט הקונקרטי שנבחר |
 | fairplay | string | yes / maybe / no |
 
+### JoinRequest ⭐ (חדש — מילוי מהיר באישור מנהל)
+| שדה | סוג | הערות |
+|---|---|---|
+| match_id | string → Match | |
+| player_id | string → Player | המבקש (בבקשות נכנסות) |
+| status | string | pending / approved / declined |
+| incoming | boolean | true = בקשה שמנהל המשחק קיבל |
+
+> זרימה: שחקן מחליק לבקשה (pending) → מנהל המשחק מאשר → status=approved
+> פותח לו את צ׳אט המשחק. בדמו המקומי האישור אוטומטי אחרי ~10 שניות;
+> בחיבור חי ההחלטה מגיעה מהמנהל בפועל.
+
+### PlayerInvite ⭐ (חדש — הזמן שחקן בשם)
+| שדה | סוג | הערות |
+|---|---|---|
+| player_id | string → Player | המוזמן |
+| match_id | string → Match | |
+| club_name | string | דה-נורמליזציה לתצוגה |
+| start_time | datetime | |
+| status | string | pending / accepted / declined |
+
+### Booking (הזמנת מגרש)
+| שדה | סוג | הערות |
+|---|---|---|
+| club_id | string → Club | |
+| club_name, city | string | |
+| court | number | |
+| date | datetime | |
+| slot | string | "19:00" |
+| duration_min, price | number | |
+
+## איך הפונקציות החדשות מתחברות
+
+`src/data/joinRequests.js`, `src/data/invites.js` ו-BookCourt כותבים **write-through**:
+כל פעולה נשמרת מקומית (הדמו מרגיש מיידי גם בלי רשת), וכש-`VITE_BASE44_APP_ID`
+מוגדר — אותה פעולה משוקפת אוטומטית ל-Base44 (`JoinRequest` / `PlayerInvite` /
+`Booking`). הדפים עצמם לא משתנים.
+
 ## מה עוד נשאר אחרי החיבור
 
 - [ ] Auth אמיתי (Base44 auth / OTP) במקום הדמו ב-Login

@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Users, Star, Clock } from 'lucide-react';
+import { ChevronLeft, Users, Star, Clock, MessageCircle, CalendarRange } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import MatchCard from '@/components/MatchCard';
@@ -12,6 +12,8 @@ import { BellIcon, BallIcon, CourtIcon, TrophyIcon, LevelUpIcon, SearchIcon } fr
 import RallyLogo from '@/components/RallyLogo';
 import FreeCourtAlert from '@/components/FreeCourtAlert';
 import LiveCourtVideo from '@/components/LiveCourtVideo';
+import BookingsSheet from '@/components/BookingsSheet';
+import { getJoinedMatchIds } from '@/data/gamesHistory';
 
 const QUICK_ACTIONS = [
   { label: 'הזמן מגרש', to: '/book-court', color: 'bg-brand text-white', Icon: CourtIcon },
@@ -50,6 +52,8 @@ export default function Home() {
   const userCity = user.city || '';
   const compatLevels = COMPAT[userLevel] || [userLevel];
   const heroMatch = matches[0];
+  const [bookingsOpen, setBookingsOpen] = useState(false);
+  const heroJoined = heroMatch ? getJoinedMatchIds().includes(heroMatch.id) : false;
 
   const recommended = useMemo(() => {
     return matches
@@ -76,6 +80,11 @@ export default function Home() {
             className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm active:scale-90 relative">
             <BellIcon size={19} />
             <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full border-2 border-white" />
+          </button>
+          {/* My games & bookings + invite-a-player panel */}
+          <button onClick={() => setBookingsOpen(true)}
+            className="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center shadow-md active:scale-90">
+            <CalendarRange size={18} strokeWidth={2} />
           </button>
         </div>
       </div>
@@ -220,7 +229,18 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <SlideToJoin matchId={heroMatch.id} />
+              {heroJoined ? (
+                /* Already in this game — joining again makes no sense */
+                <button
+                  onClick={() => navigate(`/match/${heroMatch.id}`)}
+                  className="w-full h-14 rounded-full bg-brand-softer border border-brand/25 text-brand font-bold text-[15px] flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+                >
+                  <MessageCircle size={18} />
+                  אתה במשחק הזה — פתח את הצ׳אט
+                </button>
+              ) : (
+                <SlideToJoin matchId={heroMatch.id} />
+              )}
             </div>
           </div>
         </div>
@@ -252,6 +272,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* My games & bookings + invite-a-player panel */}
+      <BookingsSheet open={bookingsOpen} onClose={() => setBookingsOpen(false)} />
     </div>
   );
 }

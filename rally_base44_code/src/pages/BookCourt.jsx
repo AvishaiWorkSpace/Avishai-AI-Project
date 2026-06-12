@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, Clock, MapPin, CalendarDays } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import confetti from 'canvas-confetti';
-import { base44 } from '@/api/base44Client';
+import { base44, isLiveBackend } from '@/api/base44Client';
 import { enrichClubs, clubHash } from '@/data/clubsExtra';
 import { CourtIcon } from '@/components/icons';
 
@@ -80,6 +80,8 @@ export default function BookCourt() {
       const prev = JSON.parse(localStorage.getItem(BOOKINGS_KEY) || '[]');
       localStorage.setItem(BOOKINGS_KEY, JSON.stringify([booking, ...(Array.isArray(prev) ? prev : [])]));
     } catch { /* demo */ }
+    // Mirror to the Base44 data center when the live backend is connected.
+    if (isLiveBackend) base44.entities.Booking.create(booking).catch(() => {});
     setDone(true);
     confetti({
       particleCount: 90,
