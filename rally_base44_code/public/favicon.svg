@@ -1,5 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <clipPath id="fh">
+      <path d="M48 16 C66 16 78 30 78 49 C78 70 64 82 48 82 C32 82 18 70 18 49 C18 30 30 16 48 16 Z" transform="translate(13 8) scale(0.36)"/>
+    </clipPath>
+  </defs>
   <rect width="64" height="64" rx="15" fill="#0E2C20"/>
-  <text x="29" y="46" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="#F6F1E5" text-anchor="middle">R</text>
-  <circle cx="47" cy="43" r="5.5" fill="#C9A05A"/>
+  <g clip-path="url(#fh)" stroke="#F6F1E5" stroke-linecap="round" opacity="0.9">
+    <g transform="translate(13 8) scale(0.36)" stroke-width="5">
+      <line x1="-52" y1="-6" x2="58" y2="104"/><line x1="58" y1="-6" x2="-52" y2="104"/>
+      <line x1="-37" y1="-6" x2="73" y2="104"/><line x1="73" y1="-6" x2="-37" y2="104"/>
+      <line x1="-22" y1="-6" x2="88" y2="104"/><line x1="88" y1="-6" x2="-22" y2="104"/>
+      <line x1="-7" y1="-6" x2="103" y2="104"/><line x1="103" y1="-6" x2="-7" y2="104"/>
+      <line x1="8" y1="-6" x2="118" y2="104"/><line x1="118" y1="-6" x2="8" y2="104"/>
+      <line x1="23" y1="-6" x2="133" y2="104"/><line x1="133" y1="-6" x2="23" y2="104"/>
+      <line x1="38" y1="-6" x2="148" y2="104"/><line x1="148" y1="-6" x2="38" y2="104"/>
+    </g>
+  </g>
+  <g transform="translate(13 8) scale(0.36)">
+    <path d="M48 7 C71 7 87 24 87 49 C87 75 69 91 48 91 C27 91 9 75 9 49 C9 24 25 7 48 7 Z" stroke="#F6F1E5" stroke-width="9"/>
+    <rect x="40" y="90" width="16" height="34" rx="8" fill="#F6F1E5"/>
+  </g>
+  <circle cx="47" cy="16.5" r="7" fill="#C9A05A"/>
 </svg>
